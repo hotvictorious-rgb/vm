@@ -89,6 +89,9 @@ class ApiErrorHandler {
             case DioExceptionType.unknown:
               errorDescription = "Request to API call limit excited ";
               break;
+            default:
+              errorDescription = "Unexpected connection issue";
+              break;
           }
         } else {
           errorDescription = "Unexpected error occured";
