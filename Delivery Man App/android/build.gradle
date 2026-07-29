@@ -1,3 +1,14 @@
+buildscript {
+    ext.kotlin_version = '2.2.10'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 // build.gradle (allprojects)
 
 // Set up repositories for dependencies
