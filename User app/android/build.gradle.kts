@@ -44,6 +44,9 @@ subprojects {
                 if (requested.group == "androidx.navigationevent" && requested.name == "navigationevent-android") {
                     useVersion("1.0.0")
                 }
+                if (requested.group == "org.jetbrains.kotlin") {
+                    useVersion("2.0.20")
+                }
             }
         }
     }
