@@ -56,6 +56,15 @@ allprojects {
                 if (details.requested.group == 'androidx.core' && (details.requested.name == 'core' || details.requested.name == 'core-ktx')) {
                     details.useVersion '1.13.1'
                 }
+                if (details.requested.group == 'androidx.activity' && (details.requested.name == 'activity' || details.requested.name == 'activity-ktx')) {
+                    details.useVersion '1.9.3'
+                }
+                if (details.requested.group == 'androidx.fragment' && (details.requested.name == 'fragment' || details.requested.name == 'fragment-ktx')) {
+                    details.useVersion '1.8.5'
+                }
+                if (details.requested.group.startsWith('androidx.lifecycle')) {
+                    details.useVersion '2.8.7'
+                }
                 if (details.requested.group == 'androidx.navigationevent' && details.requested.name == 'navigationevent-android') {
                     details.useVersion '1.0.0'
                 }
