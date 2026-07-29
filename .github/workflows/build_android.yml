@@ -26,6 +26,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Free Disk Space
+        run: |
+          echo "Freeing up disk space on runner..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf /usr/share/swift
+
       - name: Set up Java JDK
         uses: actions/setup-java@v4
         with:
