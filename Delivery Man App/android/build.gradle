@@ -78,7 +78,7 @@ allprojects {
                     details.useVersion '1.0.0'
                 }
                 if (details.requested.group == 'org.jetbrains.kotlin') {
-                    details.useVersion '2.0.20'
+                    details.useVersion '2.2.10'
                 }
                 if (details.requested.group == 'com.google.maps.android' && details.requested.name == 'android-maps-utils') {
                     details.useVersion '4.0.0'
