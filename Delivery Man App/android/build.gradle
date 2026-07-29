@@ -65,6 +65,15 @@ allprojects {
                 if (details.requested.group.startsWith('androidx.lifecycle')) {
                     details.useVersion '2.8.7'
                 }
+                if (details.requested.group == 'androidx.browser' && details.requested.name == 'browser') {
+                    details.useVersion '1.8.0'
+                }
+                if (details.requested.group.startsWith('androidx.savedstate')) {
+                    details.useVersion '1.2.1'
+                }
+                if (details.requested.group.startsWith('androidx.annotation')) {
+                    details.useVersion '1.8.2'
+                }
                 if (details.requested.group == 'androidx.navigationevent' && details.requested.name == 'navigationevent-android') {
                     details.useVersion '1.0.0'
                 }

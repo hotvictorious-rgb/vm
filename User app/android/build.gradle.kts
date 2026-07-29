@@ -32,6 +32,15 @@ subprojects {
                 if (requested.group.startsWith("androidx.lifecycle")) {
                     useVersion("2.8.7")
                 }
+                if (requested.group == "androidx.browser" && requested.name == "browser") {
+                    useVersion("1.8.0")
+                }
+                if (requested.group.startsWith("androidx.savedstate")) {
+                    useVersion("1.2.1")
+                }
+                if (requested.group.startsWith("androidx.annotation")) {
+                    useVersion("1.8.2")
+                }
                 if (requested.group == "androidx.navigationevent" && requested.name == "navigationevent-android") {
                     useVersion("1.0.0")
                 }
