@@ -71,7 +71,7 @@ allprojects {
                 if (details.requested.group.startsWith('androidx.savedstate')) {
                     details.useVersion '1.2.1'
                 }
-                if (details.requested.group.startsWith('androidx.annotation')) {
+                if (details.requested.group == 'androidx.annotation' && details.requested.name == 'annotation') {
                     details.useVersion '1.8.2'
                 }
                 if (details.requested.group == 'androidx.navigationevent' && details.requested.name == 'navigationevent-android') {

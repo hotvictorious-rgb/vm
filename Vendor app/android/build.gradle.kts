@@ -44,7 +44,7 @@ subprojects {
                 if (requested.group.startsWith("androidx.savedstate")) {
                     useVersion("1.2.1")
                 }
-                if (requested.group.startsWith("androidx.annotation")) {
+                if (requested.group == "androidx.annotation" && requested.name == "annotation") {
                     useVersion("1.8.2")
                 }
                 if (requested.group == "androidx.navigationevent" && requested.name == "navigationevent-android") {
