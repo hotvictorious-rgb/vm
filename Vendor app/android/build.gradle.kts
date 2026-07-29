@@ -53,6 +53,9 @@ subprojects {
                 if (requested.group == "org.jetbrains.kotlin") {
                     useVersion("2.0.20")
                 }
+                if (requested.group == "com.google.maps.android" && requested.name == "android-maps-utils") {
+                    useVersion("3.8.2")
+                }
             }
         }
     }

@@ -80,6 +80,9 @@ allprojects {
                 if (details.requested.group == 'org.jetbrains.kotlin') {
                     details.useVersion '2.0.20'
                 }
+                if (details.requested.group == 'com.google.maps.android' && details.requested.name == 'android-maps-utils') {
+                    details.useVersion '3.8.2'
+                }
             }
         }
     }
