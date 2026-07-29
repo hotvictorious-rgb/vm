@@ -1,0 +1,40 @@
+# System / IDE
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.zip
+*.tar.gz
+
+# Flutter / Dart
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Android
+.gradle/
+local.properties
+*.keystore
+*.jks
+*.apk
+*.aab
+
+# iOS
+*.mode1v3
+*.mode2v3
+*.owner
+*.xcworkspacedata
+# Xcode custom settings
+Runner.xcuserstate
+
+# Laravel Backend
+backend/**/vendor/
+backend/**/.env
+backend/**/node_modules/
+backend/**/public/storage
+backend/**/storage/*.key
+backend/**/bootstrap/cache/*
