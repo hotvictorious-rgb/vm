@@ -49,7 +49,7 @@ trait ActivationClass
         return 60 * 60 * 24 * $days;
     }
 
-    public function getRequestConfig(string|null $username = null, string|null $purchaseKey = null, string|null $softwareId = null, string|null $softwareType = null): array
+    public function getRequestConfig(string|null $username = null, string|null $purchaseKey = null, string|null $softwareId = null, string|null $softwareType = null, string|null $name = null, string|null $identifier = null): array
     {
         $activeStatus = base64_encode(1);
         if(!$this->is_local()) {
