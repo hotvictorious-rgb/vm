@@ -1,0 +1,66 @@
+name: Build Victorious MARKET Android Apps
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch: # Allows you to trigger the build manually from the GitHub webpage
+
+jobs:
+  build:
+    name: Build Android APK & AAB
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        app_path: [ "User app", "Vendor app", "Delivery Man App" ]
+        include:
+          - app_path: "User app"
+            app_name: "Customer-App"
+          - app_path: "Vendor app"
+            app_name: "Vendor-App"
+          - app_path: "Delivery Man App"
+            app_name: "Delivery-App"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: |
+          cd "${{ matrix.app_path }}"
+          flutter pub get
+
+      - name: Build APK (For Direct Testing)
+        run: |
+          cd "${{ matrix.app_path }}"
+          flutter build apk --release
+
+      - name: Build App Bundle (For Play Store Upload)
+        run: |
+          cd "${{ matrix.app_path }}"
+          flutter build appbundle --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app_name }}-APK
+          path: ${{ matrix.app_path }}/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload App Bundle (AAB) Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app_name }}-AAB
+          path: ${{ matrix.app_path }}/build/app/outputs/bundle/release/app-release.aab
