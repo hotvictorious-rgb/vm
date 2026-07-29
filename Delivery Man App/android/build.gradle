@@ -50,5 +50,16 @@ allprojects {
         project.evaluationDependsOn(':app')
     }
 
-
+    subprojects {
+        project.configurations.all {
+            resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == 'androidx.core' && (details.requested.name == 'core' || details.requested.name == 'core-ktx')) {
+                    details.useVersion '1.13.1'
+                }
+                if (details.requested.group == 'androidx.navigationevent' && details.requested.name == 'navigationevent-android') {
+                    details.useVersion '1.0.0'
+                }
+            }
+        }
+    }
 }

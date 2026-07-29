@@ -22,6 +22,21 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency {
+                if (requested.group == "androidx.core" && (requested.name == "core" || requested.name == "core-ktx")) {
+                    useVersion("1.13.1")
+                }
+                if (requested.group == "androidx.navigationevent" && requested.name == "navigationevent-android") {
+                    useVersion("1.0.0")
+                }
+            }
+        }
+    }
+}
+
 // Clean task
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
