@@ -41,7 +41,7 @@ ThemeData dark = ThemeData(
     labelLarge: TextStyle(color: Color(0xFFFFFFFF)),
   ),
 
-  dialogTheme: const DialogTheme(
+  dialogTheme: const DialogThemeData(
     surfaceTintColor: Color(0xFF02203A),
     shadowColor: Color(0x20454545),
   ),
