@@ -12,7 +12,7 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
 
   static const String baseUrl = 'https://shop.victoriousmarket.com.ng';
 
-  static const String googleServerClientId = 'client_id here';
+  static const String googleServerClientId = '979105513696-spdsjbb5gdoc0p4cn56sj6nfropuslcp.apps.googleusercontent.com';
   static const String userId = 'userId';
 
   static const String name = 'name';
