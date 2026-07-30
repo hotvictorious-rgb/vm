@@ -87,7 +87,7 @@ class ApiErrorHandler {
               // TODO: Handle this case.
               break;
             case DioExceptionType.unknown:
-              errorDescription = "Request to API call limit excited ";
+              errorDescription = "Connection lost. Please check your internet connection.";
               break;
             default:
               errorDescription = "Unexpected connection issue";

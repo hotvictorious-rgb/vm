@@ -102,7 +102,7 @@ class ApiErrorHandler {
             // TODO: Handle this case.
               break;
             case DioExceptionType.unknown:
-            // TODO: Handle this case.
+              errorDescription = "Connection lost. Please check your internet connection.";
               break;
           }
         } else {
