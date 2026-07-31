@@ -1140,7 +1140,7 @@
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
                                                 <span class="fw-semibold">
-                                                {{$shippingAddress->contact_person_name}}
+                                                {{ $shippingAddress->contact_person_name ?? '' }}
                                                 </span>
                                         {{ $order->is_guest ? '('. translate('guest_customer') .')':''}}
                                     </td>
@@ -1229,7 +1229,7 @@
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
                                         <span class="fw-semibold">
-                                            {{$billing->contact_person_name}}
+                                            {{ $billing->contact_person_name ?? '' }}
                                         </span>
                                         {{ $order->is_guest ? '('. translate('guest_customer') .')':''}}
                                     </td>
@@ -1434,7 +1434,7 @@
                                         <label for="name"
                                                class="form-label">{{translate('contact_person_name')}}</label>
                                         <input type="text" name="name" id="name" class="form-control"
-                                               value="{{$shippingAddress? $shippingAddress->contact_person_name : ''}}"
+                                               value="{{ isset($shippingAddress->contact_person_name) ? $shippingAddress->contact_person_name : '' }}"
                                                placeholder="{{ translate('ex') }}: {{translate('john_doe')}}" required>
                                     </div>
                                 </div>
@@ -1556,7 +1556,7 @@
                                                 <label for="name"
                                                        class="form-label">{{translate('contact_person_name')}}</label>
                                                 <input type="text" name="name" id="name" class="form-control"
-                                                       value="{{$billing? $billing->contact_person_name : ''}}"
+                                                       value="{{ isset($billing->contact_person_name) ? $billing->contact_person_name : '' }}"
                                                        placeholder="{{ translate('ex') }}: {{translate('john_doe')}}"
                                                        required>
                                             </div>

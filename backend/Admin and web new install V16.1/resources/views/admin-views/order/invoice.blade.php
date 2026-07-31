@@ -686,9 +686,9 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
                                         <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-danger">{{ $billingAddress->contact_person_name }}</span>
-                                        </td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-danger">{{ $billingAddress->contact_person_name ?? '' }}</span>
+                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
@@ -727,8 +727,8 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
                                         <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-danger">{{ $shipping->contact_person_name }}</span></td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-danger">{{ $shipping->contact_person_name ?? '' }}</span></td>
                                     </tr>
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
