@@ -34,28 +34,20 @@ Future<void> main() async {
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
 
 
-  if(Firebase.apps.isEmpty){
-    if(Platform.isAndroid){
-      try{
-        await Firebase.initializeApp(options: const FirebaseOptions(
-            apiKey: "current_key here",
-            projectId: "project_id here",
-            messagingSenderId: "project_number here",
-            appId: "mobilesdk_app_id here"
-        ));
-      } finally{
-        await Firebase.initializeApp();
-      }
-
-    }else{
+  try {
+    if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp();
     }
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
   }
 
-
-
-  if(defaultTargetPlatform == TargetPlatform.android) {
-    await FirebaseMessaging.instance.requestPermission();
+  try {
+    if(defaultTargetPlatform == TargetPlatform.android) {
+      await FirebaseMessaging.instance.requestPermission();
+    }
+  } catch(e) {
+    debugPrint('FirebaseMessaging permission error: $e');
   }
 
 
