@@ -181,9 +181,9 @@
 
                                                 @php(
                                                     $isSameAddress = $billing && $shipping &&
-                                                        ($billing->address == $shipping->address) &&
-                                                        ($billing->city == $shipping->city) &&
-                                                        ($billing->zip == $shipping->zip)
+                                                        (($billing->address ?? '') == ($shipping->address ?? '')) &&
+                                                        (($billing->city ?? '') == ($shipping->city ?? '')) &&
+                                                        (($billing->zip ?? '') == ($shipping->zip ?? ''))
                                                 )
 
                                                 <div class="card-body">
