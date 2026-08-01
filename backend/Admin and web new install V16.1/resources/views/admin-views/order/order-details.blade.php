@@ -119,21 +119,21 @@
                                     @endif
 
                                     @if($isOrderEditable['status'] === true)
-                                        <buton type="button" class="btn btn-outline-primary btn-sm"
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
                                                data-bs-toggle="modal"
                                                data-bs-target="#confirm-edit-order-modal">
                                             <i class="fi fi-sr-pencil"></i> {{ translate('Edit_Products') }}
-                                        </buton>
+                                        </button>
                                     @else
-                                        <buton type="button" class="btn btn-outline-primary btn-sm opacity-50"
+                                        <button type="button" class="btn btn-outline-primary btn-sm opacity-50"
                                                data-bs-toggle="tooltip" data-bs-placement="top"
                                                data-bs-title="{{ $isOrderEditable['message'] }}" disabled>
                                             <i class="fi fi-sr-pencil"></i> {{ translate('Edit_Products') }}
-                                        </buton>
+                                        </button>
                                     @endif
 
                                     <a class="btn btn-primary btn-sm" target="_blank"
-                                       href={{ route('admin.orders.generate-invoice', [$order['id']]) }}>
+                                       href="{{ route('admin.orders.generate-invoice', [$order['id']]) }}">
                                         <img alt="" class="mr-1"
                                              src="{{ dynamicAsset(path: 'public/assets/new/back-end/img/icons/uil_invoice.svg') }}">
                                         {{translate('print_Invoice')}}
@@ -959,7 +959,7 @@
                             </div>
                         </div>
                         <div
-                            class="d-flex justify-content-between align-items-center gap-10 form-control py-10 h-auto flex-wrap  text-capitalize">
+                            class="d-flex justify-content-between align-items-center gap-10 form-control py-10 h-auto flex-wrap text-capitalize">
                             <span class="text-dark">
                                 {{translate('payment_status')}}
                             </span>
@@ -1148,36 +1148,36 @@
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('contact')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="fw-semibold px-0 py-2">{{$shippingAddress->phone}}</td>
+                                    <td class="fw-semibold px-0 py-2">{{ $shippingAddress->phone ?? '' }}</td>
                                 </tr>
-                                @if ($order->is_guest && $shippingAddress->email)
+                                @if ($order->is_guest && ($shippingAddress->email ?? false))
                                     <tr>
                                         <td class="px-0 py-2 text-nowrap">{{translate('email')}}</td>
                                         <td class="px-3 py-2">:</td>
-                                        <td class="px-0 py-2" class="fw-semibold">{{$shippingAddress->email}}</td>
+                                        <td class="px-0 py-2 fw-semibold">{{ $shippingAddress->email ?? '' }}</td>
                                     </tr>
                                 @endif
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('country')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="px-0 py-2" class="fw-semibold">{{$shippingAddress->country}}</td>
+                                    <td class="px-0 py-2 fw-semibold">{{ $shippingAddress->country ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('city')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="px-0 py-2" class="fw-semibold">{{$shippingAddress->city}}</td>
+                                    <td class="px-0 py-2 fw-semibold">{{ $shippingAddress->city ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('zip_code')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="fw-semibold px-0 py-2">{{$shippingAddress->zip}}</td>
+                                    <td class="fw-semibold px-0 py-2">{{ $shippingAddress->zip ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{ translate('Address') }}</td>
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
                                         <div class="d-flex align-items-start gap-2">
-                                            <span>{{$shippingAddress->address  ?? translate('empty')}}</span>
+                                            <span>{{$shippingAddress->address ?? translate('empty')}}</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -1237,36 +1237,36 @@
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('contact')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="px-0 py-2 fw-semibold">{{$billing->phone}}</td>
+                                    <td class="px-0 py-2 fw-semibold">{{ $billing->phone ?? '' }}</td>
                                 </tr>
-                                @if ($order->is_guest && $billing->email)
+                                @if ($order->is_guest && ($billing->email ?? false))
                                     <tr>
                                         <td class="px-0 py-2 text-nowrap">{{translate('email')}}</td>
                                         <td class="px-3 py-2">:</td>
-                                        <td class="px-0 py-2 fw-semibold">{{$billing->email}}</td>
+                                        <td class="px-0 py-2 fw-semibold">{{ $billing->email ?? '' }}</td>
                                     </tr>
                                 @endif
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('country')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="px-0 py-2 fw-semibold">{{$billing->country}}</td>
+                                    <td class="px-0 py-2 fw-semibold">{{ $billing->country ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('city')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="px-0 py-2 fw-semibold">{{$billing->city}}</td>
+                                    <td class="px-0 py-2 fw-semibold">{{ $billing->city ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('zip_code')}}</td>
                                     <td class="px-3 py-2">:</td>
-                                    <td class="fw-semibold">{{$billing->zip}}</td>
+                                    <td class="fw-semibold">{{ $billing->zip ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{ translate('Address') }}</td>
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
                                         <div class="d-flex align-items-start gap-2">
-                                            <span>{{$billing->address}}</span>
+                                            <span>{{ $billing->address ?? '' }}</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -1337,27 +1337,36 @@
                                     <span class="text-dark fs-12"><strong>{{ $totalDelivered }}</strong> {{translate('orders_Served')}}</span>
                                 </div>
                             @else
-                                @if(!empty($order->seller->shop))
+                                @if(!empty($order->seller) && !empty($order->seller->shop))
                                     <a class="d-block" target="_blank"
                                        href="{{ route('admin.vendors.view', ['id' => $order->seller->id]) }}">
                                         <img class="avatar rounded avatar-70 img-fit"
-                                             src="{{ getStorageImages(path:$order->seller->shop->image_full_url , type: 'backend-basic') }}"
+                                             src="{{ getStorageImages(path: $order->seller->shop->image_full_url ?? '', type: 'backend-basic') }}"
                                              alt="">
                                     </a>
                                     <div class="media-body d-flex flex-column gap-2">
                                         <a class="fs-14 fw-semibold mb-0 text-dark hover-c1" target="_blank"
                                            href="{{ route('admin.vendors.view', ['id' => $order->seller->id]) }}">
-                                            {{ $order->seller->shop->name }}
+                                            {{ $order->seller->shop->name ?? translate('shop_name_not_found') }}
                                         </a>
-                                        <span class="text-dark fs-12"><strong>{{ $totalDelivered }}</strong> {{translate('orders_Served')}}</span>
-                                        <span
-                                            class="text-dark fs-12"> <strong>{{ $order->seller->shop->contact }}</strong></span>
-                                        <div class="d-flex align-items-start gap-2">
-                                            <img
-                                                src="{{ dynamicAsset(path: 'public/assets/new/back-end/img/location.png')}}"
-                                                class="mt-1" alt="">
-                                            {{ $order->seller->shop->address }}
-                                        </div>
+                                        <span class="text-dark fs-12"><strong>{{ $totalDelivered ?? 0 }}</strong> {{translate('orders_Served')}}</span>
+
+                                        {{-- Safe check for shop contact / phone --}}
+                                        @if(isset($order->seller->shop->contact) && $order->seller->shop->contact)
+                                            <span class="text-dark fs-12"> <strong>{{ $order->seller->shop->contact }}</strong></span>
+                                        @elseif(isset($order->seller->phone) && $order->seller->phone)
+                                            <span class="text-dark fs-12"> <strong>{{ $order->seller->phone }}</strong></span>
+                                        @endif
+
+                                        {{-- Safe check for shop address --}}
+                                        @if(isset($order->seller->shop->address) && $order->seller->shop->address)
+                                            <div class="d-flex align-items-start gap-2">
+                                                <img
+                                                    src="{{ dynamicAsset(path: 'public/assets/new/back-end/img/location.png')}}"
+                                                    class="mt-1" alt="">
+                                                {{ $order->seller->shop->address }}
+                                            </div>
+                                        @endif
                                     </div>
                                 @else
                                     <div class="text-center p-4">
@@ -1443,7 +1452,7 @@
                                         <label for="phone_number"
                                                class="form-label">{{translate('phone_number')}}</label>
                                         <input class="form-control form-control-user"
-                                               type="tel" value="{{$shippingAddress ? $shippingAddress->phone  : ''}}"
+                                               type="tel" value="{{ $shippingAddress->phone ?? '' }}"
                                                placeholder="{{ translate('ex').': 017xxxxxxxx' }}" name="phone_number"
                                                required>
                                     </div>
@@ -1454,7 +1463,7 @@
                                         <select name="country" id="country" class="form-control">
                                             @forelse($countries as $country)
                                                 <option
-                                                    value="{{ $country['name'] }}" {{ isset($shippingAddress) && $country['name'] == $shippingAddress->country ? 'selected'  : ''}}>{{ $country['name'] }}</option>
+                                                    value="{{ $country['name'] }}" {{ isset($shippingAddress) && $country['name'] == ($shippingAddress->country ?? null) ? 'selected' : ''}}>{{ $country['name'] }}</option>
                                             @empty
                                                 <option value="">{{ translate('No_country_to_deliver') }}</option>
                                             @endforelse
@@ -1466,7 +1475,7 @@
                                     <div class="form-group">
                                         <label for="city" class="form-label">{{translate('city')}}</label>
                                         <input type="text" name="city" id="city"
-                                               value="{{$shippingAddress ? $shippingAddress->city : ''}}"
+                                               value="{{ $shippingAddress->city ?? '' }}"
                                                class="form-control"
                                                placeholder="{{ translate('ex') }}:{{translate('dhaka')}}" required>
                                     </div>
@@ -1478,14 +1487,14 @@
                                             <select name="zip" class="form-control" data-live-search="true" required>
                                                 @forelse($zipCodes as $code)
                                                     <option
-                                                        value="{{ $code->zipcode }}"{{ isset($shippingAddress) && $code->zipcode == $shippingAddress->zip ? 'selected'  : ''}}>{{ $code->zipcode }}</option>
+                                                        value="{{ $code->zipcode }}"{{ isset($shippingAddress) && $code->zipcode == ($shippingAddress->zip ?? null) ? 'selected' : ''}}>{{ $code->zipcode }}</option>
                                                 @empty
                                                     <option value="">{{ translate('No_zip_to_deliver') }}</option>
                                                 @endforelse
                                             </select>
                                         @else
                                             <input type="text" class="form-control"
-                                                   value="{{$shippingAddress ? $shippingAddress->zip  : ''}}" id="zip"
+                                                   value="{{ $shippingAddress->zip ?? '' }}" id="zip"
                                                    name="zip"
                                                    placeholder="{{ translate('ex') }}: 1216" {{$shippingAddress?'required':''}}>
                                         @endif
@@ -1494,9 +1503,9 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="address" class="form-label">{{translate('address')}}</label>
-                                        <textarea name="address" id="address" name="address" rows="3"
+                                        <textarea name="address" id="address" rows="3"
                                                   class="form-control"
-                                                  placeholder="{{ translate('ex') }} : {{translate('street_1,_street_2,_street_3,_street_4')}}">{{$shippingAddress ? $shippingAddress->address : ''}}</textarea>
+                                                  placeholder="{{ translate('ex') }} : {{translate('street_1,_street_2,_street_3,_street_4')}}">{{ $shippingAddress->address ?? '' }}</textarea>
                                     </div>
                                 </div>
                                 <input type="hidden" id="latitude"
@@ -1506,7 +1515,7 @@
                                 <input type="hidden"
                                        name="longitude" class="form-control"
                                        placeholder="{{ translate('Ex') }} : 103.344322" id="longitude"
-                                       value="{{$shippingAddress->longitude ??0}}" required readonly>
+                                       value="{{$shippingAddress->longitude ?? 0}}" required readonly>
                                 @if(getWebConfig('map_api_status') ==1 )
                                     <div class="col-12 ">
                                         <input id="pac-input" class="form-control rounded w-200 mt-1"
@@ -1566,7 +1575,7 @@
                                                 <label for="phone_number"
                                                        class="form-label">{{translate('phone_number')}}</label>
                                                 <input class="form-control form-control-user"
-                                                       type="tel" value="{{$billing ? $billing->phone  : ''}}"
+                                                       type="tel" value="{{ $billing->phone ?? '' }}"
                                                        placeholder="{{ translate('ex').': 017xxxxxxxx' }}"
                                                        name="phone_number" required>
                                             </div>
@@ -1578,7 +1587,7 @@
                                                 <select name="country" id="country" class="form-control">
                                                     @forelse($countries as $country)
                                                         <option
-                                                            value="{{ $country['name'] }}" {{ isset($billing) && $country['name'] == $billing->country ? 'selected'  : ''}}>{{ $country['name'] }}</option>
+                                                            value="{{ $country['name'] }}" {{ isset($billing) && $country['name'] == ($billing->country ?? null) ? 'selected' : ''}}>{{ $country['name'] }}</option>
                                                     @empty
                                                         <option
                                                             value="">{{ translate('No_country_to_deliver') }}</option>
@@ -1590,7 +1599,7 @@
                                             <div class="form-group">
                                                 <label for="city" class="form-label">{{translate('city')}}</label>
                                                 <input type="text" name="city" id="city"
-                                                       value="{{$billing ? $billing->city : ''}}" class="form-control"
+                                                       value="{{ $billing->city ?? '' }}" class="form-control"
                                                        placeholder="{{ translate('ex') }}:{{translate('dhaka')}}"
                                                        required>
                                             </div>
@@ -1603,7 +1612,7 @@
                                                             required>
                                                         @forelse($zipCodes as $code)
                                                             <option
-                                                                value="{{ $code->zipcode }}"{{ isset($billing) && $code->zipcode == $billing->zip ? 'selected'  : ''}}>{{ $code->zipcode }}</option>
+                                                                value="{{ $code->zipcode }}"{{ isset($billing) && $code->zipcode == ($billing->zip ?? null) ? 'selected' : ''}}>{{ $code->zipcode }}</option>
                                                         @empty
                                                             <option
                                                                 value="">{{ translate('no_zip_to_deliver') }}</option>
@@ -1611,7 +1620,7 @@
                                                     </select>
                                                 @else
                                                     <input type="text" class="form-control"
-                                                           value="{{$billing ? $billing->zip  : ''}}" id="zip"
+                                                           value="{{ $billing->zip ?? '' }}" id="zip"
                                                            name="zip"
                                                            placeholder="{{ translate('ex').': 1216' }}" {{$billing?'required':''}}>
                                                 @endif
@@ -1623,7 +1632,7 @@
                                                        class="form-label">{{translate('address')}}</label>
                                                 <textarea name="address" id="billing_address" rows="3"
                                                           class="form-control"
-                                                          placeholder="{{ translate('ex') }} : {{translate('street_1,_street_2,_street_3,_street_4')}}">{{$billing ? $billing->address : ''}}</textarea>
+                                                          placeholder="{{ translate('ex') }} : {{translate('street_1,_street_2,_street_3,_street_4')}}">{{ $billing->address ?? '' }}</textarea>
                                             </div>
                                         </div>
                                         <input type="hidden" id="billing_latitude"
@@ -1930,7 +1939,7 @@
                             <div class="col-md-12 modal_body_map mt-5 pl-0 pr-0">
                                 <div class="mb-2">
                                     <img src="{{ dynamicAsset('assets/new/back-end/img/location-blue.png') }}" alt="">
-                                    <span>{{ $shippingAddress ? $shippingAddress->address : ($billing ? $billing->address : '') }}</span>
+                                    <span>{{ ($shippingAddress->address ?? null) ?: ($billing->address ?? '') }}</span>
                                 </div>
                                 @if(getWebConfig('map_api_status') ==1 )
                                     <div class="location-map" id="location-map">

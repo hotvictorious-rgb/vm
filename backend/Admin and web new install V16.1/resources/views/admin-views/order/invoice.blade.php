@@ -679,7 +679,7 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                                 @if(!empty((array) $billingAddress))
                                     <tr>
                                         <td class="px-2" colspan="3">
-                                            <h5>{{ translate('Billing_address') }} <span class="fw-normal">({{ translate($billingAddress->address_type) }})</span>
+                                            <h5>{{ translate('Billing_address') }} <span class="fw-normal">({{ translate($billingAddress->address_type ?? '') }})</span>
                                             </h5>
                                         </td>
                                     </tr>
@@ -694,24 +694,24 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                                         <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
                                         <td class="pt-1 pb-1">:</td>
                                         <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $billingAddress->phone }}</span></td>
+                                                class="text-dark">{{ $billingAddress->phone ?? '' }}</span></td>
                                     </tr>
                                     <tr>
                                         <td class="px-2 pt-1 pb-1 text-nowrap">{{ translate('City_/_Zip') }}</td>
                                         <td class="pt-1 pb-1">:</td>
                                         <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $billingAddress->city }} {{ $billingAddress->zip }}</span>
+                                                class="text-dark">{{ $billingAddress->city ?? '' }} {{ $billingAddress->zip ?? '' }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Address') }}</td>
                                         <td class="pt-1 pb-1">:</td>
                                         <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $billingAddress->address }}</span></td>
+                                                class="text-dark">{{ $billingAddress->address ?? '' }}</span></td>
                                     </tr>
                                 @endif
                                 </tbody>
-                            </table>
+                              </table>
                         </td>
                         <td class="vertical-align-top border-{{$direction === "rtl" ? 'right' : 'left'}}">
                             <table>
@@ -720,7 +720,7 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                                 @if(!empty((array) $shipping))
                                     <tr>
                                         <td class="px-2" colspan="3">
-                                            <h5>{{ translate('Shipping_address') }} <span class="fw-normal">({{ translate($shipping->address_type) }})</span>
+                                            <h5>{{ translate('Shipping_address') }} <span class="fw-normal">({{ translate($shipping->address_type ?? '') }})</span>
                                             </h5>
                                         </td>
                                     </tr>
@@ -733,20 +733,20 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
                                         <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span class="text-dark">{{ $shipping->phone }}</span>
+                                        <td class="px-2 pt-1 pb-1"><span class="text-dark">{{ $shipping->phone ?? '' }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td class="px-2 pt-1 pb-1 text-nowrap">{{ translate('City_/_Zip') }}</td>
                                         <td class="pt-1 pb-1">:</td>
                                         <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $shipping->city }} {{ $shipping->zip }}</span></td>
+                                                class="text-dark">{{ $shipping->city ?? '' }} {{ $shipping->zip ?? '' }}</span></td>
                                     </tr>
                                     <tr>
                                         <td class="px-2 pt-1 pb-1">{{ translate('Address') }}</td>
                                         <td class="pt-1 pb-1">:</td>
                                         <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $shipping->address }}</span></td>
+                                                class="text-dark">{{ $shipping->address ?? '' }}</span></td>
                                     </tr>
                                 @else
                                     <tr>

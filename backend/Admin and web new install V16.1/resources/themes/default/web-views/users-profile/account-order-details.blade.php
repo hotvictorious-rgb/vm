@@ -343,18 +343,18 @@
                                                 <div class="text-capitalize fs-12">
                                                     <span
                                                         class="min-w-60px title-semidark">{{ translate('name') }}</span>
-                                                    : {{ $shipping->contact_person_name }}<br>
+                                                    : {{ $shipping->contact_person_name ?? '' }}<br>
                                                     <span
                                                         class="min-w-60px title-semidark">{{ translate('phone') }}</span>
-                                                    : {{ $shipping->phone }}<br>
+                                                    : {{ $shipping->phone ?? '' }}<br>
                                                     <span
                                                         class="min-w-60px title-semidark">{{ translate('city') }} / {{ translate('zip') }}</span>
                                                     :
-                                                    {{ $shipping->city }}, {{ $shipping->zip }}<br>
+                                                    {{ $shipping->city ?? '' }}, {{ $shipping->zip ?? '' }}<br>
                                                     <span
                                                         class="min-w-60px title-semidark">{{ translate('address') }}</span>
                                                     :
-                                                    {{ $shipping->address }}
+                                                    {{ $shipping->address ?? '' }}
                                                 </div>
                                             </div>
                                         </div>
@@ -371,9 +371,9 @@
 
                                                     <?php
                                                     $isSameAddress = $billing && $shipping && !empty((array) $shipping) &&
-                                                        ($billing->address == $shipping->address) &&
-                                                        ($billing->city == $shipping->city) &&
-                                                        ($billing->zip == $shipping->zip);
+                                                        (($billing->address ?? '') == ($shipping->address ?? '')) &&
+                                                        (($billing->city ?? '') == ($shipping->city ?? '')) &&
+                                                        (($billing->zip ?? '') == ($shipping->zip ?? ''));
                                                     ?>
                                                 @if($isSameAddress)
                                                     <div class="bg-white card">
@@ -386,18 +386,18 @@
                                                         <span
                                                             class="min-w-60px title-semidark">{{ translate('name') }}</span>
                                                         :
-                                                        {{ $billing->contact_person_name }}<br>
+                                                        {{ $billing->contact_person_name ?? '' }}<br>
                                                         <span
                                                             class="min-w-60px title-semidark">{{ translate('phone') }}</span>
                                                         :
-                                                        {{ $billing->phone }}<br>
+                                                        {{ $billing->phone ?? '' }}<br>
                                                         <span class="min-w-60px title-semidark">{{ translate('city') }} / {{ translate('zip') }}</span>
                                                         :
-                                                        {{ $billing->city }}, {{ $billing->zip }}<br>
+                                                        {{ $billing->city ?? '' }}, {{ $billing->zip ?? '' }}<br>
                                                         <span
                                                             class="min-w-60px title-semidark">{{ translate('address') }}</span>
                                                         :
-                                                        {{ $billing->address }}
+                                                        {{ $billing->address ?? '' }}
                                                     </div>
                                                 @endif
                                             </div>

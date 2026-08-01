@@ -171,36 +171,62 @@ class SMSModule
 
     public static function releans($receiver, $otp): string
     {
+        // NOTE: this "releans" slot has been repurposed to send via Ebulksms.
+        // Admin panel still displays "Releans" / "Api Key" / "From" / "Otp Template" —
+        // labels intentionally left alone. Field mapping for whoever configures it:
+        //   Api Key      -> Ebulksms API key
+        //   From         -> Ebulksms sender ID
+        //   Otp Template -> Ebulksms account username/email (NOT a message template)
         $config = self::get_settings('releans');
         $response = 'error';
         if (isset($config) && $config['status'] == 1) {
-            $curl = curl_init();
-            $from = $config['from'];
-            $to = $receiver;
-            $message = str_replace("#OTP#", $otp, $config['otp_template']);
+            $apiKey   = $config['api_key'];
+            $sender   = $config['from'];
+            $username = $config['otp_template'];
+
+            // Normalize to 234XXXXXXXXXX (no + or leading 0)
+            $to = preg_replace('/[^0-9]/', '', $receiver);
+            if (str_starts_with($to, '0')) {
+                $to = '234' . substr($to, 1);
+            } elseif (!str_starts_with($to, '234')) {
+                $to = '234' . $to;
+            }
+
+            $appName = getWebConfig(name: 'company_name');
+            $message = "Your $appName Verification code is $otp";
 
             try {
+                $curl = curl_init();
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://api.releans.com/v2/message",
+                    CURLOPT_URL => "https://api.ebulksms.com/sendsms?username=" . urlencode($username)
+                        . "&apikey=" . urlencode($apiKey)
+                        . "&sender=" . urlencode($sender)
+                        . "&messagetext=" . urlencode($message)
+                        . "&flash=0&dndsender=1&recipients=" . $to,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => "",
                     CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_TIMEOUT => 30,
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS => "sender=$from&mobile=$to&content=$message",
-                    CURLOPT_HTTPHEADER => array(
-                        "Authorization: Bearer " . $config['api_key']
-                    ),
+                    CURLOPT_CUSTOMREQUEST => "GET",
                 ));
-                $response = curl_exec($curl);
+                $result = curl_exec($curl);
+                $err = curl_error($curl);
                 curl_close($curl);
-                $response = 'success';
+
+                // Log Ebulksms' actual response so failures (bad sender ID,
+                // insufficient credit, DND-blocked number, etc.) are visible
+                // in laravel.log instead of silently reporting "success".
+                \Illuminate\Support\Facades\Log::info('Ebulksms response', [
+                    'to' => $to,
+                    'curl_error' => $err,
+                    'response' => $result,
+                ]);
+
+                $response = (!$err) ? 'success' : 'error';
             } catch (Exception $exception) {
                 $response = 'error';
             }
-
         }
         return $response;
     }

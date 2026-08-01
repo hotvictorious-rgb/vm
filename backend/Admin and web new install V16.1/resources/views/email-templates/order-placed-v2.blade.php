@@ -50,7 +50,7 @@ if ($order->seller_is == 'seller') {
 }
 
 if ($order->is_guest) {
-    $userPhone = $order['shipping_address_data'] ? $order['shipping_address_data']->phone : $order['billing_address_data']->phone;
+    $userPhone = $order['shipping_address_data']->phone ?? ($order['billing_address_data']->phone ?? '');
 } else {
     $userPhone = User::find($order->customer_id)->phone;
 }
