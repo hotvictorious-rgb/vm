@@ -429,7 +429,8 @@ class CustomerController extends Controller
             }
             $query['product_details'] = Helpers::product_data_formatting_for_json_data($product);
 
-            $reviews = Review::where(['product_id' => $query['product_id'], 'customer_id' => $user->id])->whereNull('delivery_man_id')->get();
+            $customerId = $user == 'offline' ? null : $user->id;
+            $reviews = $customerId ? Review::where(['product_id' => $query['product_id'], 'customer_id' => $customerId])->whereNull('delivery_man_id')->get() : [];
             $reviewData = null;
             foreach ($reviews as $review) {
                 if ($review->order_id == $query['order_id']) {
