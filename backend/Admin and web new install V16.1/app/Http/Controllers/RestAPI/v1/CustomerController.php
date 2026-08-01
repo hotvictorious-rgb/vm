@@ -396,55 +396,64 @@ class CustomerController extends Controller
 
     public function get_order_details(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'order_id' => 'required',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => Helpers::validationErrorProcessor($validator)], 403);
-        }
-
-        $user = Helpers::getCustomerInformation($request);
-
-        $detailsList = OrderDetail::with(['productAllStatus', 'order.offlinePayments', 'order.deliveryMan', 'order.deliveryManReview', 'verificationImages', 'seller.shop', 'latestEditHistory'])
-            ->whereHas('order', function ($query) use ($request, $user) {
-                $query->where([
-                    'customer_id' => $user == 'offline' ? $request->guest_id : $user->id,
-                    'is_guest' => $user == 'offline' ? 1 : '0'
-                ]);
-            })
-            ->where(['order_id' => $request['order_id']])
-            ->get();
-
-        $detailsList->map(function ($query) use ($user) {
-            $query['variation'] = is_array($query['variation']) ? $query['variation'] : json_decode($query['variation'], true);
-            $currentProduct = Product::with(['digitalVariation', 'clearanceSale' => function ($query) {
-                return $query->active();
-            }])->where('id', $query['product_id'])->first();
-            $product = json_decode($query['product_details'], true);
-            $product['thumbnail_full_url'] = $currentProduct?->thumbnail_full_url;
-            if (isset($product['product_type']) && $product['product_type'] == 'digital' && $product['digital_product_type'] == 'ready_product' && $product['digital_file_ready']) {
-                $checkFilePath = storageLink('product/digital-product', $product['digital_file_ready'], ($product['storage_path'] ?? 'public'));
-                $product['digital_file_ready_full_url'] = $checkFilePath;
+            if ($validator->fails()) {
+                return response()->json(['errors' => Helpers::validationErrorProcessor($validator)], 403);
             }
-            $query['product_details'] = Helpers::product_data_formatting_for_json_data($product);
 
-            $customerId = $user == 'offline' ? null : $user->id;
-            $reviews = $customerId ? Review::where(['product_id' => $query['product_id'], 'customer_id' => $customerId])->whereNull('delivery_man_id')->get() : [];
-            $reviewData = null;
-            foreach ($reviews as $review) {
-                if ($review->order_id == $query['order_id']) {
-                    $reviewData = $review;
+            $user = Helpers::getCustomerInformation($request);
+
+            $detailsList = OrderDetail::with(['productAllStatus', 'order.offlinePayments', 'order.deliveryMan', 'order.deliveryManReview', 'verificationImages', 'seller.shop', 'latestEditHistory'])
+                ->whereHas('order', function ($query) use ($request, $user) {
+                    $query->where([
+                        'customer_id' => $user == 'offline' ? $request->guest_id : $user->id,
+                        'is_guest' => $user == 'offline' ? 1 : '0'
+                    ]);
+                })
+                ->where(['order_id' => $request['order_id']])
+                ->get();
+
+            $detailsList->map(function ($query) use ($user) {
+                $query['variation'] = is_array($query['variation']) ? $query['variation'] : json_decode($query['variation'], true);
+                $currentProduct = Product::with(['digitalVariation', 'clearanceSale' => function ($query) {
+                    return $query->active();
+                }])->where('id', $query['product_id'])->first();
+                $product = json_decode($query['product_details'], true) ?? [];
+                $product['thumbnail_full_url'] = $currentProduct?->thumbnail_full_url;
+                if (isset($product['product_type']) && $product['product_type'] == 'digital' && $product['digital_product_type'] == 'ready_product' && $product['digital_file_ready']) {
+                    $checkFilePath = storageLink('product/digital-product', $product['digital_file_ready'], ($product['storage_path'] ?? 'public'));
+                    $product['digital_file_ready_full_url'] = $checkFilePath;
                 }
-            }
+                $query['product_details'] = Helpers::product_data_formatting_for_json_data($product);
 
-            if (isset($reviews[0]) && is_null($reviewData)) {
-                $reviewData = ($reviews[0]['order_id'] == null ? $reviews[0] : null);
-            }
-            $query['reviewData'] = $reviewData;
-            return $query;
-        });
-        return response()->json($detailsList, 200);
+                $customerId = $user == 'offline' ? null : $user->id;
+                $reviews = $customerId ? Review::where(['product_id' => $query['product_id'], 'customer_id' => $customerId])->whereNull('delivery_man_id')->get() : [];
+                $reviewData = null;
+                foreach ($reviews as $review) {
+                    if ($review->order_id == $query['order_id']) {
+                        $reviewData = $review;
+                    }
+                }
+
+                if (isset($reviews[0]) && is_null($reviewData)) {
+                    $reviewData = ($reviews[0]['order_id'] == null ? $reviews[0] : null);
+                }
+                $query['reviewData'] = $reviewData;
+                return $query;
+            });
+            return response()->json($detailsList, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
+        }
     }
 
     public function getOrderInvoice(Request $request):JsonResponse
