@@ -844,11 +844,11 @@ class OrderController extends Controller
                 $billingAddress = (array)($order['billing_address_data'] ?? []);
                 if ($order?->shippingAddress && $order?->shippingAddress->phone == $request['phone_number']) {
                     $orderExist = $order;
-                } else if ($shippingAddress['phone'] == $request['phone_number']) {
+                } else if (($shippingAddress['phone'] ?? '') == $request['phone_number']) {
                     $orderExist = $order;
                 } else if ($order && $order?->billingAddress && $order?->billingAddress->phone == $request['phone_number']) {
                     $orderExist = $order;
-                } else if ($billingAddress['phone'] == $request['phone_number']) {
+                } else if (($billingAddress['phone'] ?? '') == $request['phone_number']) {
                     $orderExist = $order;
                 }
             } elseif ($user->phone == $request['phone_number']) {
@@ -871,11 +871,11 @@ class OrderController extends Controller
                 $billingAddress = (array)($order['billing_address_data'] ?? []);
                 if ($order?->shippingAddress && $order?->shippingAddress->phone == $request['phone_number']) {
                     $orderExist = $order;
-                } else if ($shippingAddress['phone'] == $request['phone_number']) {
+                } else if (($shippingAddress['phone'] ?? '') == $request['phone_number']) {
                     $orderExist = $order;
                 } else if ($order?->billingAddress && $order?->billingAddress->phone == $request['phone_number']) {
                     $orderExist = $order;
-                } else if ($billingAddress['phone'] == $request['phone_number']) {
+                } else if (($billingAddress['phone'] ?? '') == $request['phone_number']) {
                     $orderExist = $order;
                 }
             } elseif ($user_id) {

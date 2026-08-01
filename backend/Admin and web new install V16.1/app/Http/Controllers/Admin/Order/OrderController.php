@@ -711,8 +711,8 @@ class OrderController extends BaseController
     public function updateAddress(Request $request): RedirectResponse
     {
         $order = $this->orderRepo->getFirstWhere(params: ['id' => $request['order_id']], relations: ['seller.shop', 'deliveryMan']);
-        $shippingAddressData = json_decode(json_encode($order['shipping_address_data']), true);
-        $billingAddressData = json_decode(json_encode($order['billing_address_data']), true);
+        $shippingAddressData = json_decode(json_encode($order['shipping_address_data']), true) ?? [];
+        $billingAddressData = json_decode(json_encode($order['billing_address_data']), true) ?? [];
         $commonAddressData = [
             'contact_person_name' => $request['name'],
             'phone' => $request['phone_number'],

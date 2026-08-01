@@ -1246,9 +1246,9 @@ class WebController extends Controller
             };
 
             if ($orderDetailsData->order->is_guest) {
-                $customerEmail = $orderDetailsData->order->shipping_address_data ? $orderDetailsData->order->shipping_address_data->email : ($orderDetailsData->order->billing_address_data ? $orderDetailsData->order->billing_address_data->email : '');
+                $customerEmail = $orderDetailsData->order->shipping_address_data ? ($orderDetailsData->order->shipping_address_data->email ?? '') : ($orderDetailsData->order->billing_address_data ? ($orderDetailsData->order->billing_address_data->email ?? '') : '');
 
-                $customerPhone = $orderDetailsData->order->shipping_address_data ? $orderDetailsData->order->shipping_address_data->phone : ($orderDetailsData->order->billing_address_data ? $orderDetailsData->order->billing_address_data->phone : '');
+                $customerPhone = $orderDetailsData->order->shipping_address_data ? ($orderDetailsData->order->shipping_address_data->phone ?? '') : ($orderDetailsData->order->billing_address_data ? ($orderDetailsData->order->billing_address_data->phone ?? '') : '');
 
                 $customerData = ['email' => $customerEmail, 'phone' => $customerPhone];
                 return self::getDigitalProductDownloadProcess(orderDetailsData: $orderDetailsData, customer: $customerData);
