@@ -30,7 +30,7 @@ class GoogleSignInController with ChangeNotifier {
 
     if (googleAccount != null) {
       const List<String> scopes = <String>['email'];
-      auth = await googleAccount?.authorizationClient.authorizationForScopes(scopes);
+      auth = await googleAccount?.authorizationClient.authorizeScopes(scopes);
     } else {
       auth = null;
     }
