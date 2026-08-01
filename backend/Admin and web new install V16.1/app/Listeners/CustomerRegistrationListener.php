@@ -4,9 +4,9 @@ namespace App\Listeners;
 
 use App\Events\CustomerRegistrationEvent;
 use App\Traits\EmailTemplateTrait;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-
-class CustomerRegistrationListener
+class CustomerRegistrationListener implements ShouldQueue
 {
     use EmailTemplateTrait;
     /**

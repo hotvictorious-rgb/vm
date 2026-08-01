@@ -4,8 +4,9 @@ namespace App\Listeners;
 
 use App\Events\OrderReceivedNotifySellerEvent;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class OrderReceivedNotifySellerListener
+class OrderReceivedNotifySellerListener implements ShouldQueue
 {
     /**
      * Create the event listener.

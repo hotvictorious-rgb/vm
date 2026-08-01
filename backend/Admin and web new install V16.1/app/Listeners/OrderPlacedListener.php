@@ -6,9 +6,9 @@ use App\Events\OrderPlacedEvent;
 use App\Models\ReferralCustomer;
 use App\Traits\EmailTemplateTrait;
 use App\Traits\PushNotificationTrait;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-
-class OrderPlacedListener
+class OrderPlacedListener implements ShouldQueue
 {
     use PushNotificationTrait, EmailTemplateTrait;
 
