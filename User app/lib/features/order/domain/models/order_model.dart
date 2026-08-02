@@ -158,9 +158,9 @@ class Orders {
     transactionRef = json['transaction_ref'];
     paymentBy = json['payment_by'];
     paymentNote = json['payment_note'];
-    orderAmount = json['order_amount'].toDouble();
+    orderAmount = double.tryParse('${json['order_amount']}') ?? 0.0;
     if (json['paid_amount'] != null) {
-      paidAmount = json['paid_amount'].toDouble();
+      paidAmount = double.tryParse('${json['paid_amount']}') ?? 0.0;
     }else{
       paidAmount = 0;
     }
@@ -168,12 +168,12 @@ class Orders {
     cause = json['cause'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    discountAmount = json['discount_amount'].toDouble();
+    discountAmount = double.tryParse('${json['discount_amount']}') ?? 0.0;
     discountType = json['discount_type'];
     couponCode = json['coupon_code'];
     couponDiscountBearer = json['coupon_discount_bearer'];
     shippingMethodId = json['shipping_method_id'];
-    shippingCost = json['shipping_cost'].toDouble();
+    shippingCost = double.tryParse('${json['shipping_cost']}') ?? 0.0;
     isShippingFree = json['is_shipping_free']??false;
     orderGroupId = json['order_group_id'];
     verificationCode = json['verification_code'];
@@ -183,7 +183,7 @@ class Orders {
     shippingAddressData = json['shipping_address_data'] != null ? ShippingAddressData.fromJson(json['shipping_address_data']) : null;
     deliveryManId = json['delivery_man_id'];
     if(json['deliveryman_charge'] != null){
-      deliverymanCharge = double.parse(json['deliveryman_charge'].toString());
+      deliverymanCharge = double.tryParse('${json['deliveryman_charge']}') ?? 0.0;
     }else{
       deliverymanCharge = 0;
     }
@@ -194,7 +194,7 @@ class Orders {
     billingAddress = json['billing_address'];
     billingAddressData = json['billing_address_data'] != null ? BillingAddressData.fromJson(json['billing_address_data']) : null;
     orderType = json['order_type'];
-    extraDiscount = json['extra_discount'].toDouble();
+    extraDiscount = double.tryParse('${json['extra_discount']}') ?? 0.0;
     extraDiscountType = json['extra_discount_type'];
     freeDeliveryBearer = json['free_delivery_bearer'];
     shippingType = json['shipping_type'];

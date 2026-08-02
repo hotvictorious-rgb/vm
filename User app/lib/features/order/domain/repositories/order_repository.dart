@@ -14,7 +14,11 @@ class OrderRepository implements OrderRepositoryInterface{
   @override
   Future<ApiResponseModel> getOrderList(int offset, String status, {String? type}) async {
     try {
-      final response = await dioClient!.get('${AppConstants.orderUri}$offset&status=$status&type=$type');
+      String url = '${AppConstants.orderUri}$offset&status=$status';
+      if (type != null && type.isNotEmpty && type != 'null') {
+        url += '&type=$type';
+      }
+      final response = await dioClient!.get(url);
       return ApiResponseModel.withSuccess(response);
     } catch (e) {
       return ApiResponseModel.withError(ApiErrorHandler.getMessage(e));

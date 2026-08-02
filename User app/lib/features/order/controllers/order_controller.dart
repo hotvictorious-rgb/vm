@@ -70,6 +70,9 @@ class OrderController with ChangeNotifier {
         orderModel!.totalSize = OrderModel.fromJson(apiResponse.response?.data).totalSize;
       }
     }else{
+      if(offset == 1) {
+        orderModel = OrderModel(orders: [], totalSize: 0, offset: '1', limit: '10');
+      }
       ApiChecker.checkApi(apiResponse);
     }
     notifyListeners();

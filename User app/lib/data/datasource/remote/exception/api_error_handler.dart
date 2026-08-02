@@ -73,10 +73,15 @@ class ApiErrorHandler {
                   errorDescription = error.response!.statusMessage;
                   break;
                 default:
-                  ErrorResponse errorResponse = ErrorResponse.fromJson(error.response!.data);
-                  if (errorResponse.errors != null && errorResponse.errors!.isNotEmpty) {
-                    errorDescription = errorResponse;
-                  } else {errorDescription = "Failed to load data - status code: ${error.response!.statusCode}";
+                  if (error.response?.data is Map<String, dynamic>) {
+                    ErrorResponse errorResponse = ErrorResponse.fromJson(error.response!.data);
+                    if (errorResponse.errors != null && errorResponse.errors!.isNotEmpty) {
+                      errorDescription = errorResponse;
+                    } else {
+                      errorDescription = "Failed to load data - status code: ${error.response!.statusCode}";
+                    }
+                  } else {
+                    errorDescription = "Failed to load data - status code: ${error.response?.statusCode ?? 'Unknown'}";
                   }
               }
               break;

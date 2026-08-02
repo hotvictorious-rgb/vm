@@ -80,9 +80,8 @@ class OrderController extends GetxController implements GetxService {
 
 
 
-  Future orderRefresh(BuildContext context) async{
-    getCurrentOrders();
-    return getCurrentOrders();
+  Future orderRefresh(BuildContext context) async {
+    return await getCurrentOrders();
   }
 
 

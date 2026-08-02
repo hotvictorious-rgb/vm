@@ -88,8 +88,10 @@ class OrderController extends ChangeNotifier {
         _orderModel!.orders!.addAll(OrderModel.fromJson(apiResponse.response!.data).orders!);
       }
 
-      for(Order order in _orderModel!.orders!) {
-        _paymentStatus = order.paymentStatus;
+      if (_orderModel?.orders != null) {
+        for(Order order in _orderModel!.orders!) {
+          _paymentStatus = order.paymentStatus;
+        }
       }
 
       if(filter != null && ValidationHelper.canOrderFilter(filter)) {

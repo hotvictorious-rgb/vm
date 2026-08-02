@@ -364,17 +364,21 @@ class CustomerController extends Controller
             'delivered' => ['delivered'],
         );
 
+        $limit = $request->get('limit', 10);
+        $offset = $request->get('offset', 1);
+
         $orders = Order::with(['details.product', 'deliveryMan', 'seller.shop', 'deliveryManReview'])
             ->withSum('details as order_details_count', 'qty')
             ->where(['customer_id' => $request->user()->id, 'is_guest' => '0'])
             ->when($request->status && $request->status != 'all', function ($query) use ($request, $status) {
-                $query->whereIn('order_status', $status[$request->status])
+                $orderStatuses = $status[$request->status] ?? [$request->status];
+                $query->whereIn('order_status', $orderStatuses)
                     ->when($request->type == 'reorder', function ($query) use ($request) {
                         $query->where('order_type', 'default_type');
                     });
             })
             ->orderBy('id', 'desc')
-            ->paginate($request['limit'], ['*'], 'page', $request['offset']);
+            ->paginate($limit, ['*'], 'page', $offset);
 
         $orders->map(function ($data) {
             $data->details->map(function ($query) {
@@ -387,8 +391,8 @@ class CustomerController extends Controller
 
         $orders = [
             'total_size' => $orders->total(),
-            'limit' => $request['limit'],
-            'offset' => $request['offset'],
+            'limit' => (string)$limit,
+            'offset' => (string)$offset,
             'orders' => $orders->items()
         ];
         return response()->json($orders, 200);

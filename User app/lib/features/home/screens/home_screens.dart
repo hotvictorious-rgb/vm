@@ -69,38 +69,25 @@ class HomePage extends StatefulWidget {
     }
 
     splashController.initConfig(Get.context!, null, null);
-
     categoryController.getCategoryList(reload);
-
     bannerController.getBannerList();
 
-    shopController.getAllSellerList(offset: 1, isUpdate: reload);
-    shopController.getTopSellerList(offset: 1, isUpdate: reload);
+    Future.delayed(const Duration(milliseconds: 100), () {
+      shopController.getAllSellerList(offset: 1, isUpdate: reload);
+      shopController.getTopSellerList(offset: 1, isUpdate: reload);
+      addressController.getAddressList();
+      cartController.getCartData(Get.context!);
+      productController.getHomeCategoryProductList(reload);
+      brandController.getBrandList(offset: 1, isUpdate: reload);
+      featuredDealController.getFeaturedDealList();
+    });
 
-    addressController.getAddressList();
-
-
-    cartController.getCartData(Get.context!);
-
-    productController.getHomeCategoryProductList(reload);
-
-    brandController.getBrandList(offset: 1, isUpdate: reload);
-
-    featuredDealController.getFeaturedDealList();
-
-    // productController.getLProductList('1', reload: reload);
-
-    productController.getLatestProductList(1, isUpdate: reload);
-    productController.getSelectedProductModel(1, isUpdate: reload);
-
-    productController.getFeaturedProductModel(1, isUpdate: reload);
-
-    productController.getRecommendedProduct();
-
-
-    productController.getClearanceAllProductList(1, isUpdate: reload);
-
-
+    Future.delayed(const Duration(milliseconds: 250), () {
+      productController.getLatestProductList(1, isUpdate: reload);
+      productController.getSelectedProductModel(1, isUpdate: reload);
+      productController.getFeaturedProductModel(1, isUpdate: reload);
+      productController.getRecommendedProduct();
+      productController.getClearanceAllProductList(1, isUpdate: reload);
 
       if(notificationController.notificationModel == null ||
         (notificationController.notificationModel != null &&
@@ -108,9 +95,10 @@ class HomePage extends StatefulWidget {
         notificationController.getNotificationList(1);
       }
 
-    if(Provider.of<AuthController>(Get.context!, listen: false).isLoggedIn() && profileController.userInfoModel == null) {
-      await profileController.getUserInfo(Get.context!);
-    }
+      if(Provider.of<AuthController>(Get.context!, listen: false).isLoggedIn() && profileController.userInfoModel == null) {
+        profileController.getUserInfo(Get.context!);
+      }
+    });
 
   }
 }

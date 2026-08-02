@@ -253,7 +253,7 @@ class Order {
       }
     }
     if(json['shipping_cost'] != null){
-      _shippingCost = json['shipping_cost'].toDouble();
+      _shippingCost = double.tryParse('${json['shipping_cost']}') ?? 0.0;
     }
 
     if(json['shipping_address_data'] != null){
@@ -271,7 +271,7 @@ class Order {
     }
 
     if(json['discount_amount']!=null){
-      _discountAmount = json['discount_amount'].toDouble();
+      _discountAmount = double.tryParse('${json['discount_amount']}') ?? 0.0;
     }
 
     _discountType = json['discount_type'];
@@ -284,7 +284,7 @@ class Order {
         ? Shipping.fromJson(json['shipping'])
         : null;
     if(json['extra_discount'] != null){
-      _extraDiscount = json['extra_discount'].toDouble();
+      _extraDiscount = double.tryParse('${json['extra_discount']}') ?? 0.0;
     }
 
     _extraDiscountType = json['extra_discount_type'];
