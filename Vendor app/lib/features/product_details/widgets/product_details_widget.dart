@@ -475,6 +475,10 @@ class _InformationElementWidget extends StatelessWidget {
   const _InformationElementWidget({
     required this.labelText,
     required this.infoText,
+    this.labelFlex = 4,
+    this.infoFlex = 6,
+    this.labelTextStyle,
+    this.infoTextStyle,
     this.showDivider = true,
     this.valueWithSign = false,
     this.isPercentage = false,
