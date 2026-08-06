@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - main
   workflow_dispatch: # Allows you to trigger the build manually from the GitHub webpage
 
 jobs:
