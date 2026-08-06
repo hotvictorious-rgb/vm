@@ -81,7 +81,7 @@
             <div class="d-flex align-items-center">
                 <div class="{{ session('direction') === "rtl" ? 'ml-sm-4' : 'mr-sm-4' }}">
                     @if (auth('customer')->check())
-                        <div class="d-flex ml-4-mobile">
+                        <div class="d-flex ml-4-mobile d-none">
                             @if($seller_id == 0)
                                 <button
                                     class="btn btn--primary __inline-70 rounded-10 btn-sm text-capitalize chat-with-seller-button d-none d-sm-inline-block"
@@ -135,7 +135,7 @@
                             @endif
                         </div>
                     @else
-                        <div class="d-flex">
+                        <div class="d-flex d-none">
                             <a href="{{ route('customer.auth.login') }}"
                                class="btn btn--primary __inline-70 rounded-10 btn-sm text-capitalize chat-with-seller-button">
                                 <img src="{{ theme_asset(path: 'public/assets/front-end/img/shopview-chat.png') }}"
