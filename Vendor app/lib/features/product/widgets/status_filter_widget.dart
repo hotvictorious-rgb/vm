@@ -25,7 +25,7 @@ class _StatusFilterWidgetState extends State<StatusFilterWidget> {
   ProductController productController = Provider.of<ProductController>(Get.context!, listen: false);
 
 
-  _callApi (String status) {
+  void _callApi (String status) {
     productController.getSellerProductList(
       Provider.of<ProfileController>(context, listen: false).userId.toString(), 1,
       Provider.of<LocalizationController>(context, listen: false).locale.languageCode == 'US'?'en':

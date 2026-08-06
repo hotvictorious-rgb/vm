@@ -25,7 +25,7 @@ class OrderEditController with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  List<OrderEditCartModel> _cartList = [];
+  final List<OrderEditCartModel> _cartList = [];
   List<OrderEditCartModel> get cartList => _cartList;
 
 
@@ -89,15 +89,15 @@ class OrderEditController with ChangeNotifier {
 
   Map<String?, dynamic>? getChoiceOptions(OrderDetailsModel orderDetails) {
     Map<String?, dynamic>? choice = {};
-    orderDetails.variation!.forEach((variation) {
+    for (var variation in orderDetails.variation!) {
       if(variation.key != 'color') {
-        orderDetails.productDetails!.choiceOptions!.forEach((option) {
+        for (var option in orderDetails.productDetails!.choiceOptions!) {
           if(option.title == variation.key) {
             choice.addAll({option.name : variation.value});
           }
-        });
+        }
       }
-    });
+    }
 
     return choice;
   }
@@ -106,17 +106,17 @@ class OrderEditController with ChangeNotifier {
     String? colorName;
     String? colorCode;
 
-    orderDetails.variation!.forEach((variation) {
+    for (var variation in orderDetails.variation!) {
       if(variation.key == 'color') {
         colorName = variation.value;
       }
-    });
+    }
 
-    orderDetails.productDetails!.colors!.forEach((colorModel) {
+    for (var colorModel in orderDetails.productDetails!.colors!) {
       if(colorModel.name == colorName) {
         colorCode = colorModel.code;
       }
-    });
+    }
     return colorCode;
   }
 

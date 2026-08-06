@@ -11,7 +11,7 @@ class PaymentRequest extends Model
     use HasUuid;
     use HasFactory;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     protected $table = 'payment_requests';
 }

@@ -1044,7 +1044,7 @@ class _ButtonWidget extends StatelessWidget {
     if (!productController.isPriceRangeValid) return false;
 
 
-    bool _areListsEqual(List<int>? list1, List<int>? list2) {
+    bool areListsEqual(List<int>? list1, List<int>? list2) {
       if (list1 == null && list2 == null) return true;
       if (list1 == null || list2 == null) return false;
       if (list1.length != list2.length) return false;

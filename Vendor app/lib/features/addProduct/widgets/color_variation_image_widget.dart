@@ -24,7 +24,7 @@ class ColorVariationImageWidget extends StatefulWidget {
 class _ColorVariationImageWidgetState extends State<ColorVariationImageWidget> {
   @override
   Widget build(BuildContext context) {
-    bool _update = widget.product != null;
+    bool update = widget.product != null;
     return Consumer<VariationController>(
       builder: (context, variationController, child){
 
@@ -97,7 +97,7 @@ class _ColorVariationImageWidgetState extends State<ColorVariationImageWidget> {
                             child: (addProductImageController.imagesWithColor[index].color != null && addProductImageController.imagesWithColor[index].image == null) ?
                             GestureDetector(
                               onTap: () async {
-                                addProductImageController.pickImage(false, false, false, index, update: _update);
+                                addProductImageController.pickImage(false, false, false, index, update: update);
                               },
                               child: Stack(children: [
                                 DottedBorder(
@@ -108,7 +108,7 @@ class _ColorVariationImageWidgetState extends State<ColorVariationImageWidget> {
                                   ),
                                   child:  ClipRRect(
                                     borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-                                    child: (_update) ? (addProductImageController.imagesWithColor[index].colorImage?.imageName?.path != null && addProductImageController.imagesWithColor[index].colorImage?.imageName?.path != '') ?
+                                    child: (update) ? (addProductImageController.imagesWithColor[index].colorImage?.imageName?.path != null && addProductImageController.imagesWithColor[index].colorImage?.imageName?.path != '') ?
                                     CustomImageWidget(
                                       placeholder: Images.placeholderImage,
                                       image: addProductImageController.imagesWithColor[index].colorImage?.imageName?.path ?? "",

@@ -44,7 +44,7 @@ class DeliverymanWallet extends Model
         'total_withdraw',
     ];
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
     /*delivery_man ->deliveryMan*/
     public function deliveryMan():BelongsTo
     {

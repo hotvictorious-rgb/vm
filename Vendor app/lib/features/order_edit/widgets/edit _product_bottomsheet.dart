@@ -462,7 +462,7 @@ class EditProductCartBottomSheetWidgetState extends State<EditProductCartBottomS
                         btnTxt: getTranslated(stock! < widget.product!.minimumOrderQty! && widget.product!.productType == "physical"? 'out_of_stock':
                         isUpdate != -1 ? 'update_cart'  : 'add_to_cart', context),
                           onTap: stock < widget.product!.minimumOrderQty!  &&  widget.product!.productType == "physical" ? null : () async {
-                            double? digitalVariantPrice = variantKey != null ? price : null;
+                            double? digitalVariantPrice;
                             if(stock! >= widget.product!.minimumOrderQty!  || widget.product!.productType == "digital") {
 
 
@@ -533,8 +533,8 @@ class EditProductCartBottomSheetWidgetState extends State<EditProductCartBottomS
       if(currentCartModel![i].product!.id == product.id && (variantKey == '')) {
         index = i;
         return i;
-      } else if (currentCartModel![i].product!.id == product.id && (variantKey != ''))  {
-        String cartVariantKey = getVariantKey(currentCartModel![i]);
+      } else if (currentCartModel[i].product!.id == product.id && (variantKey != ''))  {
+        String cartVariantKey = getVariantKey(currentCartModel[i]);
 
         if (cartVariantKey == variantKey) {
           index = i;
