@@ -150,6 +150,7 @@
                                                @if($canChat)
                                                     <div class="type_msg">
                                                     <div class="input_msg_write">
+                                                      @if(isset($userType) ? $userType != 'vendor' : request('type') != 'vendor')
                                                         <form
                                                             class="d-flex justify-content-center align-items-center md-form form-sm active-cyan-2 chatting-messages-form form-advance-validation form-advance-file-validation"
                                                             method="post" enctype="multipart/form-data">
@@ -251,6 +252,11 @@
                                                                 </div>
                                                             </div>
                                                         </form>
+                                                      @else
+                                                        <div class="text-center py-4">
+                                                            <span class="text-muted">{{ translate('Chatting is disabled for vendors') }}</span>
+                                                        </div>
+                                                      @endif
 
                                                     </div>
                                                 </div>

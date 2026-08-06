@@ -201,6 +201,7 @@
 
                         <div class="type_msg">
                             <div class="input_msg_write">
+                            @if($userType != 'customer')
                                 <form class="mt-4 chatting-messages-ajax-form form-advance-validation form-advance-file-validation" enctype="multipart/form-data" novalidate="novalidate">
                                     @csrf
                                     <input type="hidden" id="current-user-hidden-id" value="{{ $lastChatUser->id }}"
@@ -291,7 +292,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                    </form>
+                            @else
+                                <div class="text-center py-4">
+                                    <span class="text-muted">{{ translate('Chatting is disabled for customers') }}</span>
+                                </div>
+                            @endif
                             </div>
                         </div>
                     @else
