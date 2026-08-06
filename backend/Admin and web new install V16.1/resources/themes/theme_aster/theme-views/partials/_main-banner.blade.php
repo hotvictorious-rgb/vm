@@ -57,14 +57,14 @@
                                             @foreach($bannerTypeMainBanner as $key=>$banner)
                                                 <div class="swiper-slide max-height-420px">
                                                     <a href="{{ $banner['url'] }}" class="h-100 rounded max-height-420px">
-                                                        <img loading="lazy" alt="" class="dark-support rounded max-height-420px"
+                                                        <img @if($key == 0) fetchpriority="high" @else loading="lazy" @endif alt="" class="dark-support rounded max-height-420px"
                                                             src="{{ getStorageImages(path:$banner['photo_full_url'], type:'banner') }}">
                                                     </a>
                                                 </div>
                                             @endforeach
                                             @if(count($bannerTypeMainBanner)==0)
                                                 <img src="{{ theme_asset('assets/img/placeholder/placeholder-2-1.png') }}"
-                                                     loading="lazy" alt="" class="dark-support rounded">
+                                                     fetchpriority="high" alt="" class="dark-support rounded">
                                             @endif
                                         </div>
                                         <div class="swiper-pagination"></div>

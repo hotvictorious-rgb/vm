@@ -67,7 +67,7 @@
                                                 $data['code'] = $countryCodeArr[0];
                                             }
                                         ?>
-                                        <img width="20"
+                                        <img width="20" height="14"
                                              src="{{ theme_asset('assets/img/flags/' . strtolower($data['code']).'.png') }}"
                                              class="dark-support" alt="{{ translate('Eng') }}"/>
                                         {{ ucwords($data['name']) }}
@@ -85,7 +85,7 @@
                                         ?>
                                         <li class="change-language" data-action="{{route('change-language')}}" data-language-code="{{$data['code']}}">
                                             <a class="d-flex gap-2 align-items-center" href="javascript:">
-                                                <img width="20" src="{{ theme_asset('assets/img/flags/' . strtolower($data['code']).'.png') }}"
+                                                <img width="20" height="14" src="{{ theme_asset('assets/img/flags/' . strtolower($data['code']).'.png') }}"
                                                      loading="lazy" class="dark-support" alt="{{$data['name']}}"/>
                                                 {{ ucwords($data['name']) }}
                                             </a>

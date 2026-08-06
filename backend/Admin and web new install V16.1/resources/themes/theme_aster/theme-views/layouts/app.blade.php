@@ -132,11 +132,11 @@
 @include('theme-views.layouts.partials.modal._initial')
 
 @php($whatsapp = getWebConfig(name: 'whatsapp'))
-<div class="social-chat-icons">
+<div class="social-chat-icons d-none">
     @if(isset($whatsapp['status']) && $whatsapp['status'] == 1 )
         <div class="">
             <a href="https://wa.me/{{ $whatsapp['phone'] }}?text=Hello%20there!" target="_blank">
-                <img src="{{theme_asset('assets/img/whatsapp.svg')}}" width="35" class="chat-image-shadow"
+                <img src="{{theme_asset('assets/img/whatsapp.svg')}}" width="35" height="35" class="chat-image-shadow"
                      alt="Chat with us on WhatsApp">
             </a>
         </div>
@@ -148,7 +148,7 @@
             <button type="button" class="btn p-0 px-1 bg-transparent text-dark border-0 shadow-none app-banner-close">
                 <i class="fi fi-sr-cross fs-14"></i>
             </button>
-            <img width="44" class="img-fit aspect-1 w-40px flex-shrink-0"
+            <img width="44" height="44" class="img-fit aspect-1 w-40px flex-shrink-0"
                 src="{{ getStorageImages(path: $web_config['mob_logo'], type: 'logo') }}"
                 alt="Victorious MARKET"
             >

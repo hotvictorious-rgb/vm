@@ -50,6 +50,7 @@
                         @foreach($bannerTypeMainBanner as $key=>$banner)
                             <a href="{{$banner['url']}}" class="d-block" target="_blank">
                                 <img class="w-100 __slide-img __slide-img-170" alt=""
+                                    @if($key == 0) fetchpriority="high" @endif
                                     src="{{ getStorageImages(path: $banner->photo_full_url, type: 'banner') }}">
                             </a>
                         @endforeach

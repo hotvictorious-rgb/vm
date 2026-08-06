@@ -5,7 +5,7 @@
  * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
  */
 @font-face {
-    font-display: block;
+    font-display: swap;
     font-family: bootstrap-icons;
     src: url("fonts/bootstrap-icons.woff2?2ab2cbbe07fcebb53bdaa7313bb290f2") format("woff2"), url("fonts/bootstrap-icons.woff?2ab2cbbe07fcebb53bdaa7313bb290f2") format("woff")
 }
