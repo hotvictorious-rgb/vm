@@ -97,7 +97,8 @@ class OrderModel {
         : null;
 
     orderNote = json['order_note'];
-    billingAddress = json['billing_address_data'] != null ? ShippingAddress.fromJson(json['billing_address_data']) : null;
+    final bData = json['billing_address_data'];
+    billingAddress = (bData is Map<String, dynamic>) ? ShippingAddress.fromJson(bData) : null;
     sellerInfo = json['seller'] != null ? SellerInfo.fromJson(json['seller']) : null;
     if(json['expected_delivery_date'] != null){
       expectedDate = json['expected_delivery_date'];

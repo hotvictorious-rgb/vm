@@ -472,8 +472,9 @@ class OfflinePayments {
 
   OfflinePayments.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    infoKey = (json['payment_info'].length>0)? json['payment_info'].entries.map((e)=> e.key).toList():[];
-    infoValue = (json['payment_info'].length>0)? json['payment_info'].entries.map((e)=> e.value).toList():[];
+    final pInfo = json['payment_info'];
+    infoKey = (pInfo is Map<String, dynamic> && pInfo.isNotEmpty) ? pInfo.entries.map((e)=> e.key).toList() : [];
+    infoValue = (pInfo is Map<String, dynamic> && pInfo.isNotEmpty) ? pInfo.entries.map((e)=> e.value).toList() : [];
     createdAt = json['created_at'];
   }
 }

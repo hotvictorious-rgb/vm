@@ -151,8 +151,9 @@ class Orders {
     verificationCode = json['verification_code'];
     sellerId = json['seller_id'];
     sellerIs = json['seller_is'];
-    if(json['shipping_address_data'] != null){
-      shippingAddressData = ShippingAddress.fromJson(json['shipping_address_data']);
+    final sData = json['shipping_address_data'];
+    if(sData is Map<String, dynamic>){
+      shippingAddressData = ShippingAddress.fromJson(sData);
     }
     deliveryManId = json['delivery_man_id'];
     if(json['deliveryman_charge'] != null){
@@ -167,8 +168,9 @@ class Orders {
     expectedDeliveryDate = json['expected_delivery_date'];
     orderNote = json['order_note'];
     billingAddress = json['billing_address'];
-    if(json['billing_address_data'] != null) {
-      billingAddressData = ShippingAddress.fromJson(json['billing_address_data']);
+    final bData = json['billing_address_data'];
+    if(bData is Map<String, dynamic>) {
+      billingAddressData = ShippingAddress.fromJson(bData);
     }
     orderType = json['order_type'];
     extraDiscount = json['extra_discount'].toDouble();

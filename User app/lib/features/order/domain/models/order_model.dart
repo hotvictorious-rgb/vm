@@ -180,7 +180,8 @@ class Orders {
     verificationStatus = json['verification_status']??false;
     sellerId = json['seller_id'];
     sellerIs = json['seller_is'];
-    shippingAddressData = json['shipping_address_data'] != null ? ShippingAddressData.fromJson(json['shipping_address_data']) : null;
+    final sData = json['shipping_address_data'];
+    shippingAddressData = (sData is Map<String, dynamic>) ? ShippingAddressData.fromJson(sData) : null;
     deliveryManId = json['delivery_man_id'];
     if(json['deliveryman_charge'] != null){
       deliverymanCharge = double.tryParse('${json['deliveryman_charge']}') ?? 0.0;
@@ -192,7 +193,8 @@ class Orders {
     deliverymanAssignedAt = json['deliveryman_assigned_at'];
     orderNote = json['order_note'];
     billingAddress = json['billing_address'];
-    billingAddressData = json['billing_address_data'] != null ? BillingAddressData.fromJson(json['billing_address_data']) : null;
+    final bData = json['billing_address_data'];
+    billingAddressData = (bData is Map<String, dynamic>) ? BillingAddressData.fromJson(bData) : null;
     orderType = json['order_type'];
     extraDiscount = double.tryParse('${json['extra_discount']}') ?? 0.0;
     extraDiscountType = json['extra_discount_type'];
