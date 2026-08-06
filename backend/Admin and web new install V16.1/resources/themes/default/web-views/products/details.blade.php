@@ -806,7 +806,7 @@
                                             </div>
                                         </div>
                                         <div class="col-12 position-static mt-3">
-                                            <div class="chat_with_seller-buttons">
+                                            <div class="chat_with_seller-buttons d-none">
                                                 @if (auth('customer')->id())
                                                     <button
                                                         class="btn w-100 d-block text-center web--bg-primary text-white"
@@ -900,7 +900,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12 position-static mt-3">
-                                        <div class="chat_with_seller-buttons">
+                                        <div class="chat_with_seller-buttons d-none">
                                             @if (auth('customer')->id())
                                                 <button class="btn w-100 d-block text-center web--bg-primary text-white"
                                                         data-toggle="modal" data-target="#chatting_modal"
