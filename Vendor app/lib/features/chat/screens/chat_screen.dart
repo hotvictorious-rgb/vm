@@ -268,10 +268,15 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ) : const SizedBox(),
 
-          SafeArea(top: false, child: SizedBox(
+          if (chatController.userTypeIndex != 0) SafeArea(top: false, child: SizedBox(
             height: chatController.openEmojiPicker ? 360 : 60,
             child: SendMessageWidget(id: widget.userId),
-          )),
+          )) else Padding(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+            child: Center(
+              child: Text(getTranslated('chatting_is_disabled', context) ?? 'Chat is disabled for customers', style: robotoRegular),
+            ),
+          ),
         ]);
       }),
     );

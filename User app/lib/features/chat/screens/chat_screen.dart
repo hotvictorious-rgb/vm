@@ -373,7 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ) : const SizedBox(),
 
 
-                Padding(
+                if (widget.isDelivery) Padding(
                   padding: const EdgeInsets.fromLTRB( Dimensions.paddingSizeDefault,  0, Dimensions.paddingSizeSmall,  Dimensions.paddingSizeDefault),
                   child: Opacity(
                     opacity: ((chatController.isSending || chatController.isLoading) || widget.isShopTemporaryClosed) ? 0.5 : 1,
@@ -448,6 +448,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       ])),
                     ),
                   ),
+                ) else Padding(
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                  child: Center(
+                    child: Text(getTranslated('chatting_is_disabled', context) ?? 'Chat is disabled for vendors', style: textRegular),
+                  ),
+                ),
                 ),
               ]),
             ),
