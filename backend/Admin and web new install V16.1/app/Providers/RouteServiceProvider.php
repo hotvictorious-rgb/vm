@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\RateLimiter;
 use App\Http\Requests\Request;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -36,7 +36,6 @@ class RouteServiceProvider extends ServiceProvider
         //
 
         parent::boot();
-        $this->configureRateLimiting();
     }
 
     /**
@@ -46,17 +45,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        if (!file_exists(base_path('.env')) || env('APP_INSTALL') !== 'true') {
-            $this->mapInstallRoutes();
-        } else {
-            $this->mapApiRoutes();
-            $this->mapApiv2Routes();
-            $this->mapApiv3Routes();
-
-            $this->mapBetaAdminRoutes();
-            $this->mapBetaVendorRoutes();
-            $this->mapBetaWebRoutes();
-        }
+        $this->mapInstallRoutes();
+        //$this->mapUpdateRoutes();
     }
 
     /**
@@ -112,6 +102,14 @@ class RouteServiceProvider extends ServiceProvider
             ->group(base_path('routes/rest_api/v3/seller.php'));
     }
 
+    protected function mapApiv4Routes()
+    {
+        Route::prefix('api')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/rest_api/v4/api.php'));
+    }
+
     /**
      * Define the "beta" routes for the application.
      *
@@ -134,7 +132,7 @@ class RouteServiceProvider extends ServiceProvider
     }
     protected function mapBetaWebRoutes(): void
     {
-        Route::middleware(['web', 'logUserBrowsingNavigation'])
+        Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web/routes.php'));
     }
