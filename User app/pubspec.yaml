@@ -89,6 +89,7 @@ dependencies:
   app_tracking_transparency: ^2.0.6+1
   app_links: ^6.4.1
   flutter_secure_storage: ^10.3.1
+  encrypt: ^5.0.3
 
 #dependency_overrides:
 #  firebase_core_platform_interface: ^5.4.0
