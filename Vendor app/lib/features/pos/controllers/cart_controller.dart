@@ -66,7 +66,7 @@ class CartController extends ChangeNotifier{
   final TextEditingController _extraDiscountController = TextEditingController();
   TextEditingController get extraDiscountController => _extraDiscountController;
 
-  final double _returnToCustomerAmount = 0 ;
+  double _returnToCustomerAmount = 0 ;
   double get returnToCustomerAmount => _returnToCustomerAmount;
 
   double? _couponCodeAmount = 0;
@@ -75,11 +75,11 @@ class CartController extends ChangeNotifier{
   double _extraDiscountAmount = 0;
   double get extraDiscountAmount =>_extraDiscountAmount;
 
-  final int _discountTypeIndex = 0;
+  int _discountTypeIndex = 0;
   int get discountTypeIndex => _discountTypeIndex;
 
 
-  final String _selectedDiscountType = '';
+  String? _selectedDiscountType = '';
   String? get selectedDiscountType => _selectedDiscountType;
 
   bool _isLoading = false;

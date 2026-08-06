@@ -615,15 +615,13 @@ class Order {
     verificationStatus = json['verification_status'];
     sellerId = json['seller_id'];
     sellerIs = json['seller_is'];
-    final sData = json['shipping_address_data'];
-    shippingAddressData = (sData is Map<String, dynamic>)
-      ? ShippingAddressData.fromJson(sData)
+    shippingAddressData = json['shipping_address_data'] != null
+      ? ShippingAddressData.fromJson(json['shipping_address_data'])
       : null;
     deliverymanCharge = json['deliveryman_charge'];
     billingAddress = json['billing_address'];
-    final bData = json['billing_address_data'];
-    billingAddressData = (bData is Map<String, dynamic>)
-      ? ShippingAddressData.fromJson(bData)
+    billingAddressData = json['billing_address_data'] != null
+      ? ShippingAddressData.fromJson(json['billing_address_data'])
       : null;
     orderType = json['order_type'];
     extraDiscount = json['extra_discount'];

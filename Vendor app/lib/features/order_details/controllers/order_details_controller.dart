@@ -44,7 +44,7 @@ class OrderDetailsController extends ChangeNotifier{
   bool _isUploadLoading = false;
   bool get isUploadLoading=> _isUploadLoading;
 
-  final bool _isUpdating = false;
+  bool _isUpdating = false;
   bool get isUpdating=> _isUpdating;
 
   Set<Marker> _markers = HashSet<Marker>();

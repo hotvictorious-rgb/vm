@@ -136,7 +136,7 @@ class ProductReviewController extends ChangeNotifier{
     ApiResponse apiResponse = await reviewServiceInterface.searchProductReviewList(search);
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       _isLoading = false;
-      if(search.trim().isNotEmpty) {
+      if(search != null && search.trim().isNotEmpty) {
         _isSearching = true;
         notifyListeners();
       }

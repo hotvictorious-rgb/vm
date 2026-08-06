@@ -28,7 +28,7 @@ class AddProductImageController extends ChangeNotifier {
   XFile? _selectedMetaImageFile;
   XFile? _selectedCoveredImageFile;
   List <XFile>_productImage = [];
-  final bool _isMultiply = false;
+  bool _isMultiply = false;
   bool get isMultiply => _isMultiply;
   XFile? get selectedLogoFile => _selectedLogoFile;
   XFile? get selectedCoverFile => _selectedCoverFile;

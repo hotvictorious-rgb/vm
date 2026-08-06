@@ -256,14 +256,12 @@ class Order {
       _shippingCost = double.tryParse('${json['shipping_cost']}') ?? 0.0;
     }
 
-    final sData = json['shipping_address_data'];
-    if(sData is Map<String, dynamic>){
-      _shippingAddressData =  BillingAddressData.fromJson(sData);
+    if(json['shipping_address_data'] != null){
+      _shippingAddressData =  BillingAddressData.fromJson(json['shipping_address_data']);
+
     }
-    
-    final bData = json['billing_address_data'];
-    if(bData is Map<String, dynamic>){
-      _billingAddressData =  BillingAddressData.fromJson(bData);
+    if(json['billing_address_data'] != null){
+      _billingAddressData =  BillingAddressData.fromJson(json['billing_address_data']);
     }
 
     _createdAt = json['created_at'];
@@ -602,9 +600,8 @@ class OfflinePayments {
 
   OfflinePayments.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    final pInfo = json['payment_info'];
-    infoKey = (pInfo is Map<String, dynamic> && pInfo.isNotEmpty) ? pInfo.entries.map((e)=> e.key).toList() : [];
-    infoValue = (pInfo is Map<String, dynamic> && pInfo.isNotEmpty) ? pInfo.entries.map((e)=> e.value).toList() : [];
+    infoKey = (json['payment_info'].length>0)? json['payment_info'].entries.map((e)=> e.key).toList():[];
+    infoValue = (json['payment_info'].length>0)? json['payment_info'].entries.map((e)=> e.value).toList():[];
     createdAt = json['created_at'];
   }
 }
@@ -621,8 +618,8 @@ class OfflinePaymentsEdit {
       });
 
   OfflinePaymentsEdit.fromJson(Map<String, dynamic> json) {
-    infoKey = (json.isNotEmpty)? json.entries.map((e)=> e.key).toList():[];
-    infoValue = (json.isNotEmpty)? json.entries.map((e)=> e.value).toList():[];
+    infoKey = (json.length>0)? json.entries.map((e)=> e.key).toList():[];
+    infoValue = (json.length>0)? json.entries.map((e)=> e.value).toList():[];
   }
 }
 

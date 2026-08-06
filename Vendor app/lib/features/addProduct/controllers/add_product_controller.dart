@@ -38,7 +38,7 @@ class AddProductController extends ChangeNotifier {
 
   AddProductController({required this.shopServiceInterface});
 
-  final int _totalQuantity = 0;
+  int _totalQuantity = 0;
   int get totalQuantity => _totalQuantity;
   String? _unitValue;
   String? get unitValue => _unitValue;
@@ -90,7 +90,7 @@ class AddProductController extends ChangeNotifier {
   int get totalVariantQuantity => _totalVariantQuantity;
 
   List<Map<String, dynamic>>? productReturnImage  = [];
-  final int _variationTotalQuantity = 0;
+  int _variationTotalQuantity = 0;
   int get variationTotalQuantity  => _variationTotalQuantity;
   final bool _isCategoryLoading = false;
   bool get isCategoryLoading => _isCategoryLoading;

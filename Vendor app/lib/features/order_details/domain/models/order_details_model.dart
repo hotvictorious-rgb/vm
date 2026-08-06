@@ -668,7 +668,7 @@ class OrderEditHistory {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = id;
     data['u_id'] = uId;
     data['order_id'] = orderId;

@@ -331,13 +331,13 @@ class ChatController extends ChangeNotifier {
         showCustomSnackBarWidget('${getTranslated('invalid_file_type', Get.context!)} ', Get.context!, sanckBarType: SnackBarType.error);
       }
 
-      for (var element in validatedFiles) {
+      validatedFiles.forEach((element) {
         if(ImageValidationHelper.getFileSizeFromPlatformFileToDouble(element) > (Provider.of<SplashController>(Get.context!, listen: false).configModel?.systemGeneralFileUploadMaxSize ?? AppConstants.maxSizeOfASingleFile)  ) {
           _singleFIleCrossMaxLimit = true;
         } else{
           _pickedFiles!.add(element);
         }
-      }
+      });
     }
 
 

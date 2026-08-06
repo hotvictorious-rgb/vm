@@ -31,7 +31,7 @@ class OrderRepository implements OrderRepositoryInterface{
         queryParameters.addAll({'order_current_status': jsonEncode([status])});
       }
 
-      print('----->>$queryParameters<<-----');
+      print('----->>${queryParameters}<<-----');
 
       final response = await dioClient!.post(
         AppConstants.orderListUri,

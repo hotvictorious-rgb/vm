@@ -642,8 +642,8 @@ class AddProductNextScreenState extends State<AddProductNextScreen> with Automat
 
                                                     Consumer<AiController>(
                                                       builder: (context, aiController, child) {
-                                                        TextEditingController? autoController;
-                                                        FocusNode? autoFocusNode;
+                                                        TextEditingController? _autoController;
+                                                        FocusNode? _autoFocusNode;
 
                                                         return Column(
                                                           children : [
@@ -738,8 +738,8 @@ class AddProductNextScreenState extends State<AddProductNextScreen> with Automat
                                                                 },
 
                                                                 fieldViewBuilder: (context, controller, node, onComplete) {
-                                                                  autoController ??= controller;
-                                                                  autoFocusNode ??= node;
+                                                                  _autoController ??= controller;
+                                                                  _autoFocusNode ??= node;
                                                                   return Container(
                                                                     height: 50,
                                                                     decoration: BoxDecoration(
@@ -774,7 +774,7 @@ class AddProductNextScreenState extends State<AddProductNextScreen> with Automat
                                                                   variationController.addColorCode(colorProvider.colorList![value].code);
 
                                                                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                                    autoFocusNode?.unfocus();
+                                                                    _autoFocusNode?.unfocus();
                                                                   });
                                                                 },
                                                               );
