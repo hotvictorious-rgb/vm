@@ -51,7 +51,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.victoriousmarket.delivery"
-        minSdkVersion 21
+        minSdkVersion flutter.minSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         targetSdkVersion 35
