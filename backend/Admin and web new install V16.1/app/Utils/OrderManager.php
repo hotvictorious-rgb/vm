@@ -988,10 +988,19 @@ class OrderManager
 
         $taxConfig = self::getTaxSystemType();
 
+        $productIds = collect($vendorCart['cart_list'])->pluck('product_id')->unique();
+        $products = Product::whereIn('id', $productIds)->with(['digitalVariation', 'clearanceSale' => function ($query) {
+            return $query->active();
+        }])->get()->keyBy('id');
+
+        $digitalVariations = DigitalProductVariation::with(['storage'])->whereIn('product_id', $productIds)->get();
+        $digitalVariationsByProduct = $digitalVariations->groupBy('product_id');
+        
+        $variationStoragePaths = Storage::where("data_type", "App\Models\DigitalProductVariation")
+            ->whereIn('data_id', $digitalVariations->pluck('id'))->get()->keyBy('data_id');
+
         foreach ($vendorCart['cart_list'] as $cartSingleItem) {
-            $product = Product::where(['id' => $cartSingleItem['product_id']])->with(['digitalVariation', 'clearanceSale' => function ($query) {
-                return $query->active();
-            }])->first()->toArray();
+            $product = $products[$cartSingleItem['product_id']]->toArray();
             unset($product['is_shop_temporary_close']);
             unset($product['color_images_full_url']);
             unset($product['meta_image_full_url']);
@@ -1000,16 +1009,16 @@ class OrderManager
             unset($product['translations']);
 
             if (!isset($product['digital_variation'])) {
-                $allDigitalVariation = DigitalProductVariation::with(['storage'])->where(['product_id' => $cartSingleItem['product_id']])->get()->toArray() ?? [];
+                $allDigitalVariation = isset($digitalVariationsByProduct[$cartSingleItem['product_id']]) ? 
+                    $digitalVariationsByProduct[$cartSingleItem['product_id']]->toArray() : [];
                 $product['digital_variation'] = $allDigitalVariation;
             }
 
-            $digitalProductVariation = DigitalProductVariation::with(['storage'])->where(['product_id' => $cartSingleItem['product_id'], 'variant_key' => $cartSingleItem['variant']])->first();
+            $digitalProductVariation = $digitalVariations->where('product_id', $cartSingleItem['product_id'])
+                ->where('variant_key', $cartSingleItem['variant'])->first();
+
             if ($product['digital_product_type'] == 'ready_product' && $digitalProductVariation) {
-                $getStoragePath = Storage::where([
-                    'data_id' => $digitalProductVariation['id'],
-                    "data_type" => "App\Models\DigitalProductVariation",
-                ])->first();
+                $getStoragePath = $variationStoragePaths->get($digitalProductVariation['id']);
 
                 $product['digital_file_ready'] = $digitalProductVariation['file'];
                 $product['storage_path'] = $getStoragePath ? $getStoragePath['value'] : 'public';
@@ -1055,6 +1064,10 @@ class OrderManager
             $finalAmount = ($cartSingleItem['price'] - $productDiscount) * $cartSingleItem['quantity'];
             $totalPrice += $finalAmount;
 
+            $productUpdateData = [
+                'current_stock' => $product['current_stock'] - $cartSingleItem['quantity']
+            ];
+
             if ($cartSingleItem['variant'] != null) {
                 $type = $cartSingleItem['variant'];
                 $variationData = [];
@@ -1064,13 +1077,10 @@ class OrderManager
                     }
                     $variationData[] = $var;
                 }
-                Product::where(['id' => $product['id']])->update([
-                    'variation' => json_encode($variationData),
-                ]);
+                $productUpdateData['variation'] = json_encode($variationData);
             }
-            Product::where(['id' => $product['id']])->update([
-                'current_stock' => $product['current_stock'] - $cartSingleItem['quantity']
-            ]);
+            
+            Product::where(['id' => $product['id']])->update($productUpdateData);
             $orderDetailsId = DB::table('order_details')->insertGetId($orderDetails);
 
             foreach ($vendorCart['applied_tax_cart_list'] as $cartItem) {
