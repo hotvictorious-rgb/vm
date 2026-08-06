@@ -68,7 +68,7 @@
                                                     $canChat = !$isTemporaryClosed;
                                                 @endphp
 
-                                                <div class="d-flex flex-column gap-3">
+                                                <div class="d-flex flex-column gap-3 d-none">
                                                     <button class="btn btn-primary"
                                                         {{ $canChat ? 'data-bs-toggle=modal data-bs-target=#contact_sellerModal' : 'disabled' }}>
                                                         <i class="bi bi-chat-square-fill"></i>
@@ -150,7 +150,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="d-flex flex-column gap-3">
+                                            <div class="d-flex flex-column gap-3 d-none">
                                                 <button class="btn btn-primary" data-bs-toggle="modal"
                                                         data-bs-target="#contact_sellerModal">
                                                     <i class="bi bi-chat-square-fill"></i>

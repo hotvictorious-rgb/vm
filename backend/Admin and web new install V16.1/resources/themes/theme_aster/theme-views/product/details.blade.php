@@ -855,12 +855,12 @@
                                                 </div>
                                             </div>
                                             @if (auth('customer')->id() == '')
-                                                <div class="btn-circle chat-btn size-2-5rem"
+                                                <div class="btn-circle chat-btn size-2-5rem d-none"
                                                      data-bs-toggle="modal" data-bs-target="#loginModal">
                                                     <i class="bi bi-chat-square-dots"></i>
                                                 </div>
                                             @else
-                                                <div class="btn-circle chat-btn size-2-5rem"
+                                                <div class="btn-circle chat-btn size-2-5rem d-none"
                                                      data-bs-toggle="modal" data-bs-target="#contact_sellerModal"
                                                      @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $product?->seller?->shop))
                                                          disabled
@@ -938,12 +938,12 @@
                                         </div>
 
                                         @if (auth('customer')->id() == '')
-                                            <div class="btn-circle chat-btn size-2-5rem"
+                                            <div class="btn-circle chat-btn size-2-5rem d-none"
                                                  data-bs-toggle="modal" data-bs-target="#loginModal">
                                                 <i class="bi bi-chat-square-dots"></i>
                                             </div>
                                         @else
-                                            <div class="btn-circle chat-btn size-2-5rem"
+                                            <div class="btn-circle chat-btn size-2-5rem d-none"
                                                  data-bs-toggle="modal" data-bs-target="#contact_sellerModal"
                                                  @if(checkVendorAbility(type: 'inhouse', status: 'temporary_close'))
                                                      disabled
