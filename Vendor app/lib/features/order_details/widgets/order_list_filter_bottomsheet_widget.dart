@@ -581,7 +581,7 @@ class _CheckboxItem extends StatelessWidget {
   final bool? isSubSubCategory;
   final bool? showDropdown;
   final Function()? onTap;
-  const _CheckboxItem({required this.title, required this.checked, this.onTap, this.isStart = false});
+  const _CheckboxItem({required this.title, required this.checked, this.onTap, this.isStart = false, this.showDropdown = false, this.isSubCategory = false, this.isSubSubCategory = false});
 
   @override
   Widget build(BuildContext context) {
