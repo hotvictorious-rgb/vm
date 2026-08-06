@@ -63,7 +63,7 @@
                                         $canChat = !$isTemporaryClosed;
                                         ?>
 
-                                        <div>
+                                        <div class="d-none">
                                             <button type="button" class="btn btn-soft-info text-capitalize px-2 px-sm-4"
                                                 data-toggle="modal" data-target="#chatting_modal"
                                                 @if (!$canChat) disabled @endif>
@@ -128,7 +128,7 @@
                                         $isTemporaryClosed = checkVendorAbility(type: 'inhouse', status: 'temporary_close');
                                         $canChat = !$isTemporaryClosed;
                                         ?>
-                                        <div>
+                                        <div class="d-none">
                                             <button @if (!$canChat) disabled @endif type="button"
                                                 class="btn btn-soft-info text-capitalize px-2 px-sm-4" data-toggle="modal"
                                                 data-target="#chatting_modal">
