@@ -6,7 +6,7 @@
             </div>
             <div class="modal-body px-4 px-lg-5">
                 <div class="mb-4 text-center">
-                    <img width="200" alt="" class="dark-support"
+                    <img width="200" style="height: auto !important;" alt="" class="dark-support"
                          src="{{ getStorageImages(path: $web_config['web_logo'], type: 'logo') }}">
                 </div>
                 <div class="mb-4">

@@ -19,7 +19,7 @@
 
     <link rel="stylesheet" href="{{ theme_asset('assets/css/fonts-init.css') }}"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap.min.css') }}"/>
-    <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap-icons.min.css') }}"/>
+    <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap-icons.min.css') }}" media="print" onload="this.media='all'"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/plugins/magnific-popup-1.1.0/magnific-popup.css') }}" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="{{ theme_asset('assets/plugins/swiper/swiper-bundle.min.css') }}"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/plugins/sweet_alert/sweetalert2.css') }}" media="print" onload="this.media='all'">
@@ -80,9 +80,8 @@
     }
     setThemeMode();
 </script>
-
 <div class="preloader d--none" id="loading">
-    <img width="200" alt="" src="{{ getStorageImages(path: getWebConfig(name: 'loader_gif'), type: 'source', source: theme_asset('assets/img/loader.gif')) }}">
+    <img width="200" height="200" style="aspect-ratio: 1/1; object-fit: contain;" alt="" src="{{ getStorageImages(path: getWebConfig(name: 'loader_gif'), type: 'source', source: theme_asset('assets/img/loader.gif')) }}">
 </div>
 @include('theme-views.layouts.partials._alert-message')
 @include('theme-views.layouts.partials._header')
@@ -145,7 +144,7 @@
 @if(isset($isMobile) && $isMobile)
     <div id="app-banner" class="app-download-popup" style="--bottom: 80px;">
         <div class="d-flex gap-3 align-items-center">
-            <button type="button" class="btn p-0 px-1 bg-transparent text-dark border-0 shadow-none app-banner-close">
+            <button type="button" class="btn p-0 px-1 bg-transparent text-dark border-0 shadow-none app-banner-close" aria-label="Close">
                 <i class="fi fi-sr-cross fs-14"></i>
             </button>
             <img width="44" height="44" class="img-fit aspect-1 w-40px flex-shrink-0"

@@ -552,12 +552,14 @@
                                             </div>
                                             <div>
                                                 <a href="javascript:">
-                                                    <img
-                                                        width="277"
-                                                        src="{{theme_asset('assets/img/media/super-market.webp')}}"
-                                                        class="dark-support"
-                                                        alt="{{translate('image')}}"
-                                                    />
+                                                     <img
+                                                         width="277"
+                                                         height="454"
+                                                         src="{{theme_asset('assets/img/media/super-market.webp')}}"
+                                                         class="dark-support"
+                                                         style="height: auto !important;"
+                                                         alt="{{translate('image')}}"
+                                                     />
                                                 </a>
                                             </div>
                                         </div>

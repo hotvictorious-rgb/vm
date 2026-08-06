@@ -39,7 +39,7 @@
         </div>
 
         <div class="product__thumbnail align-items-center d-flex h-100 justify-content-center">
-            <img src="{{ getStorageImages(path:$product->thumbnail_full_url, type: 'product') }}"
+            <img width="270" height="270" src="{{ getStorageImages(path:$product->thumbnail_full_url, type: 'product') }}"
                  loading="lazy" class="dark-support rounded-10 h-100 object-fit-cover" alt="">
         </div>
         @if(($product['product_type'] == 'physical') && ($product['current_stock'] < 1))

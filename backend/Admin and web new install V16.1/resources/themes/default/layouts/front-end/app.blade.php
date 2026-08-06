@@ -114,10 +114,10 @@
 @if(isset($isMobile) && $isMobile)
     <div id="app-banner" class="app-download-popup" style="--bottom: 30px;">
         <div class="d-flex gap-3 align-items-center">
-            <button type="button" class="btn p-0 px-1 bg-transparent text-dark border-0 shadow-none app-banner-close">
+            <button type="button" class="btn p-0 px-1 bg-transparent text-dark border-0 shadow-none app-banner-close" aria-label="Close">
                 <i class="fi fi-sr-cross fs-14"></i>
             </button>
-            <img width="44" class="img-fit aspect-1 w-40px flex-shrink-0"
+            <img width="44" height="44" class="img-fit aspect-1 w-40px flex-shrink-0"
                 src="{{ getStorageImages(path: $web_config['mob_logo'], type: 'logo') }}"
                 alt="Victorious MARKET"
             >
@@ -137,7 +137,7 @@
     <div class="col-12 loading-parent d--none" id="loading">
         <div class="loading-parent-first-div">
            <div class="text-center">
-            <img width="200" alt=""
+            <img width="200" height="200" style="aspect-ratio: 1/1; object-fit: contain;" alt=""
                  src="{{ getStorageImages(path: getWebConfig(name: 'loader_gif'), type: 'source', source: theme_asset(path: 'public/assets/front-end/img/loader.gif')) }}">
             </div>
         </div>

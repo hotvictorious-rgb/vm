@@ -23,7 +23,7 @@ if (!$customerOTPLogin && $customerManualLogin && $customerSocialLogin) {
             </div>
             <div class="modal-body px-4 px-sm-5">
                 <div class="mb-4 text-center">
-                    <img alt="" class="dark-support" width="200"
+                    <img alt="" class="dark-support" width="200" style="height: auto !important;"
                         src="{{ getStorageImages(path: $web_config['web_logo'], type: 'logo') }}">
                 </div>
 
