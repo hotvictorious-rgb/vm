@@ -46,16 +46,17 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        $this->mapApiRoutes();
-        $this->mapApiv2Routes();
-        $this->mapApiv3Routes();
+        if (!file_exists(base_path('.env')) || env('APP_INSTALL') !== 'true') {
+            $this->mapInstallRoutes();
+        } else {
+            $this->mapApiRoutes();
+            $this->mapApiv2Routes();
+            $this->mapApiv3Routes();
 
-        //$this->mapInstallRoutes();
-        //$this->mapUpdateRoutes();
-
-        $this->mapBetaAdminRoutes();
-        $this->mapBetaVendorRoutes();
-        $this->mapBetaWebRoutes();
+            $this->mapBetaAdminRoutes();
+            $this->mapBetaVendorRoutes();
+            $this->mapBetaWebRoutes();
+        }
     }
 
     /**
