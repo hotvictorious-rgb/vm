@@ -16,9 +16,6 @@ class ImageManager
                 Storage::disk($storage)->makeDirectory($dir);
             }
 
-            $imageName = Carbon::now()->toDateString() . "-" . uniqid() . "." . $image->getClientOriginalExtension();
-            Storage::disk($storage)->put($dir . $imageName, file_get_contents($image));
-
             if (in_array($image->getClientOriginalExtension(), ['gif', 'svg'])) {
                 $imageName = Carbon::now()->toDateString() . "-" . uniqid() . "." . $image->getClientOriginalExtension();
                 Storage::disk($storage)->put($dir . $imageName, file_get_contents($image));
@@ -26,9 +23,19 @@ class ImageManager
                 if (in_array(request()->ip(), ['127.0.0.1', '::1']) && !(imagetypes() & IMG_WEBP) || env('APP_DEBUG') && !(imagetypes() & IMG_WEBP)) {
                     $format = 'png';
                 }
-                $imageWebp = Image::make($image)->encode($format, 85);
+                $imageWebp = Image::make($image);
+                
+                // If image exceeds 2MB, automatically downscale it to max 1200px to compress it heavily
+                if (method_exists($image, 'getSize') && $image->getSize() > 2 * 1024 * 1024) {
+                    $imageWebp->resize(1200, 1200, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
+
+                $imageWebpEncoded = $imageWebp->encode($format, 80);
                 $imageName = Carbon::now()->toDateString() . "-" . uniqid() . "." . $format;
-                Storage::disk($storage)->put($dir . $imageName, $imageWebp);
+                Storage::disk($storage)->put($dir . $imageName, $imageWebpEncoded);
                 $imageWebp->destroy();
             }
         } else {
