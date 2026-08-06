@@ -20,18 +20,18 @@
     <link rel="stylesheet" href="{{ theme_asset('assets/css/fonts-init.css') }}"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap.min.css') }}"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap-icons.min.css') }}"/>
-    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/magnific-popup-1.1.0/magnific-popup.css') }}" />
+    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/magnific-popup-1.1.0/magnific-popup.css') }}" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="{{ theme_asset('assets/plugins/swiper/swiper-bundle.min.css') }}"/>
-    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/sweet_alert/sweetalert2.css') }}">
-    <link rel="stylesheet" href="{{ theme_asset('assets/css/toastr.css') }}"/>
+    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/sweet_alert/sweetalert2.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ theme_asset('assets/css/toastr.css') }}" media="print" onload="this.media='all'"/>
 
-    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/webfonts/uicons-regular-rounded.css') }}">
-    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/webfonts/uicons-solid-rounded.css') }}">
+    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/webfonts/uicons-regular-rounded.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/webfonts/uicons-solid-rounded.css') }}" media="print" onload="this.media='all'">
 
-    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/select2/css/select2.min.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ theme_asset('assets/css/style.css') }}"/>
-    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/libs/intl-tel-input/css/intlTelInput.css') }}">
-    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/libs/google-recaptcha/google-recaptcha-init.css') }}">
+    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/libs/intl-tel-input/css/intlTelInput.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/libs/google-recaptcha/google-recaptcha-init.css') }}" media="print" onload="this.media='all'">
 
     <title>@yield('title')</title>
 
