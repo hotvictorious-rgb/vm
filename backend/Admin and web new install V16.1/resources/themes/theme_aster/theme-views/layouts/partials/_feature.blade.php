@@ -5,7 +5,7 @@
                 <div class="col-lg-3 col-sm-6">
                     <div class="media gap-3 mb-3 align-items-center">
                         <div class="feature-icon-wrap">
-                            <img src="{{theme_asset('assets/img/icons/f1.png')}}" alt="{{translate('image')}}">
+                            <img src="{{theme_asset('assets/img/icons/f1.png')}}" width="50" height="31" style="aspect-ratio: 50/31;" alt="{{translate('image')}}">
                         </div>
                         <div class="media-body">
                             <h2 class="mb-2 text-capitalize h5">{{translate('fast_shipping')}}</h2>
@@ -16,7 +16,7 @@
                 <div class="col-lg-3 col-sm-6">
                     <div class="media gap-3 mb-3 align-items-center">
                         <div class="feature-icon-wrap">
-                            <img src="{{theme_asset('assets/img/icons/f2.png')}}" alt="{{translate('image')}}">
+                            <img src="{{theme_asset('assets/img/icons/f2.png')}}" width="50" height="31" style="aspect-ratio: 50/31;" alt="{{translate('image')}}">
                         </div>
                         <div class="media-body">
                             <h2 class="mb-2 text-capitalize h5">{{translate('authentic_products')}}</h2>
@@ -27,7 +27,7 @@
                 <div class="col-lg-3 col-sm-6">
                     <div class="media gap-3 mb-3 align-items-center">
                         <div class="feature-icon-wrap">
-                            <img src="{{theme_asset('assets/img/icons/f3.png')}}" alt="{{translate('image')}}">
+                            <img src="{{theme_asset('assets/img/icons/f3.png')}}" width="50" height="31" style="aspect-ratio: 50/31;" alt="{{translate('image')}}">
                         </div>
                         <div class="media-body">
                             <h2 class="mb-2 text-capitalize h5">{{ '100% '.translate('secure_payment') }}</h2>
@@ -38,7 +38,7 @@
                 <div class="col-lg-3 col-sm-6">
                     <div class="media gap-3 mb-3 align-items-center">
                         <div class="feature-icon-wrap">
-                            <img src="{{theme_asset('assets/img/icons/f4.png')}}" alt="{{translate('image')}}">
+                            <img src="{{theme_asset('assets/img/icons/f4.png')}}" width="50" height="31" style="aspect-ratio: 50/31;" alt="{{translate('image')}}">
                         </div>
                         <div class="media-body">
                             <h2 class="mb-2 text-capitalize h5">{{'24/7'.' '.translate('support_center')}}</h2>

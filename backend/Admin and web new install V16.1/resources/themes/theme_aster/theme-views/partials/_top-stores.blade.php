@@ -98,20 +98,21 @@
                                                     <div class="auto-col gap-3 minWidth-3-75rem"
                                                          style="--maxWidth: {{ count($vendorData->products)==1 ? '6.5rem' : '1fr' }}">
                                                         @foreach($vendorData->products as $product)
-                                                            <a href="{{route('product',$product['slug'])}}"
-                                                               class="store-product d-flex flex-column gap-2 align-items-center">
-                                                                <div class="store-product__top border rounded">
-                                                                    <span class="store-product__action preventDefault get-quick-view"
-                                                                            data-product-id = "{{$product['id']}}"
-                                                                            data-action = "{{route('quick-view')}}"
-                                                                            >
-                                                                        <i class="bi bi-eye fs-12"></i>
-                                                                    </span>
-                                                                    <img width="100"
-                                                                         src="{{getStorageImages(path:$product['thumbnail_full_url'], type: 'product') }}"
-                                                                         alt="" loading="lazy"
-                                                                         class="dark-support rounded aspect-1 img-fit">
-                                                                </div>
+                                                             <a href="{{route('product',$product['slug'])}}"
+                                                                aria-label="{{ $product['name'] }}"
+                                                                class="store-product d-flex flex-column gap-2 align-items-center">
+                                                                 <div class="store-product__top border rounded">
+                                                                     <span class="store-product__action preventDefault get-quick-view"
+                                                                             data-product-id = "{{$product['id']}}"
+                                                                             data-action = "{{route('quick-view')}}"
+                                                                             >
+                                                                         <i class="bi bi-eye fs-12"></i>
+                                                                     </span>
+                                                                     <img width="100" height="100" style="aspect-ratio: 1/1;"
+                                                                          src="{{getStorageImages(path:$product['thumbnail_full_url'], type: 'product') }}"
+                                                                          alt="{{ $product['name'] }}" loading="lazy"
+                                                                          class="dark-support rounded aspect-1 img-fit">
+                                                                 </div>
                                                                 <div
                                                                     class="product__price d-flex justify-content-center flex-wrap column-gap-2">
                                                                     @if($product['discount'] > 0)

@@ -685,6 +685,8 @@
                                         loading="lazy"
                                         src="{{theme_asset('assets/img/user.png')}}"
                                         class="img-fit rounded-circle"
+                                        width="24"
+                                        height="24"
                                         alt="{{translate('image')}}"
                                     />
                               </span>

@@ -62,10 +62,12 @@
                     <a href="{{ $bannerTypeSidebarBanner['url'] }}">
                         <img
                             src="{{ getStorageImages(path: $bannerTypeSidebarBanner['photo_full_url'], type:'banner') }}"
+                            width="302" height="554" style="aspect-ratio: 302/554; object-fit: cover;"
                             alt="" class="dark-support rounded w-100">
                     </a>
                 @else
                     <img src="{{ theme_asset('assets/img/top-side-banner-placeholder.png') }}"
+                         width="302" height="554" style="aspect-ratio: 302/554; object-fit: cover;"
                          class="dark-support rounded w-100" alt="">
                 @endif
             </div>

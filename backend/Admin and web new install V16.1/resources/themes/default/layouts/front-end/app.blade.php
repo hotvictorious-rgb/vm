@@ -2,6 +2,10 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ session()->get('direction') ?? 'ltr' }}">
 
 <head>
+    <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+    <link rel="preconnect" href="https://www.google.com" crossorigin>
     <meta charset="utf-8">
     <title>@yield('title')</title>
     <meta name="_token" content="{{csrf_token()}}">
@@ -31,7 +35,7 @@
     <link rel="stylesheet" href="{{ theme_asset(path: 'public/css/lightbox.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ theme_asset(path: 'public/assets/back-end/vendor/icon-set/style.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ theme_asset(path: 'public/assets/front-end/css/owl.carousel.min.css') }}" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/front-end/plugin/swiper/swiper-bundle.min.css') }}"/>
+    <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/front-end/plugin/swiper/swiper-bundle.min.css') }}" media="print" onload="this.media='all'"/>
     <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/libs/google-recaptcha/google-recaptcha-init.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ dynamicAsset(path: 'public/assets/backend/libs/intl-tel-input/css/intlTelInput.css') }}" media="print" onload="this.media='all'">
 
@@ -137,7 +141,7 @@
     <div class="col-12 loading-parent d--none" id="loading">
         <div class="loading-parent-first-div">
            <div class="text-center">
-            <img width="200" height="200" style="aspect-ratio: 1/1; object-fit: contain;" alt=""
+            <img style="width: 200px !important; height: 200px !important; aspect-ratio: 1/1 !important; object-fit: contain !important;" alt="loader"
                  src="{{ getStorageImages(path: getWebConfig(name: 'loader_gif'), type: 'source', source: theme_asset(path: 'public/assets/front-end/img/loader.gif')) }}">
             </div>
         </div>

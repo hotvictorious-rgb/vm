@@ -58,7 +58,7 @@
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <img width="309" alt="" class="dark-support rounded"
+                                    <img width="309" height="309" style="aspect-ratio: 1/1; object-fit: cover;" alt="" class="dark-support rounded"
                                          src="{{ getStorageImages(path: $dealOfTheDay?->product?->thumbnail_full_url, type: 'product') }}">
                                 </div>
                             </div>
@@ -74,7 +74,7 @@
                                         <h2 class="title fs-18 text-primary fw-extra-bold text-capitalize">{{ translate('todays_best_deal') }}</h2>
                                     </div>
                                     <div class="mb-3">
-                                        <img width="106" alt="" class="dark-support rounded"
+                                        <img width="106" height="106" style="aspect-ratio: 1/1; object-fit: cover;" alt="" class="dark-support rounded"
                                             src="{{ getStorageImages(path: $dealOfTheDay?->product?->thumbnail_full_url, type: 'product') }}">
                                     </div>
                                     <div class="mb-20 d-flex flex-column gap-1">
@@ -176,7 +176,7 @@
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <img width="309" alt="" class="dark-support rounded"
+                                    <img width="309" height="309" style="aspect-ratio: 1/1; object-fit: cover;" alt="" class="dark-support rounded"
                                          src="{{ getStorageImages(path: $recommendedProduct['thumbnail_full_url'], type: 'product') }}">
                                 </div>
                             </div>
@@ -210,7 +210,7 @@
                                         <a href="{{ route('product', $product->slug) }}" class="">
                                             <div class="d-flex gap-2 align-items-center">
                                                 <div class="position-relative">
-                                                    <img width="64" alt="" loading="lazy" class="w-64px dark-support rounded-10 border aspect-1"
+                                                    <img width="64" height="64" alt="" loading="lazy" class="w-64px dark-support rounded-10 border aspect-1"
                                                          src="{{ getStorageImages(path:$product->thumbnail_full_url, type: 'product') }}">
                                                 </div>
                                                 <div class="flex-grow-1">

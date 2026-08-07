@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ session()->get('direction') }}">
 <head>
+    <link rel="preconnect" href="https://fonts.cdnfonts.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+    <link rel="preconnect" href="https://www.google.com" crossorigin>
 
     <meta name="base-url" content="{{ url('/') }}">
     <meta property="og:site_name" content="{{ $web_config['company_name'] }}" />
@@ -21,7 +25,7 @@
     <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap.min.css') }}"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/css/bootstrap-icons.min.css') }}" media="print" onload="this.media='all'"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/plugins/magnific-popup-1.1.0/magnific-popup.css') }}" media="print" onload="this.media='all'" />
-    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/swiper/swiper-bundle.min.css') }}"/>
+    <link rel="stylesheet" href="{{ theme_asset('assets/plugins/swiper/swiper-bundle.min.css') }}" media="print" onload="this.media='all'"/>
     <link rel="stylesheet" href="{{ theme_asset('assets/plugins/sweet_alert/sweetalert2.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ theme_asset('assets/css/toastr.css') }}" media="print" onload="this.media='all'"/>
 
@@ -81,7 +85,7 @@
     setThemeMode();
 </script>
 <div class="preloader d--none" id="loading">
-    <img width="200" height="200" style="aspect-ratio: 1/1; object-fit: contain;" alt="" src="{{ getStorageImages(path: getWebConfig(name: 'loader_gif'), type: 'source', source: theme_asset('assets/img/loader.gif')) }}">
+    <img style="width: 200px !important; height: 200px !important; aspect-ratio: 1/1 !important; object-fit: contain !important;" alt="loader" src="{{ getStorageImages(path: getWebConfig(name: 'loader_gif'), type: 'source', source: theme_asset('assets/img/loader.gif')) }}">
 </div>
 @include('theme-views.layouts.partials._alert-message')
 @include('theme-views.layouts.partials._header')

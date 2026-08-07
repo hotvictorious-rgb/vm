@@ -22,8 +22,8 @@ if (!$customerOTPLogin && $customerManualLogin && $customerSocialLogin) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body px-4 px-sm-5">
-                <div class="mb-4 text-center">
-                    <img alt="" class="dark-support" width="200" style="height: auto !important;"
+                <div class="mb-4 text-center d-flex justify-content-center align-items-center" style="height: 60px;">
+                    <img alt="logo" class="dark-support" style="max-height: 100%; max-width: 200px; width: auto; height: auto; object-fit: contain;"
                         src="{{ getStorageImages(path: $web_config['web_logo'], type: 'logo') }}">
                 </div>
 
