@@ -67,11 +67,11 @@
                                                 $data['code'] = $countryCodeArr[0];
                                             }
                                         ?>
-                                        <img width="20" height="14"
+                                        <img width="16" height="11"
                                              src="{{ theme_asset('assets/img/flags/' . strtolower($data['code']).'.png') }}"
                                              class="dark-support" alt="{{ translate('Eng') }}"/>
                                         {{ ucwords($data['name']) }}
-                                    @endif
+                                     @endif
                                 @endforeach
                             </button>
                             <ul class="dropdown-menu bs-dropdown-min-width--10rem">
@@ -85,7 +85,7 @@
                                         ?>
                                         <li class="change-language" data-action="{{route('change-language')}}" data-language-code="{{$data['code']}}">
                                             <a class="d-flex gap-2 align-items-center" href="javascript:">
-                                                <img width="20" height="14" src="{{ theme_asset('assets/img/flags/' . strtolower($data['code']).'.png') }}"
+                                                <img width="16" height="11" src="{{ theme_asset('assets/img/flags/' . strtolower($data['code']).'.png') }}"
                                                      loading="lazy" class="dark-support" alt="{{$data['name']}}"/>
                                                 {{ ucwords($data['name']) }}
                                             </a>

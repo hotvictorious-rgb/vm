@@ -4,6 +4,7 @@
 <ul class="list-unstyled d-flex justify-content-around gap-3 mb-0 position-relative bg-white shadow-lg">
     <li>
         <a href="{{ route('home') }}"
+           aria-label="{{ translate('home') }}"
            class="d-flex align-items-center flex-column py-2 {{ (Request::is('/') || Request::is('home')) ? 'active' : '' }}">
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_8487_6234)">
@@ -22,6 +23,7 @@
     <li>
         @if(auth('customer')->check())
             <a href="{{ route('wishlists') }}"
+               aria-label="{{ translate('wishlist') }}"
                class="d-flex align-items-center flex-column  py-2 {{ Request::is('wishlists') ? 'active' : '' }}">
                 <div class="position-relative">
                     <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,7 +41,7 @@
                 </div>
             </a>
         @else
-            <a href="javascript:" class="d-flex align-items-center flex-column py-2" data-bs-toggle="modal"
+            <a href="javascript:" aria-label="{{ translate('wishlist') }}" class="d-flex align-items-center flex-column py-2" data-bs-toggle="modal"
                data-bs-target="#loginModal">
                 <div class="position-relative">
                     <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,6 +62,7 @@
         <div class="dropup position-static">
             <a
                 href="javascript"
+                aria-label="{{ translate('cart') }}"
                 class="d-flex align-items-center flex-column py-2 {{ Request::is('shop-cart') ? 'active' : '' }}"
                 data-toggle="collapse"
                 data-target="cart_dropdown"
@@ -240,6 +243,7 @@
     <li>
         @if(auth('customer')->check())
             <a href="{{ route('product-compare.index') }}"
+               aria-label="{{ translate('compare') }}"
                class="d-flex align-items-center flex-column py-2 {{ Request::is('compare-list') ? 'active' : '' }}">
                 <div class="position-relative">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -257,7 +261,7 @@
                 </div>
             </a>
         @else
-            <a href="javascript:" class="d-flex align-items-center flex-column py-2" data-bs-toggle="modal"
+            <a href="javascript:" aria-label="{{ translate('compare') }}" class="d-flex align-items-center flex-column py-2" data-bs-toggle="modal"
                data-bs-target="#loginModal">
                 <div class="position-relative">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

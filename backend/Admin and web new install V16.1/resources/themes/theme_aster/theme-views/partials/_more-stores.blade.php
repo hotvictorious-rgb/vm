@@ -90,7 +90,7 @@
                                             <div class="avatar rounded-circle hover-zoom-in">
                                                 <img class="dark-support img-fit rounded-circle img-w-h-80 border"
                                                      src="{{ getStorageImages(path: $seller?->shop?->image_full_url, type:'shop') }}"
-                                                     alt=""
+                                                     alt="{{ $seller?->shop?->name }}"
                                                      loading="lazy">
                                             </div>
                                             @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $seller->shop))
@@ -141,7 +141,7 @@
                                         <div class="avatar rounded-circle hover-zoom-in" style="--size: 80px;">
                                             <img class="dark-support img-fit rounded-circle img-w-h-80 border border-black-50"
                                                  src="{{ getStorageImages(path: $seller?->shop?->image_full_url, type:'shop') }}"
-                                                 alt=""
+                                                 alt="{{ $seller?->shop?->name }}"
                                                  loading="lazy">
                                         </div>
                                         @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $seller->shop))

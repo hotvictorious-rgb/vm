@@ -6,8 +6,8 @@
             <div class="row gy-3 align-items-center">
                 <div class="col-lg-3 col-sm-3">
                     <div class="d-flex justify-content-center justify-content-md-start">
-                        <img width="180" loading="lazy" alt="{{ translate('image') }}"
-                             class="max-height-45px w-auto img-fit"
+                        <img width="180" height="45" loading="lazy" alt="{{ translate('logo') }}"
+                             class="max-height-45px w-auto img-fit" style="aspect-ratio: 180/45; object-fit: contain;"
                              src="{{ getStorageImages(path: $web_config['footer_logo'], type:'logo') }}">
                     </div>
                 </div>
@@ -18,7 +18,7 @@
                             @foreach ($web_config['social_media'] as $item)
                                 <li>
                                     @if ($item->name == "twitter")
-                                        <a href="{{$item->link}}" target="_blank" class="font-bold">
+                                        <a href="{{$item->link}}" target="_blank" class="font-bold" aria-label="{{ $item->name }}">
                                             <svg width="18" height="18" viewBox="0 0 300 301" fill="none"
                                                  xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_2327_8364)">
@@ -35,11 +35,11 @@
                                             </svg>
                                         </a>
                                     @elseif($item->name == 'google-plus')
-                                        <a href="{{$item->link}}" target="_blank">
+                                        <a href="{{$item->link}}" target="_blank" aria-label="{{ $item->name }}">
                                             <i class="bi bi-google"></i>
                                         </a>
                                     @else
-                                        <a href="{{$item->link}}" target="_blank">
+                                        <a href="{{$item->link}}" target="_blank" aria-label="{{ $item->name }}">
                                             <i class="bi bi-{{$item->name}}"></i>
                                         </a>
                                     @endif
