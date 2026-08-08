@@ -780,7 +780,7 @@ class ProductController extends Controller
             'shipping_cost' => 'required_if:product_type,==,physical|gt:-1',
             'code' => 'required|min:6|max:20|regex:/^[a-zA-Z0-9]+$/|unique:products',
             'minimum_order_qty' => 'required|numeric|min:1',
-            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:30720',
+            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:20480',
         ], [
             'name.required' => translate('Product name is required!'),
             'unit.required_if' => translate('Unit is required!'),
@@ -1198,7 +1198,7 @@ class ProductController extends Controller
             'shipping_cost' => 'required_if:product_type,==,physical|gt:-1',
             'minimum_order_qty' => 'required|numeric|min:1',
             'code' => 'required|min:6|max:20|regex:/^[a-zA-Z0-9]+$/|unique:products,code,' . $product->id,
-            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:30720',
+            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:20480',
         ], [
             'name.required' => 'Product name is required!',
             'category_id.required' => 'category  is required!',

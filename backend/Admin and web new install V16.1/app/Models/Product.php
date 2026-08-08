@@ -471,11 +471,38 @@ class Product extends Model
                             $productName = $decoded[0]['value'] ?? 'Product Video';
                         }
                     }
-                    if (empty($productName)) {
+                    if (empty($productName) || !is_string($productName)) {
                         $productName = 'Product Video';
                     }
-                    
-                    $uploadedUrl = $youtubeService->uploadVideo(request()->file('product_video')->getRealPath(), $productName);
+
+                    $productDescription = $model->details;
+                    if (is_array($productDescription)) {
+                        $productDescription = $productDescription[array_search('en', request()->input('lang', []))] ?? '';
+                    } elseif (is_string($productDescription) && strpos($productDescription, '[') !== false) {
+                        $decoded = json_decode($productDescription, true);
+                        if (is_array($decoded)) {
+                            $productDescription = $decoded[0]['value'] ?? '';
+                        }
+                    }
+                    if (!is_string($productDescription)) {
+                        $productDescription = '';
+                    }
+
+                    $cleanDescription = trim(strip_tags($productDescription));
+                    $productSlug = $model->slug ?? \Illuminate\Support\Str::slug($productName);
+                    $productLink = route('product', $productSlug);
+
+                    $videoDescription = "Product: " . $productName . "\n\n";
+                    if ($cleanDescription) {
+                        $videoDescription .= $cleanDescription . "\n\n";
+                    }
+                    $videoDescription .= "Buy it here: " . $productLink;
+
+                    $uploadedUrl = $youtubeService->uploadVideo(
+                        request()->file('product_video')->getRealPath(),
+                        $productName,
+                        $videoDescription
+                    );
                     if ($uploadedUrl) {
                         $model->video_url = $uploadedUrl;
                         $model->video_provider = 'youtube';

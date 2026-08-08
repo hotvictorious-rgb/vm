@@ -62,7 +62,7 @@ class ProductUpdateRequest extends FormRequest
                 Rule::unique('products', 'code')->ignore($product->id, 'id'),
             ],
             'video_url' => 'nullable|url',
-            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:30720',
+            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:20480',
         ];
     }
 
@@ -81,7 +81,7 @@ class ProductUpdateRequest extends FormRequest
             'shipping_cost.required_if' => translate('Shipping Cost is required!'),
             'video_url.url' => translate('please_provide_a_valid_video_url'),
             'product_video.mimes' => translate('The_product_video_must_be_a_file_of_type:_mp4,_webm,_mov,_avi,_mkv.'),
-            'product_video.max' => translate('The_product_video_must_not_exceed_30MB.'),
+            'product_video.max' => translate('The_product_video_must_not_exceed_20MB.'),
         ];
     }
 

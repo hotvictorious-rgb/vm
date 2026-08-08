@@ -10,7 +10,7 @@
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="video_option" id="video_option_upload" value="upload">
                 <label class="form-check-label fw-semibold" for="video_option_upload">
-                    {{ translate('Upload_Video_File') }} <span class="text-info">({{ translate('Max_30MB,_1_Min') }})</span>
+                    {{ translate('Upload_Video_File') }} <span class="text-info">({{ translate('Max_20MB,_1_Min') }})</span>
                 </label>
             </div>
             <div class="form-check form-check-inline">
@@ -21,6 +21,7 @@
             </div>
         </div>
 
+        <!-- File Upload Section -->
         <div id="video_upload_section" class="d-none">
             <div class="mb-3">
                 <label class="form-label mb-0">
@@ -29,17 +30,17 @@
                 <span> ({{ translate('optional') }})</span>
             </div>
             <div class="custom-file text-left">
-                <input type="file" name="product_video" id="product_video_input" class="custom-file-input" accept=".mp4,.webm,.mov,.avi,.mkv" data-max-size="30">
+                <!-- File input will be submitted directly with the form -->
+                <input type="file" name="product_video" id="product_video_input" class="custom-file-input" accept=".mp4,.webm,.mov,.avi,.mkv" data-max-size="20">
                 <label class="custom-file-label" for="product_video_input">{{ translate('choose_file') }}</label>
             </div>
-            <div class="progress d-none mt-3" style="height: 10px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
-            </div>
+            
             <small class="form-text text-muted mt-2 d-block">
-                {{ translate('Supported formats: MP4, WebM. Maximum size: 30MB. Maximum duration: 60 seconds (1 minute). This will upload the video to YouTube and replace the existing product video.') }}
+                {{ translate('Supported formats: MP4, WebM. Maximum size: 20MB. Maximum duration: 60 seconds (1 minute). This will upload the video to YouTube and replace the existing product video.') }}
             </small>
         </div>
 
+        <!-- Pasted Link Section -->
         <div id="video_link_section">
             <div class="mb-3">
                 <label class="form-label mb-0">
@@ -47,7 +48,7 @@
                 </label>
                 <span> ({{ translate('optional') }})</span>
             </div>
-            <input type="text" value="{{ $product['video_url'] }}" name="video_url" id="video_url_input"
+            <input type="text" value="{{ $product['video_url'] }}" id="video_url_input"
                    placeholder="{{ translate('ex').': https://www.youtube.com/embed/5R06LRdUCSE' }}"
                    class="form-control">
             <p class="mt-1 mb-0 fs-12 text-muted">{{ translate('please_provide_embed_link_not_direct_link.') }}</p>
@@ -69,32 +70,37 @@
             if (optionUpload.checked) {
                 uploadSection.classList.remove('d-none');
                 linkSection.classList.add('d-none');
-                urlInput.value = ''; // Clear link input if uploading file
+                urlInput.name = ''; // Clear text input name to prevent conflict
+                videoInput.name = 'product_video'; // Restore file input name
             } else {
                 uploadSection.classList.add('d-none');
                 linkSection.classList.remove('d-none');
-                urlInput.value = initialVideoUrl; // Restore original URL when switching back
-                videoInput.value = ''; // Clear file input
+                urlInput.name = 'video_url'; // Set text input name
+                videoInput.name = ''; // Clear file input name to prevent uploading empty files
+                videoInput.value = '';
                 videoInput.nextElementSibling.innerText = "{{ translate('choose_file') }}";
+                urlInput.value = initialVideoUrl; // Restore original URL when switching back
             }
         }
 
         optionUpload.addEventListener('change', toggleSections);
         optionLink.addEventListener('change', toggleSections);
+        toggleSections(); // Run initially to align input names
 
+        // Frontend validation helper for selecting file (limits size/duration)
         videoInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Validate video size is <= 30MB
-            const maxSizeInBytes = 30 * 1024 * 1024;
+            // Validate video size is <= 20MB
+            const maxSizeInBytes = 20 * 1024 * 1024;
             if (file.size > maxSizeInBytes) {
-                toastr.error("{{ translate('Video file size exceeds 30MB! Please select a smaller file.') }}", {
+                toastr.error("{{ translate('Video file size exceeds 20MB! Please select a smaller file.') }}", {
                     CloseButton: true,
                     ProgressBar: true
                 });
-                videoInput.value = '';
-                videoInput.nextElementSibling.innerText = "{{ translate('choose_file') }}";
+                this.value = '';
+                this.nextElementSibling.innerText = "{{ translate('choose_file') }}";
                 return;
             }
 

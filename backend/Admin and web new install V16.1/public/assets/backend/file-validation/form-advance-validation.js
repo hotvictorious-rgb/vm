@@ -278,6 +278,12 @@ document.addEventListener('submit', async function (e) {
     const form = e.target.closest('.form-advance-validation.non-ajax-form-validate');
     if (!form) return;
 
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        e.preventDefault();
+        return false;
+    }
+
     e.preventDefault();
     if (formSubmitting.has(form)) return false;
 
@@ -296,6 +302,16 @@ document.addEventListener('submit', async function (e) {
     }
 
     formSubmitting.delete(form);
+    const submitBtn = form.querySelector('button[type="submit"], .product-add-requirements-check');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        const videoInput = form.querySelector('input[type="file"][accept*="video"], input[type="file"][id*="video"], input[type="file"][name="product_video"]');
+        if (videoInput && videoInput.files && videoInput.files.length > 0) {
+            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Saving product & uploading video... Please wait.`;
+        } else {
+            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Saving product...`;
+        }
+    }
     HTMLFormElement.prototype.submit.call(form);
 });
 

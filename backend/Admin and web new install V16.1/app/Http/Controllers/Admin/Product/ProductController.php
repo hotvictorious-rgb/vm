@@ -1111,5 +1111,4 @@ class ProductController extends BaseController
         ];
         return Excel::download(new RestockProductListExport($data), 'restock-product-list.xlsx');
     }
-
 }
