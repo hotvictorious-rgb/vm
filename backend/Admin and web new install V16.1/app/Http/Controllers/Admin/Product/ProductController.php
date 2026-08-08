@@ -158,7 +158,7 @@ class ProductController extends BaseController
         $productWiseTax = $taxData['productWiseTax'] && !$taxData['is_included'];
         $taxVats = $taxData['taxVats'];
 
-        $categories = $this->categoryRepo->getListWhere(filters: ['position' => 0], dataLimit: 'all');
+        $categories = $this->categoryRepo->getListWhere(filters: ['position' => 0], relations: ['childes.childes'], dataLimit: 'all');
         $brands = $this->brandRepo->getListWhere(dataLimit: 'all');
         $brandSetting = getWebConfig(name: 'product_brand');
         $digitalProductSetting = getWebConfig(name: 'digital_product');
@@ -259,7 +259,7 @@ class ProductController extends BaseController
         $productPublishingHouseIds = $this->productService->getProductPublishingHouseInfo(product: $product)['ids'];
 
         $product['colors'] = json_decode($product['colors']);
-        $categories = $this->categoryRepo->getListWhere(filters: ['position' => 0], dataLimit: 'all');
+        $categories = $this->categoryRepo->getListWhere(filters: ['position' => 0], relations: ['childes.childes'], dataLimit: 'all');
         $brands = $this->brandRepo->getListWhere(dataLimit: 'all');
         $brandSetting = getWebConfig(name: 'product_brand');
         $digitalProductSetting = getWebConfig(name: 'digital_product');

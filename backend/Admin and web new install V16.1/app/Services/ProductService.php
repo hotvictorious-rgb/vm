@@ -513,6 +513,12 @@ class ProductService
 
     public function getAddProductData(object $request, string $addedBy, int|string $shopId): array
     {
+        if (!$request->hasFile('image') && $request->hasFile('images')) {
+            $files = $request->file('images');
+            if (count($files) > 0) {
+                $request->files->set('image', $files[0]);
+            }
+        }
         $storage = config('filesystems.disks.default') ?? 'public';
         $processedImages = $this->getProcessedImages(request: $request); //once the images are processed do not call this function again just use the variable
         $combinations = $this->getCombinations($this->getOptions(request: $request));
@@ -585,6 +591,12 @@ class ProductService
 
     public function getUpdateProductData(object $request, object $product, string $updateBy): array
     {
+        if (!$request->hasFile('image') && $request->hasFile('images')) {
+            $files = $request->file('images');
+            if (count($files) > 0) {
+                $request->files->set('image', $files[0]);
+            }
+        }
         $storage = config('filesystems.disks.default') ?? 'public';
         $processedImages = $this->getProcessedUpdateImages(request: $request, product: $product);
         $combinations = $this->getCombinations($this->getOptions(request: $request));

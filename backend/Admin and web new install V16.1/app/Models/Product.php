@@ -459,6 +459,37 @@ class Product extends Model
         parent::boot();
 
         static::saving(function ($model) {
+            // Auto-populate SEO/Meta fields from product details if not specified
+            if (empty($model->meta_title)) {
+                $pName = $model->name;
+                if (is_array($pName)) {
+                    $pName = $pName[array_search('en', request()->input('lang', []))] ?? 'Product';
+                } elseif (is_string($pName) && strpos($pName, '[') !== false) {
+                    $decoded = json_decode($pName, true);
+                    if (is_array($decoded)) {
+                        $pName = $decoded[0]['value'] ?? 'Product';
+                    }
+                }
+                $model->meta_title = is_string($pName) ? substr(trim(strip_tags($pName)), 0, 100) : 'Product';
+            }
+
+            if (empty($model->meta_description)) {
+                $pDesc = $model->details;
+                if (is_array($pDesc)) {
+                    $pDesc = $pDesc[array_search('en', request()->input('lang', []))] ?? '';
+                } elseif (is_string($pDesc) && strpos($pDesc, '[') !== false) {
+                    $decoded = json_decode($pDesc, true);
+                    if (is_array($decoded)) {
+                        $pDesc = $decoded[0]['value'] ?? '';
+                    }
+                }
+                $model->meta_description = is_string($pDesc) ? substr(trim(strip_tags($pDesc)), 0, 160) : '';
+            }
+
+            if (empty($model->meta_image)) {
+                $model->meta_image = $model->thumbnail;
+            }
+
             if (request()->hasFile('product_video')) {
                 $youtubeService = resolve(\App\Services\YouTubeService::class);
                 if ($youtubeService->hasCredentials()) {

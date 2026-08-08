@@ -335,6 +335,21 @@ class AddProductImageController extends ChangeNotifier {
     }
   }
 
+  void removeThumbnail() {
+    _selectedLogoFile = null;
+    thumbnailImageModel = null;
+    notifyListeners();
+  }
+
+  void promoteToThumbnail(int index) {
+    if (index >= 0 && index < withoutColor.length) {
+      _selectedLogoFile = withoutColor[index].image;
+      thumbnailImageModel = ImageModel(type: 'thumbnail', color: '', image: _selectedLogoFile);
+      withoutColor.removeAt(index);
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteProductImage(String id, String name, String? color, {bool updateProductImage = true, bool isCheckError = true}) async {
     //_isLoading = true;
     ApiResponse apiResponse = await shopServiceInterface.deleteProductImage(id, name, color);

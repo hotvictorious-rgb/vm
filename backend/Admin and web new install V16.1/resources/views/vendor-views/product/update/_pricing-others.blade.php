@@ -136,7 +136,7 @@
                             </div>
                         @endif
 
-                        <div class="col-md-6 col-lg-4 physical_product_show" id="shipping_cost">
+                        <div class="col-md-6 col-lg-4 physical_product_show d-none" id="shipping_cost">
                             <div class="form-group mb-0">
                                 <div class="d-flex gap-2">
                                     <label class="title-color">
@@ -157,7 +157,7 @@
                                         name="shipping_cost" class="form-control" required>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-4 physical_product_show" id="shipping_cost_multi">
+                        <div class="col-md-6 col-lg-4 physical_product_show d-none" id="shipping_cost_multi">
                             <div class="form-group mb-0">
                                 <div class="d-flex gap-2">
                                     <label class="title-color text-capitalize"

@@ -143,7 +143,7 @@
                             </div>
                         @endif
 
-                        <div class="col-md-6 col-lg-4 show-for-physical-product" id="shipping_cost">
+                        <div class="col-md-6 col-lg-4 show-for-physical-product d-none" id="shipping_cost">
                             <div class="form-group">
                                 <label class="form-label">
                                     {{ translate('Shipping_Cost') }}
@@ -162,7 +162,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4 show-for-physical-product" id="shipping_cost_multi">
+                        <div class="col-md-6 col-lg-4 show-for-physical-product d-none" id="shipping_cost_multi">
                             <div class="form-group">
                                 <label class="form-label" for="shipping_cost">
                                    {{ translate('shipping_cost_multiply_with_quantity') }}

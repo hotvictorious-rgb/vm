@@ -10,7 +10,10 @@
             @include("admin-views.product.add._title-description")
         </div>
         <div class="col-lg-4">
-            @include("admin-views.product.add._product-thumbnail")
+            @include("admin-views.product.add._additional-images")
+            <div class="d-none">
+                @include("admin-views.product.add._product-thumbnail")
+            </div>
         </div>
     </div>
 </div>

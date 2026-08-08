@@ -133,55 +133,12 @@
                                 </div>
                             </div>
                         @endif
-
-                        <div class="col-md-6 col-lg-4 show-for-physical-product" id="shipping_cost">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    {{ translate('Shipping_Cost') }}
-                                    <span class="input-required-icon">*</span>
-                                    ({{ getCurrencySymbol(currencyCode: getCurrencyCode()) }})
-                                    <span class="tooltip-icon cursor-pointer" data-bs-toggle="tooltip"
-                                          aria-label="{{ translate('set_the_shipping_cost_for_this_product_here._Shipping_cost_will_only_be_applicable_if_product-wise_shipping_is_enabled.') }}"
-                                          data-bs-title="{{ translate('set_the_shipping_cost_for_this_product_here._Shipping_cost_will_only_be_applicable_if_product-wise_shipping_is_enabled.') }}"
-                                    >
-                                        <i class="fi fi-sr-info"></i>
-                                    </span>
-                                </label>
-                                <input type="number" min="0" value="0" step="1"
-                                       placeholder="{{ translate('shipping_cost') }}" name="shipping_cost" id="shipping_cost_input" data-required-msg="{{ translate('shipping_cost_is_required') }}"
-                                       class="form-control" required>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4 show-for-physical-product" id="shipping_cost_multi">
-                            <div class="form-group">
-                                <label class="form-label" for="shipping_cost">
-                                    {{ translate('shipping_cost_multiply_with_quantity') }}
-                                    <span class="tooltip-icon cursor-pointer" data-bs-toggle="tooltip"
-                                      title="{{ translate('if_enabled,_the_shipping_charge_will_increase_with_the_product_quantity') }}">
-                                        <i class="fi fi-sr-info"></i>
-                                    </span>
-                                </label>
-
-                                <div
-                                    class="form-control min-h-40 d-flex align-items-center flex-wrap justify-content-between gap-2">
-                                    <label class="form-label mb-0">
-                                        {{ translate('Status') }}
-                                    </label>
-                                    <div>
-                                        <label class="switcher">
-                                            <input type="checkbox" class="switcher_input" name="multiply_qty" id="is_shipping_cost_multil">
-                                            <span class="switcher_control"></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="hidden" name="shipping_cost" value="0">
+                        <input type="hidden" name="multiply_qty" value="0">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 

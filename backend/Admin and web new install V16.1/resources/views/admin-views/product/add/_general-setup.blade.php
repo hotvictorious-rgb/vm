@@ -47,57 +47,44 @@
 
                         <div class="col-md-6 col-lg-4">
                             <div class="form-group">
-                                <label for="name" class="form-label">
+                                <label for="category_id_selector" class="form-label">
                                     {{ translate('category') }}
                                     <span class="input-required-icon">*</span>
                                 </label>
-                                <select class="custom-select action-get-request-onchange" name="category_id" id="category_id"
-                                        data-url-prefix="{{ url('/admin/products/get-categories?parent_id=') }}"
-                                        data-element-id="sub-category-select"
-                                        data-element-type="select"
-                                        data-placeholder="{{ translate('select_category') }}"
-                                        data-required-msg="{{ translate('category_name_is_required') }}"
-                                        required>
-                                    <option value="{{ old('category_id') }}" selected disabled>
-                                        {{ translate('select_category') }}
-                                    </option>
+                                <select class="custom-select js-select2-custom" id="category_id_selector" required>
+                                    <option value="" selected disabled>{{ translate('select_category') }}</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category['id'] }}"
-                                            {{ old('name') == $category['id'] ? 'selected' : '' }}>
+                                        <option value="{{ $category['id'] }}" data-type="category" data-category="{{ $category['id'] }}"
+                                            {{ (isset($product) && $product['category_id'] == $category['id'] && !$product['sub_category_id']) ? 'selected' : '' }}>
                                             {{ $category['defaultName'] }}
                                         </option>
+                                        @foreach ($category->childes as $subCategory)
+                                            <option value="{{ $subCategory['id'] }}" data-type="sub_category" data-category="{{ $category['id'] }}" data-sub-category="{{ $subCategory['id'] }}"
+                                                {{ (isset($product) && $product['sub_category_id'] == $subCategory['id'] && !$product['sub_sub_category_id']) ? 'selected' : '' }}>
+                                                &nbsp;&nbsp;&mdash;&nbsp;{{ $subCategory['defaultName'] }}
+                                            </option>
+                                            @foreach ($subCategory->childes as $subSubCategory)
+                                                <option value="{{ $subSubCategory['id'] }}" data-type="sub_sub_category" data-category="{{ $category['id'] }}" data-sub-category="{{ $subCategory['id'] }}" data-sub-sub-category="{{ $subSubCategory['id'] }}"
+                                                    {{ (isset($product) && $product['sub_sub_category_id'] == $subSubCategory['id']) ? 'selected' : '' }}>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&bull;&bull;&nbsp;{{ $subSubCategory['defaultName'] }}
+                                                </option>
+                                            @endforeach
+                                        @endforeach
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="form-group">
-                                <label for="name" class="form-label">{{ translate('sub_Category') }}</label>
-                                <select class="custom-select action-get-request-onchange" name="sub_category_id"
-                                        id="sub-category-select"
-                                        data-url-prefix="{{ url('/admin/products/get-categories?parent_id=') }}"
-                                        data-element-id="sub-sub-category-select"
-                                        data-element-type="select"
-                                        data-placeholder="{{ translate('select_Sub_Category') }}"
-                                >
-                                    <option value="{{ null }}" selected disabled>
-                                        {{ translate('select_Sub_Category') }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="form-group">
-                                <label for="name" class="form-label">{{ translate('sub_Sub_Category') }}</label>
-                                <select class="custom-select" name="sub_sub_category_id"
-                                        id="sub-sub-category-select"
-                                        data-placeholder="{{ translate('select_Sub_Sub_Category') }}"
-                                >
-                                    <option value="{{ null }}" selected disabled>
-                                        {{ translate('select_Sub_Sub_Category') }}
-                                    </option>
-                                </select>
-                            </div>
+
+                        <!-- Keep the original select fields hidden, so standard JS forms/dependencies remain unbroken -->
+                        <div class="d-none">
+                            <input type="hidden" name="category_id" id="category_id_hidden" value="{{ $product['category_id'] ?? '' }}">
+                            <input type="hidden" name="sub_category_id" id="sub_category_id_hidden" value="{{ $product['sub_category_id'] ?? '' }}">
+                            <input type="hidden" name="sub_sub_category_id" id="sub_sub_category_id_hidden" value="{{ $product['sub_sub_category_id'] ?? '' }}">
+
+                            <!-- Dummy selects to avoid any JS runtime crashes -->
+                            <select id="category_id"><option value=""></option></select>
+                            <select id="sub-category-select"><option value=""></option></select>
+                            <select id="sub-sub-category-select"><option value=""></option></select>
                         </div>
                         @if($brandSetting)
                             <div class="col-md-6 col-lg-4 show-for-physical-product">
@@ -232,4 +219,37 @@
         </div>
     </div>
 </div>
+
+
+@push('script')
+<script>
+    $(document).ready(function() {
+        function updateHiddenCategoryFields() {
+            var selectedOption = $('#category_id_selector').find('option:selected');
+            if (selectedOption.length) {
+                var type = selectedOption.data('type');
+                var catId = selectedOption.data('category') || '';
+                var subCatId = selectedOption.data('sub-category') || '';
+                var subSubCatId = selectedOption.data('sub-sub-category') || '';
+
+                $('#category_id_hidden').val(catId);
+                $('#sub_category_id_hidden').val(subCatId);
+                $('#sub_sub_category_id_hidden').val(subSubCatId);
+
+                // Also populate the dummy selects to keep old JS validation happy
+                $('#category_id').val(catId);
+                $('#sub-category-select').val(subCatId);
+                $('#sub-sub-category-select').val(subSubCatId);
+            }
+        }
+
+        $('#category_id_selector').on('change', function() {
+            updateHiddenCategoryFields();
+        });
+
+        // Initialize on page load
+        updateHiddenCategoryFields();
+    });
+</script>
+@endpush
 

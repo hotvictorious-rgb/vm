@@ -37,6 +37,15 @@ import 'package:sixvalley_vendor_app/common/basewidgets/custom_snackbar_widget.d
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/digital_product_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/select_category_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/title_and_description_widget.dart';
+import 'package:textfield_tags/textfield_tags.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+import 'package:sixvalley_vendor_app/features/addProduct/widgets/attribute_view_widget.dart';
+import 'package:sixvalley_vendor_app/features/addProduct/widgets/attribute_pricing_widget.dart';
+import 'package:sixvalley_vendor_app/features/addProduct/widgets/color_variation_image_widget.dart';
+import 'package:sixvalley_vendor_app/features/addProduct/widgets/product_discount_text_field_widget.dart';
+import 'package:sixvalley_vendor_app/helper/price_converter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:sixvalley_vendor_app/features/shop/controllers/shop_controller.dart';
 
 class AddProductScreen extends StatefulWidget {
   final Product? product;
@@ -65,7 +74,18 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
   FocusNode _authorFocus = FocusNode();
   final ScrollController _scrollController = ScrollController();
   double optionHeight = 0;
-  late List<int?> brandIds;
+  List<int?> brandIds = [];
+
+  final FocusNode _discountNode = FocusNode();
+  final FocusNode _shippingCostNode = FocusNode();
+  final FocusNode _unitPriceNode = FocusNode();
+  final FocusNode _totalQuantityNode = FocusNode();
+  final FocusNode _minimumOrderQuantityNode = FocusNode();
+  final TextEditingController _discountController = TextEditingController();
+  final TextEditingController _taxController = TextEditingController();
+  final TextEditingController _colorVariationController = TextEditingController();
+  List<String> tagList = [];
+  TextfieldTagsController? _controller;
 
 
   Future<void> _load() async {
@@ -141,6 +161,10 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
     _load();
     length = Provider.of<SplashController>(context,listen: false).configModel!.languageList!.length;
     Provider.of<VariationController>(context, listen: false).initColorCode();
+    _taxController.text = '0';
+    _discountController.text = '0';
+    _controller = TextfieldTagsController();
+
     if(widget.product != null) {
       unitValue = widget.product!.unit;
       Provider.of<AddProductController>(context,listen: false).productCode.text = widget.product!.code ?? '123456';
@@ -149,6 +173,25 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
       Provider.of<AddProductController>(context,listen: false).setValueForUnit(widget.product!.unit.toString()) ;
       Provider.of<AddProductController>(context,listen: false).setProductTypeIndex(widget.product!.productType == "physical" ? 0 : 1, false);
       Provider.of<DigitalProductController>(context,listen: false).setDigitalProductTypeIndex(widget.product!.digitalProductType == "ready_after_sell"? 0 : 1, false);
+      
+      addProductController.unitPriceController.text = PriceConverter.convertPriceWithoutSymbol(context, widget.product!.unitPrice);
+      _taxController.text = widget.product!.tax.toString();
+      Provider.of<VariationController>(context, listen: false).setCurrentStock(widget.product!.currentStock.toString());
+      addProductController.shippingCostController.text = PriceConverter.convertPriceWithoutSymbol(context, widget.product!.shippingCost);
+      addProductController.minimumOrderQuantityController.text = widget.product!.minimumOrderQty.toString();
+      Provider.of<AddProductController>(context, listen: false).setDiscountTypeIndex(widget.product!.discountType == 'percent' ? 0 : 1, false);
+      _discountController.text = widget.product!.discountType == 'percent' ? widget.product!.discount.toString() : PriceConverter.convertPriceWithoutSymbol(context, widget.product!.discount);
+      Provider.of<AddProductController>(context, listen: false).setTaxTypeIndex(widget.product!.taxModel == 'include' ? 0 : 1, false);
+      Provider.of<AddProductTaxController>(Get.context!,listen: false).setProductVatTax(widget.product?.taxVats);
+      
+      if((widget.product?.variation != null && widget.product!.variation!.isNotEmpty) || (widget.product?.digitalVariation != null && widget.product!.digitalVariation!.isNotEmpty) || (widget.product!.colors != null && widget.product!.colors!.isNotEmpty)) {
+        Provider.of<AddProductController>(context, listen: false).setIsAttributeActive(true, notify: false);
+      }
+      if(widget.product!.tags != null) {
+        for(int i = 0; i< widget.product!.tags!.length; i++){
+          tagList.add(widget.product!.tags![i].tag!);
+        }
+      }
       if(widget.product!.productType == 'digital') {
         Provider.of<DigitalProductController>(context,listen: false).setAuthorPublishingData(widget.product!);
       }
@@ -331,95 +374,174 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                         children: [
                                           Row(
                                             children: [
-                                              Text(getTranslated('upload_thumbnail', context)!,
+                                              Text(getTranslated('product_images', context)!,
                                                 style: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge?.color)
                                               ),
                                               SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                                              Text('*',style: robotoBold.copyWith(color: Theme.of(context).colorScheme.error,
-                                                fontSize: Dimensions.fontSizeDefault),
-                                              ),
+                                              Text('*', style: robotoBold.copyWith(color: Theme.of(context).colorScheme.error, fontSize: Dimensions.fontSizeDefault)),
                                             ],
                                           ),
                                           SizedBox(height: Dimensions.paddingSizeSmall),
-
                                           Consumer<AddProductImageController>(
-                                            builder: (context, addProductImageController, child){
-                                              return DottedBorder(
-                                                options: RoundedRectDottedBorderOptions (
-                                                  dashPattern: const [4,5],
-                                                  color: Theme.of(context).hintColor,
-                                                  radius: const Radius.circular(Dimensions.radiusDefault),
+                                            builder: (context, addProductImageController, child) {
+                                              List<dynamic> allPhotos = [];
+                                              if (addProductImageController.selectedLogoFile != null) {
+                                                allPhotos.add(addProductImageController.selectedLogoFile);
+                                              } else if (widget.product?.thumbnailFullUrl?.path != null && widget.product!.thumbnailFullUrl!.path!.isNotEmpty) {
+                                                allPhotos.add(widget.product!.thumbnailFullUrl!.path);
+                                              }
+
+                                              if (addProductImageController.imagesWithoutColor.isNotEmpty) {
+                                                allPhotos.addAll(addProductImageController.imagesWithoutColor);
+                                              }
+
+                                              if (addProductImageController.withoutColor.isNotEmpty) {
+                                                allPhotos.addAll(addProductImageController.withoutColor.map((img) => img.image));
+                                              }
+
+                                              return GridView.builder(
+                                                shrinkWrap: true,
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 3,
+                                                  crossAxisSpacing: 8,
+                                                  mainAxisSpacing: 8,
+                                                  childAspectRatio: 1,
                                                 ),
-                                                child: Stack(
-                                                  children: [
-                                                    Container(
-                                                      width: double.infinity,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
-                                                      ),
-                                                      child: Align(alignment: Alignment.center, child: Stack(children: [
-                                                        Padding(
-                                                          padding: const EdgeInsets.all(0),
-                                                          child: ClipRRect(
-                                                            borderRadius: BorderRadius.circular(0),
-                                                            child: addProductImageController.selectedLogoFile != null ?  Image.file(File(addProductImageController.selectedLogoFile!.path),
-                                                              width: 150, height: 150, fit: BoxFit.cover,
-                                                            ) : widget.product != null ? FadeInImage.assetNetwork(
-                                                              placeholder: Images.placeholderImage,
-                                                              image: widget.product!.thumbnailFullUrl?.path ?? '',
-                                                              height: 150, width: 150, fit: BoxFit.cover,
-                                                              imageErrorBuilder: (c, o, s) => Image.asset(Images.placeholderImage,
-                                                                  height: 150, width: 150, fit: BoxFit.cover, color: Theme.of(context).highlightColor),
-                                                            ) : Image.asset(Images.placeholderImage, height: 150,
-                                                              width: 150, fit: BoxFit.cover, color: Theme.of(context).highlightColor,),
-                                                          ),
-                                                        ),
-                                                      ])
-                                                      ),
-                                                    ),
+                                                itemCount: allPhotos.length + 1,
+                                                itemBuilder: (context, index) {
+                                                  if (index < allPhotos.length) {
+                                                    final photo = allPhotos[index];
+                                                    final bool isCover = index == 0;
 
-                                                    Positioned(bottom: 0, right: 0, top: 0, left: 0,
-                                                      child: InkWell(
-                                                        splashColor: Colors.transparent,
-                                                        onTap: () => addProductImageController.pickImage(true,false, false, null, isAddProduct: widget.product == null),
-                                                        child: Container(
-                                                          width: double.infinity,
+                                                    return Stack(
+                                                      children: [
+                                                        Container(
                                                           decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
+                                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                            border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.2)),
                                                           ),
-                                                          child: (addProductImageController.selectedLogoFile == null && (widget.product?.thumbnailFullUrl?.path == null || widget.product!.thumbnailFullUrl?.path == '')) ?
-                                                          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                            CustomAssetImageWidget(Images.addImageIcon, height: 30, width: 30, color: Theme.of(context).hintColor.withValues(alpha: .7)),
-
-                                                            Text(getTranslated('click_to_add', context)!, style: robotoRegular.copyWith(color: Theme.of(context).hintColor.withValues(alpha: .7),))
-                                                          ],) : const SizedBox.shrink(),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                                            child: photo is String
+                                                                ? CustomImageWidget(
+                                                                    image: photo,
+                                                                    width: double.infinity,
+                                                                    height: double.infinity,
+                                                                    fit: BoxFit.cover,
+                                                                  )
+                                                                : Image.file(
+                                                                    File(photo.path),
+                                                                    width: double.infinity,
+                                                                    height: double.infinity,
+                                                                    fit: BoxFit.cover,
+                                                                  ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-
-                                                    if (addProductImageController.selectedLogoFile  != null || (widget.product?.thumbnailFullUrl?.path?.isNotEmpty ?? false))
-                                                      Positioned(right: 10, top: 10,
-                                                        child: SizedBox(width: 25, height: 25,
-                                                          child: InkWell(
-                                                            onTap: () {
-                                                              addProductImageController.pickImage(true,false, false, null, isAddProduct: widget.product == null);
-                                                            },
-                                                            child: const Column(
-                                                              mainAxisSize: MainAxisSize.min,
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                CustomAssetImageWidget(Images.editImageIcon, height: 25, width: 25),
-                                                              ],
+                                                        if (isCover)
+                                                          Positioned(
+                                                            bottom: 0,
+                                                            left: 0,
+                                                            right: 0,
+                                                            child: Container(
+                                                              color: Colors.black.withOpacity(0.6),
+                                                              padding: const EdgeInsets.symmetric(vertical: 2),
+                                                              child: const Text(
+                                                                "Cover",
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 10,
+                                                                  fontWeight: FontWeight.bold,
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
-                                                        )
+                                                        Positioned(
+                                                          top: 4,
+                                                          right: 4,
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              if (isCover) {
+                                                                if (addProductImageController.withoutColor.isNotEmpty) {
+                                                                  addProductImageController.promoteToThumbnail(0);
+                                                                } else {
+                                                                  addProductImageController.removeThumbnail();
+                                                                }
+                                                              } else {
+                                                                if (photo is String) {
+                                                                  addProductImageController.deleteProductImage(
+                                                                    '${widget.product?.id}',
+                                                                    _getFilenameFromFullImagePath(photo),
+                                                                    null,
+                                                                  );
+                                                                } else {
+                                                                  int localIdx = addProductImageController.withoutColor.indexWhere((img) => img.image == photo);
+                                                                  if (localIdx != -1) {
+                                                                    addProductImageController.removeImage(localIdx, false);
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            child: Container(
+                                                              decoration: const BoxDecoration(
+                                                                color: Colors.red,
+                                                                shape: BoxShape.circle,
+                                                              ),
+                                                              padding: const EdgeInsets.all(4),
+                                                              child: const Icon(
+                                                                Icons.close,
+                                                                color: Colors.white,
+                                                                size: 14,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  } else {
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        final hasThumbnail = addProductImageController.selectedLogoFile != null ||
+                                                            (widget.product?.thumbnailFullUrl?.path != null && widget.product!.thumbnailFullUrl!.path!.isNotEmpty);
+                                                        if (!hasThumbnail) {
+                                                          addProductImageController.pickImage(true, false, false, null, isAddProduct: widget.product == null);
+                                                        } else {
+                                                          addProductImageController.pickImage(false, false, false, null, isAddProduct: widget.product == null);
+                                                        }
+                                                      },
+                                                      child: DottedBorder(
+                                                        options: RoundedRectDottedBorderOptions(
+                                                          dashPattern: const [4, 5],
+                                                          color: Theme.of(context).hintColor,
+                                                          radius: const Radius.circular(Dimensions.radiusDefault),
+                                                        ),
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Icon(
+                                                                Icons.add_photo_alternate_outlined,
+                                                                color: Theme.of(context).hintColor,
+                                                                size: 28,
+                                                              ),
+                                                              const SizedBox(height: 4),
+                                                              Text(
+                                                                getTranslated('add_photo', context)!,
+                                                                style: robotoRegular.copyWith(
+                                                                  fontSize: Dimensions.fontSizeSmall,
+                                                                  color: Theme.of(context).hintColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
                                                       ),
-
-                                                  ],
-                                                ),
+                                                    );
+                                                  }
+                                                },
                                               );
-                                            }
+                                            },
                                           ),
                                           SizedBox(height: Dimensions.paddingSizeSmall),
 
@@ -939,193 +1061,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                             const SizedBox(height: Dimensions.paddingSizeDefault),
 
 
-                            AddProductSectionWidget(
-                              title: getTranslated('additional_product_images', context)!,
-                              subTitle: getTranslated('upload_any_additional_images_for', context)!,
-                              childrens: <Widget>[
-                                if(_update)
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
-                                    child: Consumer<VariationController>(
-                                      builder: (context, variationController, _) {
-                                        List<int> colors = [];
-
-
-                                        if (_update && variationController.attributeList != null &&
-                                            variationController.attributeList!.isNotEmpty) {
-                                          if(addColor==0) {
-                                            addColor++;
-                                            if ( widget.product!.colors != null && widget.product!.colors!.isNotEmpty) {
-                                              Future.delayed(Duration.zero, () async {
-                                                Provider.of<VariationController>(Get.context!, listen: false).setAttribute();
-                                              });
-                                            }
-                                            for (int index = 0; index < widget.product!.colors!.length; index++) {
-                                              colors.add(index);
-                                              Future.delayed(Duration.zero, () async {
-                                                variationController.addVariant(Get.context!, 0, widget.product!.colors![index].name, widget.product, false);
-                                                variationController.addColorCode(widget.product!.colors![index].code, index: index);
-                                              });
-                                            }
-                                          }
-                                        }
-
-                                        return Consumer<AddProductImageController>(
-                                          builder: (context, addProductImageController, _) {
-                                            return GridView.builder(
-                                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                                childAspectRatio: 1,
-                                                crossAxisCount: 2,
-                                                crossAxisSpacing: 10,
-                                                mainAxisSpacing: 10),
-                                              shrinkWrap: true,
-                                              physics: const NeverScrollableScrollPhysics(),
-                                              itemCount: addProductImageController.imagesWithoutColor.length,
-                                              itemBuilder: (BuildContext context, index){
-                                                return Stack(children: [
-                                                  DottedBorder(
-                                                    options: RoundedRectDottedBorderOptions (
-                                                      dashPattern: const [4,5],
-                                                      color: Theme.of(context).hintColor,
-                                                      radius: const Radius.circular(15),
-                                                    ),
-                                                    child: Container(
-                                                      decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(20))),
-                                                      child: ClipRRect(
-                                                        borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeSmall)),
-                                                        child: CustomImageWidget(
-                                                          image: addProductImageController.imagesWithoutColor[index],
-                                                          width: MediaQuery.of(context).size.width/2.3,
-                                                          height: MediaQuery.of(context).size.width/2.3,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-
-                                                  Positioned(top: 5, right : 5, child: InkWell(
-                                                    splashColor: Colors.transparent,
-                                                    onTap : () => addProductImageController.deleteProductImage(
-                                                      '${widget.product?.id}',
-                                                      _getFilenameFromFullImagePath(addProductImageController.imagesWithoutColor[index]),
-                                                      null,
-                                                    ),
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        boxShadow: [BoxShadow(
-                                                          color: Theme.of(context).hintColor.withValues(alpha:.25),
-                                                          blurRadius: 1,
-                                                          spreadRadius: 1,
-                                                          offset: const Offset(0,0),
-                                                        )],
-                                                        borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeDefault)),
-                                                      ),
-                                                      child: const Padding(
-                                                        padding: EdgeInsets.all(4.0),
-                                                        child: Icon(Icons.delete_forever_rounded,color: Colors.red,size: 25,),
-                                                      ),
-                                                    ),
-                                                  )),
-                                                ]);
-                                              });
-                                          }
-                                        );
-                                      }
-                                    ),
-                                  ),
-
-                                  Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
-                                  child: Consumer<AddProductImageController>(
-                                      builder: (context, addProductImageController, child) {
-                                        return GridView.builder(
-                                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                              childAspectRatio: 1,
-                                              crossAxisCount: 2,
-                                              crossAxisSpacing: 10,
-                                              mainAxisSpacing: 10,
-                                            ),
-                                            shrinkWrap: true,
-                                            physics: const NeverScrollableScrollPhysics(),
-                                            itemCount: addProductImageController.withoutColor.length + 1,
-                                            itemBuilder: (BuildContext context, index){
-                                              return index == addProductImageController.withoutColor.length ?
-                                              GestureDetector(
-                                                onTap: ()=> addProductImageController.pickImage(false, false, false, null),
-                                                child: Stack(children: [
-                                                  DottedBorder(
-                                                    options: RoundedRectDottedBorderOptions (
-                                                      dashPattern: const [4,5],
-                                                      color: Theme.of(context).hintColor,
-                                                      radius: const Radius.circular(15),
-                                                    ),
-                                                    child: ClipRRect(
-                                                      borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-                                                      child:  Image.asset(Images.placeholderImage, height: MediaQuery.of(context).size.width/2.3,
-                                                        width: MediaQuery.of(context).size.width/2.3, fit: BoxFit.cover, color: Theme.of(context).highlightColor,),
-                                                    ),
-                                                  ),
-
-
-                                                  Positioned(bottom: 0, right: 0, top: 0, left: 0,
-                                                    child: Align(
-                                                      alignment: Alignment.center,
-                                                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                                        CustomAssetImageWidget(Images.addImageIcon, height: 30, width: 30, color: Theme.of(context).hintColor.withValues(alpha: .7)),
-
-                                                        const SizedBox(height: Dimensions.paddingSizeSmall),
-                                                        Text(getTranslated('click_to_add', context)!, style: robotoRegular.copyWith(color: Theme.of(context).textTheme.headlineMedium?.color))
-                                                      ]),
-                                                    ),
-                                                  ),
-
-
-                                                ],
-                                                ),
-                                              ) :
-                                              Stack(children: [
-                                                DottedBorder(
-                                                  options: RoundedRectDottedBorderOptions (
-                                                    dashPattern: const [4,5],
-                                                    color: Theme.of(context).hintColor,
-                                                    radius: const Radius.circular(15),
-                                                  ),
-                                                  child: Container(
-                                                    decoration: const BoxDecoration(color: Colors.white,
-                                                      borderRadius: BorderRadius.all(Radius.circular(20)),),
-                                                    child: ClipRRect(borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeSmall)),
-                                                      child: Image.file(File(addProductImageController.withoutColor[index].image!.path),
-                                                        width: MediaQuery.of(context).size.width/2.3,
-                                                        height: MediaQuery.of(context).size.width/2.3,
-                                                        fit: BoxFit.cover,),) ,),
-                                                ),
-
-                                                Positioned(top: 5, right : 5,
-                                                  child: InkWell(
-                                                    splashColor: Colors.transparent,
-                                                    onTap :() => addProductImageController.removeImage(index, false),
-                                                    child: Container(decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        boxShadow: [BoxShadow(color: Theme.of(context).hintColor.withValues(alpha:.25), blurRadius: 1,spreadRadius: 1,offset: const Offset(0,0))],
-                                                        borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeDefault))),
-                                                        child: const Padding(
-                                                          padding: EdgeInsets.all(4.0),
-                                                          child: Icon(Icons.delete_forever_rounded,color: Colors.red,size: 25,),)),
-                                                  ),
-                                                ),
-                                              ],
-                                              );
-                                            }
-                                        );
-                                      }
-                                  ),
-                                ),
-
-
-                              ],
-                            ),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
+                            const SizedBox.shrink(),
 
 
                             AddProductSectionWidget(
@@ -1319,6 +1255,323 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                               ],
                             ),
                             const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                            Consumer<VariationController>(
+                              builder: (context, variationController, _) {
+                                return Column(
+                                  children: [
+                                    Consumer<SplashController>(
+                                      builder: (context, splashController, _) {
+                                        final configModel = splashController.configModel;
+                                        return AddProductSectionWidget(
+                                          title: getTranslated('pricing_and_others', context)!,
+                                          subTitle: getTranslated('setup_product_pricing_and_stock_settings', context)!,
+                                          childrens: [
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeMedium),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+                                                  CustomTextFieldWidget(
+                                                    border: true,
+                                                    controller: resProvider.unitPriceController,
+                                                    focusNode: _unitPriceNode,
+                                                    textInputAction: TextInputAction.done,
+                                                    textInputType: TextInputType.number,
+                                                    isAmount: true,
+                                                    hintText: getTranslated('unit_price', context)!,
+                                                    formProduct: true,
+                                                  ),
+                                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                                                  if(configModel?.systemTaxType == 'product_wise' && configModel?.systemTaxIncludeStatus == 0)
+                                                    Consumer<AddProductTaxController>(
+                                                      builder: (context, addProductTaxController, child) {
+                                                        return Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            DropdownDecoratorWidget(
+                                                              child: DropdownButton<TaxVatModel>(
+                                                                icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                                                                borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingEye)),
+                                                                hint: Text(getTranslated('select_tax_rate', context)!,
+                                                                  style: robotoRegular.copyWith(
+                                                                    color: Theme.of(context).disabledColor,
+                                                                    fontSize: Dimensions.fontSizeExtraLarge
+                                                                  )
+                                                                ),
+                                                                items: addProductTaxController.taxVatList.map((TaxVatModel? value) {
+                                                                  bool isSelected = addProductTaxController.isSelected(value!);
+                                                                  return DropdownMenuItem<TaxVatModel>(
+                                                                    enabled: !isSelected,
+                                                                    value: value,
+                                                                    child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text('${value.name} (${value.taxRate}%)'),
+                                                                        if (isSelected)
+                                                                          Icon(Icons.check, color: Theme.of(context).primaryColor, size: 18),
+                                                                      ],
+                                                                    ),
+                                                                  );
+                                                                }).toList(),
+                                                                onChanged: (TaxVatModel? value) {
+                                                                  addProductTaxController.addToSelectedTaxList(value!);
+                                                                },
+                                                                isExpanded: true,
+                                                                underline: const SizedBox(),
+                                                              ),
+                                                            ),
+
+                                                            !addProductTaxController.selectedTaxList.isNotEmpty ?
+                                                            const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox.shrink(),
+
+                                                            addProductTaxController.selectedTaxList.isNotEmpty ?
+                                                            SizedBox(
+                                                              height: addProductTaxController.selectedTaxList.isNotEmpty ? 40 : 0,
+                                                              child: ListView.builder(
+                                                                itemCount: addProductTaxController.selectedTaxList.length,
+                                                                scrollDirection: Axis.horizontal,
+                                                                itemBuilder: (context, index) {
+                                                                  return Padding(
+                                                                    padding: const EdgeInsets.all(Dimensions.paddingSizeVeryTiny),
+                                                                    child: Container(
+                                                                      padding: const EdgeInsets.symmetric(horizontal : Dimensions.paddingSizeMedium),
+                                                                      margin: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
+                                                                      decoration: BoxDecoration(color: Theme.of(context).primaryColor.withValues(alpha:.20),
+                                                                        borderRadius: BorderRadius.circular(Dimensions.paddingSizeDefault),
+                                                                      ),
+                                                                      child: Row(children: [
+                                                                        Text(
+                                                                          '${addProductTaxController.selectedTaxList[index].name} (${addProductTaxController.selectedTaxList[index].taxRate}%)',
+                                                                          style: robotoRegular.copyWith(color: ColorHelper.blendColors(Colors.white, Theme.of(context).textTheme.bodyLarge!.color!, 0.7)),
+                                                                        ),
+                                                                        const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                                                                        InkWell(
+                                                                          splashColor: Colors.transparent,
+                                                                          onTap: (){
+                                                                            addProductTaxController.removeToSelectedTaxList (addProductTaxController.selectedTaxList[index], index);
+                                                                          },
+                                                                          child: Icon(Icons.close, size: 15, color: ColorHelper.blendColors(Colors.white, Theme.of(context).textTheme.bodyLarge!.color!, 0.7)),
+                                                                        ),
+                                                                      ]),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ) : const SizedBox(),
+
+                                                            addProductTaxController.selectedTaxList.isNotEmpty ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
+                                                          ],
+                                                        );
+                                                      }
+                                                    ),
+
+                                                  ///Discount
+                                                  ProductDiscountTextFieldWidget(
+                                                    formProduct: true,
+                                                    focusNode: _discountNode,
+                                                    nextNode: _totalQuantityNode,
+                                                    border: true,
+                                                    borderColor: Theme.of(context).primaryColor.withOpacity(.25),
+                                                    focusBorder: true,
+                                                    controller: _discountController,
+                                                    textInputAction: TextInputAction.next,
+                                                    textInputType: TextInputType.number,
+                                                    isAmount: true,
+                                                    hintText: getTranslated('discount_amount', context)!,
+                                                    isPassword : false,
+                                                    isDiscountAmount : resProvider.discountTypeIndex != 0,
+                                                    onDiscountTypeChanged : (String? value) {
+                                                      resProvider.setDiscountTypeIndex(value == 'percent' ? 0 : 1, true);
+                                                    },
+                                                  ),
+                                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                                                  ///Stock Quantity
+                                                  resProvider.productTypeIndex == 0 ?
+                                                  CustomTextFieldWidget(
+                                                    idDate: variationController.variantTypeList.isNotEmpty,
+                                                    border: true,
+                                                    textInputType: TextInputType.number,
+                                                    focusNode: _totalQuantityNode,
+                                                    controller: variationController.totalQuantityController,
+                                                    textInputAction: TextInputAction.next,
+                                                    isAmount: true,
+                                                    hintText: getTranslated('current_stock', context)!,
+                                                    formProduct: true,
+                                                  ) : const SizedBox.shrink(),
+
+                                                  resProvider.productTypeIndex == 0 ?
+                                                  const SizedBox(height: Dimensions.iconSizeExtraLarge) : const SizedBox.shrink(),
+
+                                                  ///Min order quantity
+                                                  CustomTextFieldWidget(
+                                                    border: true,
+                                                    textInputType: TextInputType.number,
+                                                    focusNode: _minimumOrderQuantityNode,
+                                                    controller: resProvider.minimumOrderQuantityController,
+                                                    textInputAction: TextInputAction.next,
+                                                    isAmount: true,
+                                                    hintText: getTranslated('minimum_order_quantity', context)!,
+                                                    formProduct: true,
+                                                  ),
+                                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    ),
+                                    const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                                    AddProductSectionWidget(
+                                      title: getTranslated('variations', context)!,
+                                      subTitle: getTranslated('enable_and_manage_different_variations', context)!,
+                                      button: Padding(
+                                        padding: const EdgeInsets.only(right: Dimensions.paddingSizeDefault),
+                                        child: FlutterSwitch(
+                                          width: 40.0, height: 20.0, toggleSize: 20.0,
+                                          value: resProvider.isAttributeActive,
+                                          borderRadius: 20.0,
+                                          activeColor: Theme.of(context).primaryColor,
+                                          padding: 1.0,
+                                          onToggle:(bool isActive) => resProvider.setIsAttributeActive(isActive, notify: true),
+                                        ),
+                                      ),
+                                      childrens: [
+                                        if(!resProvider.isAttributeActive)
+                                          const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                                        resProvider.productTypeIndex == 0 && resProvider.isAttributeActive ?
+                                        Column(children: [
+                                          const SizedBox(height: Dimensions.paddingSizeDefault),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                                            child: AttributeViewWidget(product: widget.product, colorOn: variationController.attributeList!.isNotEmpty ? variationController.attributeList![0].active : false),
+                                          ),
+                                          const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                                          variationController.variantTypeList.isNotEmpty ? const SizedBox(height: Dimensions.paddingSizeDefault) : const SizedBox(),
+
+                                          variationController.variantTypeList.isNotEmpty ?
+                                          AttributePricingWidget(product: widget.product, colorOn: variationController.attributeList!.isNotEmpty ? variationController.attributeList![0].active : false) : const SizedBox(),
+
+                                          if(variationController.attributeList!.isNotEmpty && variationController.attributeList![0].active && variationController.attributeList![0].variants.isNotEmpty)
+                                            const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                                          if(variationController.attributeList!.isNotEmpty && variationController.attributeList![0].active && variationController.attributeList![0].variants.isNotEmpty)
+                                            ColorVariationImageWidget(product: widget.product),
+
+                                          if(variationController.attributeList!.isNotEmpty && variationController.attributeList![0].active && variationController.attributeList![0].variants.isNotEmpty)
+                                            const SizedBox(height: Dimensions.paddingSizeDefault),
+                                        ]) : const SizedBox.shrink(),
+                                      ],
+                                    ),
+                                    const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                                    AddProductSectionWidget(
+                                      title: getTranslated('tags', context)!,
+                                      subTitle: getTranslated('add_tags_to_help_customers_find_product', context) ?? 'Tags (Optional)',
+                                      childrens: [
+                                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeMedium),
+                                          child: TextFieldTags(
+                                            textfieldTagsController: _controller,
+                                            initialTags: (tagList.isNotEmpty) ? tagList : const [],
+                                            textSeparators: const [' ', ','],
+                                            letterCase: LetterCase.normal,
+                                            validator: (String? tag) {
+                                              if (tag == 'php') {
+                                                return 'No, please just no';
+                                              } else if (_controller!.getTags!.contains(tag)) {
+                                                return 'you already entered that';
+                                              }
+                                              return null;
+                                            },
+                                            inputfieldBuilder: (context, tec, fn, error, onChanged, onSubmitted) {
+                                              return (context, sc, tags, onTagDelete) {
+                                                tagList = tags;
+                                                return TextField(
+                                                  controller: tec,
+                                                  focusNode: fn,
+                                                  decoration: InputDecoration(
+                                                    border: const OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Colors.grey,
+                                                        width: 1.0,
+                                                      ),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Theme.of(context).primaryColor,
+                                                        width: 1.0,
+                                                      ),
+                                                    ),
+                                                    helperText: '',
+                                                    helperStyle: const TextStyle(color: Colors.grey),
+                                                    hintText: _controller!.hasTags ? '' : "Enter tag...",
+                                                    hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                                                    errorText: error,
+                                                    prefixIconConstraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.74),
+                                                    prefixIcon: tags.isNotEmpty
+                                                        ? SingleChildScrollView(
+                                                            controller: sc,
+                                                            scrollDirection: Axis.horizontal,
+                                                            child: Row(children: tags.map((String? tag) {
+                                                              return Container(
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                                                                  color: Theme.of(context).primaryColor,
+                                                                ),
+                                                                margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                                                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                                                                child: Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                  children: [
+                                                                    InkWell(
+                                                                      child: Text('$tag', style: const TextStyle(color: Colors.white)),
+                                                                      onTap: () {
+                                                                        //print("$tag selected");
+                                                                      },
+                                                                    ),
+                                                                    const SizedBox(width: 4.0),
+                                                                    InkWell(
+                                                                      child: const Icon(
+                                                                        Icons.cancel,
+                                                                        size: 14.0,
+                                                                        color: Colors.white,
+                                                                      ),
+                                                                      onTap: () {
+                                                                        onTagDelete(tag!);
+                                                                      },
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            }).toList()),
+                                                          )
+                                                        : null,
+                                                  ),
+                                                  onChanged: onChanged,
+                                                  onSubmitted: onSubmitted,
+                                                );
+                                              };
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                                      ],
+                                    ),
+                                    const SizedBox(height: Dimensions.paddingSizeDefault),
+                                  ],
+                                );
+                              }
+                            ),
                           ]),
                         ),
                       )),
@@ -1339,97 +1592,161 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                   return Consumer<AiController>(
                                     builder: (context, aiController, _) {
                                       return InkWell(
-                                        onTap: categoryController.categoryList == null ? null : () {
-                                          AddProductImageController addProductImageController =  Provider.of<AddProductImageController>(context, listen: false);
-                                          CategoryController categoryControllerr =  Provider.of<CategoryController>(context, listen: false);
+                                        onTap: categoryController.categoryList == null ? null : () async {
+                                          AddProductImageController addProductImageController = Provider.of<AddProductImageController>(context, listen: false);
+                                          CategoryController categoryControllerr = Provider.of<CategoryController>(context, listen: false);
+                                          VariationController variationController = Provider.of<VariationController>(context, listen: false);
+                                          SplashController splashController = Provider.of<SplashController>(context, listen: false);
+                                          DigitalProductController digitalProductController = Provider.of<DigitalProductController>(context, listen: false);
 
+                                          titleList.clear();
+                                          descriptionList.clear();
+                                          for (TextEditingController textEditingController in resProvider.titleControllerList) {
+                                            titleList.add(textEditingController.text.trim());
+                                          }
+                                          for (TextEditingController textEditingController in resProvider.descriptionControllerList) {
+                                            descriptionList.add(textEditingController.text.trim());
+                                          }
 
-                                          // bool isProductImageNull = false;
-                                          //
-                                          // final productController = Provider.of<ProductController>(context,listen: false);
-                                          // final categoryController = Provider.of<CategoryController>(context,listen: false);
-                                          //
-                                          // bool haveBlankTitle = false;
-                                          // bool haveBlankDes = false;
-                                          // if(resProvider.titleControllerList.isNotEmpty) {
-                                          //   if( resProvider.titleControllerList[0].text.isEmpty){
-                                          //     haveBlankTitle = true;
-                                          //   }
-                                          // }
-                                          //
-                                          // if(resProvider.descriptionControllerList.isNotEmpty) {
-                                          //   if(resProvider.descriptionControllerList[0].text.isEmpty) {
-                                          //     haveBlankDes = true;
-                                          //   }
-                                          // }
-                                          //
-                                          // if(_update && (widget.product!.imagesFullUrl != null && widget.product!.imagesFullUrl!.isNotEmpty)) {
-                                          //   for(ImageFullUrl image in widget.product!.imagesFullUrl!) {
-                                          //     if(image.path == null || image.path == '') {
-                                          //       isProductImageNull = true;
-                                          //       break;
-                                          //     }
-                                          //   }
-                                          // }
-                                          //
-                                          // if(haveBlankTitle){
-                                          //   showCustomSnackBarWidget(getTranslated('please_input_all_title',context),context, sanckBarType: SnackBarType.warning);
-                                          // }else if(haveBlankDes){
-                                          //   showCustomSnackBarWidget(getTranslated('please_input_all_des',context),context,  sanckBarType: SnackBarType.warning);
-                                          // }
-                                          // else if (categoryController.categoryIndex == 0 || categoryController.categoryIndex == -1) {
-                                          //   showCustomSnackBarWidget(getTranslated('select_a_category',context),context,  sanckBarType: SnackBarType.warning);
-                                          // }
-                                          // else if ((resProvider.unitValue == 'select_unit' || resProvider.unitValue == null) &&  resProvider.productTypeIndex == 0) {
-                                          //   showCustomSnackBarWidget(getTranslated('select_a_unit',context),context,  sanckBarType: SnackBarType.warning);
-                                          // }
-                                          // else if (resProvider.productCode.text == '' || resProvider.productCode.text.isEmpty) {
-                                          //   showCustomSnackBarWidget(getTranslated('product_code_is_required',context),context,  sanckBarType: SnackBarType.warning);
-                                          // }
-                                          // else if (resProvider.productCode.text.length < 6 || resProvider.productCode.text == '000000') {
-                                          //   showCustomSnackBarWidget(getTranslated('product_code_minimum_6_digit',context),context,  sanckBarType: SnackBarType.warning);
-                                          // } else if ((!_update && addProductImageController.selectedLogoFile == null) || (_update && (addProductImageController.selectedLogoFile == null  && (widget.product?.thumbnailFullUrl?.path == null || widget.product?.thumbnailFullUrl?.path == ''))) ) {
-                                          //   showCustomSnackBarWidget(getTranslated('upload_thumbnail_image',context),context, sanckBarType: SnackBarType.warning);
-                                          // } else if (!_update && addProductImageController.imagesWithColor.length + addProductImageController.withoutColor.length == 0  || (_update && addProductImageController.imagesWithColor.length + addProductImageController.withoutColor.length == 0 && ((widget.product!.imagesFullUrl != null && widget.product!.imagesFullUrl!.isEmpty) || isProductImageNull))) {
-                                          //   showCustomSnackBarWidget(getTranslated('upload_product_image',context),context, sanckBarType: SnackBarType.warning);
-                                          // }
-
-
-
-                                          bool isValidate = resProvider.validateGeneralInfo(
+                                          bool isValidateProduct = resProvider.validateGeneralInfo(
                                             context,
                                             categoryController: categoryControllerr,
                                             imageController: addProductImageController,
                                             existingProduct: widget.product,
-                                            youtubeLink: resProvider.youtubeLinkController.text
+                                            youtubeLink: resProvider.youtubeLinkController.text.trim(),
                                           );
 
-                                          if(isValidate) {
-                                            for(TextEditingController textEditingController in resProvider.titleControllerList) {
-                                              titleList.add(textEditingController.text.trim());
-                                            }
-
-                                            //  print('----UnitValue--->>${resProvider.unitValue}---');
-                                            // if(resProvider.productTypeIndex == 1 &&resProvider.digitalProductTypeIndex == 1 &&
-                                            //     resProvider.selectedFileForImport != null ) {
-                                            //   resProvider.uploadDigitalProduct(Provider.of<AuthController>(context,listen: false).getUserToken());
-                                            // }
-                                            resProvider.setSelectedPageIndex(1, isUpdate: true);
-
-                                            widget.onTabChanged(1);
-                                            // Navigator.push(context, MaterialPageRoute(builder: (_) => AddProductNextScreen(
-                                            //   categoryId: categoryController.categoryList![categoryController.categoryIndex!-1].id.toString(),
-                                            //   subCategoryId: categoryController.subCategoryIndex != 0? categoryController.subCategoryList![categoryController.subCategoryIndex!-1].id.toString(): "-1",
-                                            //   subSubCategoryId:(categoryController.subSubCategoryIndex != 0 && categoryController.subSubCategoryIndex! != -1) ? categoryController.subSubCategoryList![categoryController.subSubCategoryIndex!-1].id.toString():"-1",
-                                            //   brandId: Provider.of<SplashController>(Get.context!, listen: false).configModel!.brandSetting == "1" && resProvider.productTypeIndex != 1 ? brandIds[productController.brandIndex!].toString() : null,
-                                            //   unit: (resProvider.unitValue != null && resProvider.unitValue!.isNotEmpty) ? resProvider.unitValue :  unitValue,
-                                            //   product: widget.product, addProduct: widget.addProduct,
-                                            //   title: resProvider.titleControllerList[0].text.trim(),
-                                            //   description: resProvider.descriptionControllerList[0].text.trim(),
-                                            // )));
-
+                                          bool? isValidVariation = false;
+                                          if (isValidateProduct) {
+                                            final taxController = Provider.of<AddProductTaxController>(context, listen: false);
+                                            isValidVariation = resProvider.validateVariations(
+                                              context,
+                                              digitalProductController: digitalProductController,
+                                              variationController: variationController,
+                                              taxController: taxController,
+                                              imageController: addProductImageController,
+                                              configModel: splashController.configModel,
+                                              unitPrice: resProvider.unitPriceController.text.trim(),
+                                              currentStock: variationController.totalQuantityController.text.trim(),
+                                              orderQuantity: resProvider.minimumOrderQuantityController.text.trim(),
+                                              shippingCost: "0",
+                                              isUpdate: widget.product != null,
+                                            );
                                           }
 
+                                          if (isValidateProduct && (isValidVariation ?? false)) {
+                                            if (Provider.of<ShopController>(context, listen: false).shopModel?.setupGuideApp != null && Provider.of<ShopController>(context, listen: false).shopModel?.setupGuideApp?['add_new_product'] != 1) {
+                                              Provider.of<ShopController>(context, listen: false).updateTutorialFlow('add_new_product');
+                                              Provider.of<ShopController>(context, listen: false).updateSetupGuideApp('add_new_product', 1);
+                                            }
+
+                                            Product productModel = widget.product ?? Product();
+                                            AddProductModel addProductModel = widget.addProduct ?? AddProductModel();
+
+                                            addProductModel.titleList = titleList;
+                                            addProductModel.descriptionList = descriptionList;
+                                            if (resProvider.videoOptionUpload) {
+                                              addProductModel.productVideo = resProvider.selectedVideoFile;
+                                              addProductModel.videoUrl = '';
+                                            } else {
+                                              addProductModel.productVideo = null;
+                                              addProductModel.videoUrl = resProvider.youtubeLinkController.text.trim();
+                                            }
+
+                                            productModel.taxIds = Provider.of<AddProductTaxController>(context, listen: false).selectedTaxList.map((tax) => tax.id).toList();
+                                            productModel.taxModel = resProvider.taxTypeIndex == 0 ? 'include' : 'exclude';
+                                            productModel.unitPrice = PriceConverter.systemCurrencyToDefaultCurrency(double.parse(resProvider.unitPriceController.text.trim()), context);
+                                            productModel.discount = resProvider.discountTypeIndex == 0
+                                                ? double.parse(_discountController.text.trim())
+                                                : PriceConverter.systemCurrencyToDefaultCurrency(double.parse(_discountController.text.trim()), context);
+                                            productModel.productType = resProvider.productTypeIndex == 0 ? 'physical' : 'digital';
+                                            productModel.unit = resProvider.unitValue;
+                                            productModel.code = resProvider.productCode.text.trim();
+                                            productModel.shippingCost = 0.0;
+                                            productModel.multiplyWithQuantity = resProvider.isMultiply ? 1 : 0;
+                                            
+                                            if (splashController.configModel!.brandSetting == "1" && resProvider.productTypeIndex != 1) {
+                                              final productController = Provider.of<ProductController>(context, listen: false);
+                                              if (productController.brandIndex != null && productController.brandIndex! < brandIds.length) {
+                                                productModel.brandId = brandIds[productController.brandIndex!];
+                                              }
+                                            }
+
+                                            productModel.currentStock = resProvider.productTypeIndex == 0 ? int.parse(variationController.totalQuantityController.text.trim()) : 0;
+                                            productModel.minimumOrderQty = int.parse(resProvider.minimumOrderQuantityController.text.trim());
+                                            productModel.discountType = resProvider.discountType;
+                                            productModel.digitalProductType = digitalProductController.digitalProductTypeIndex == 0 ? 'ready_after_sell' : 'ready_product';
+                                            productModel.digitalFileReady = digitalProductController.digitalProductFileName;
+
+                                            productModel.categoryIds = [];
+                                            productModel.categoryIds!.add(CategoryIds(id: categoryControllerr.categoryIndex != 0 ? categoryControllerr.categoryList![categoryControllerr.categoryIndex!-1].id.toString() : '-1'));
+
+                                            if (categoryControllerr.subCategoryIndex != 0) {
+                                              productModel.categoryIds!.add(CategoryIds(id: categoryControllerr.subCategoryList![categoryControllerr.subCategoryIndex!-1].id.toString()));
+                                            }
+
+                                            if (categoryControllerr.subSubCategoryIndex != 0) {
+                                              productModel.categoryIds!.add(CategoryIds(id: categoryControllerr.subSubCategoryList![categoryControllerr.subSubCategoryIndex!-1].id.toString()));
+                                            }
+
+                                            addProductModel.colorCodeList = [];
+                                            addProductModel.colorCodeList!.addAll(variationController.colorCodeList);
+
+                                            addProductModel.languageList = [];
+                                            if (splashController.configModel!.languageList != null && splashController.configModel!.languageList!.isNotEmpty) {
+                                              for (int i = 0; i < splashController.configModel!.languageList!.length; i++) {
+                                                addProductModel.languageList!.insert(i, splashController.configModel!.languageList![i].code);
+                                              }
+                                            }
+
+                                            String? thumbnailImage = widget.product?.thumbnail;
+                                            String? metaImage = widget.product?.metaImage;
+
+                                            final route = () {
+                                              if (widget.product != null) {
+                                                resProvider.addProduct(context, productModel, addProductModel, thumbnailImage, metaImage, false, tagList);
+                                              } else {
+                                                resProvider.addProduct(context, productModel, addProductModel, thumbnailImage, metaImage, true, tagList);
+                                              }
+                                            };
+
+                                            if (widget.product != null) {
+                                              if (addProductImageController.selectedLogoFile != null) {
+                                                await addProductImageController.addProductImage(context, addProductImageController.thumbnailImageModel, route, update: true);
+                                              }
+                                              if (context.mounted) {
+                                                await addProductImageController.onUploadColorImages(
+                                                  context: context,
+                                                  isUpdate: true,
+                                                  productId: productModel.id,
+                                                  callBack: route,
+                                                );
+                                              }
+                                              if (addProductImageController.withoutColor.isNotEmpty) {
+                                                for (int i = 0; i < addProductImageController.withoutColor.length; i++) {
+                                                  if (addProductImageController.withoutColor[i].image != null) {
+                                                    await addProductImageController.addProductImage(context, addProductImageController.withoutColor[i], route, index: i, update: true);
+                                                  }
+                                                }
+                                              }
+                                            } else {
+                                              if (addProductImageController.selectedLogoFile != null) {
+                                                await addProductImageController.addProductImage(context, addProductImageController.thumbnailImageModel, route);
+                                              }
+                                              if (addProductImageController.imagesWithColor.isNotEmpty) {
+                                                for (int i = 0; i < addProductImageController.imagesWithColor.length; i++) {
+                                                  await addProductImageController.addProductImage(context, addProductImageController.imagesWithColor[i], route);
+                                                }
+                                              }
+                                              if (addProductImageController.withoutColor.isNotEmpty) {
+                                                for (int i = 0; i < addProductImageController.withoutColor.length; i++) {
+                                                  await addProductImageController.addProductImage(context, addProductImageController.withoutColor[i], route);
+                                                }
+                                              }
+                                            }
+
+                                            route();
+                                          }
                                         },
 
 
@@ -1469,7 +1786,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                             color: categoryController.categoryList == null ? Theme.of(context).hintColor : Theme.of(context).primaryColor,
                                             borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
                                           ),
-                                          child: Center(child: Text(getTranslated('next',context)!, style: const TextStyle(
+                                          child: Center(child: Text(getTranslated('submit', context)!, style: const TextStyle(
                                             color: Colors.white,fontWeight: FontWeight.w600,
                                             fontSize: Dimensions.fontSizeLarge),)),
                                         ),

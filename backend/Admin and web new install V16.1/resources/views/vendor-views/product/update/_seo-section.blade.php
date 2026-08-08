@@ -1,4 +1,4 @@
-<div class="seo_wrapper mt-3">
+<div class="seo_wrapper mt-3 d-none">
     <div class="outline-wrapper">
         <div class="card rest-part bg-animate">
             <div class="card-header d-flex justify-content-between align-items-center border-0 shadow-none pb-0 pc-header-ai-btn">

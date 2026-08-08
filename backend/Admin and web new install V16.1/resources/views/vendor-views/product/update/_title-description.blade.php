@@ -83,9 +83,9 @@
                 </div>
 
                 <div class="outline-wrapper" id="editor-container-{{ getLanguageCode($language) }}">
-                    <div id="description-{{ getLanguageCode($language) }}-editor" class="quill-editor editor-min-h-80">{!! $translate[$language]['description']??$product['details'] !!}</div>
                     <textarea name="description[]" id="description-{{getLanguageCode($language)}}"
-                              style="display:none;" data-required-msg="{{ translate('Description_field_is_required') }}" required>{!! $translate[$language]['description']??$product['details'] !!}</textarea>
+                              class="form-control {{ $language == $defaultLanguage ? 'product-description-default-language' : '' }}"
+                              rows="6" data-required-msg="{{ translate('Description_field_is_required') }}" required>{!! $translate[$language]['description']??$product['details'] !!}</textarea>
                     <div class="blue-fire-animation"></div>
                 </div>
             </div>

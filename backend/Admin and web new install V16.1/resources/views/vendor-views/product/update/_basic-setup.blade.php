@@ -10,7 +10,10 @@
             @include("vendor-views.product.update._title-description")
         </div>
         <div class="col-lg-4">
-            @include("vendor-views.product.update._product-thumbnail")
+            @include("vendor-views.product.update._additional-images")
+            <div class="d-none">
+                @include("vendor-views.product.update._product-thumbnail")
+            </div>
         </div>
     </div>
 </div>

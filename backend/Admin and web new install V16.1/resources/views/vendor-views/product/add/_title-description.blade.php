@@ -71,10 +71,9 @@
                     @endif
                 </div>
                 <div class="outline-wrapper" id="editor-container-{{ getLanguageCode($lang)}}">
-                    <div id="description-{{ getLanguageCode($lang) }}-editor" class="quill-editor editor-min-h-80"></div>
                     <textarea name="description[]" id="description-{{ getLanguageCode($lang) }}"
-                              class="{{ $lang == $defaultLanguage ? 'product-description-default-language' : '' }}"
-                              style="display:none;"></textarea>
+                              class="form-control {{ $lang == $defaultLanguage ? 'product-description-default-language' : '' }}"
+                              rows="6" placeholder="{{ translate('ex') }}: {{ translate('product_description') }}" required></textarea>
                 </div>
             </div>
         </div>

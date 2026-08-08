@@ -26,7 +26,6 @@
             @include("admin-views.product.add._pricing-others")
             @include("admin-views.product.add._product-variation-setup")
             <div class="row product-image-wrapper g-3 mt-0">
-                @include("admin-views.product.add._additional-images")
                 @include("admin-views.product.add._digital-product-file")
             </div>
             @include("admin-views.product.add._product-video")
