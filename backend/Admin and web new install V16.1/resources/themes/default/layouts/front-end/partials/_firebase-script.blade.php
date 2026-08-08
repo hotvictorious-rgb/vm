@@ -17,20 +17,22 @@
 
 
 @if(isset($fcmCredentials['apiKey']) && !empty($fcmCredentials['apiKey']))
-    <script src="{{ dynamicAsset(path: 'public/assets/backend/libs/firebase/firebase.min.js') }}"></script>
-    <script src="{{ 'https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js' }}"></script>
-    <script src="{{ 'https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js' }}"></script>
-    <script src="{{ 'https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js' }}"></script>
-    <script src="{{ dynamicAsset(path: 'public/assets/backend/libs/firebase/firebase-init.js') }}"></script>
-    <script src="{{ dynamicAsset(path: 'public/assets/backend/libs/firebase/firebase-auth.js') }}"></script>
+    <script defer src="{{ dynamicAsset(path: 'public/assets/backend/libs/firebase/firebase.min.js') }}"></script>
+    <script defer src="{{ 'https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js' }}"></script>
+    <script defer src="{{ 'https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js' }}"></script>
+    <script defer src="{{ 'https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js' }}"></script>
+    <script defer src="{{ dynamicAsset(path: 'public/assets/backend/libs/firebase/firebase-init.js') }}"></script>
+    <script defer src="{{ dynamicAsset(path: 'public/assets/backend/libs/firebase/firebase-auth.js') }}"></script>
 
     <script>
-        try {
-            // List of topics to subscribe to
-            const topics = {!! json_encode(getFCMTopicListToSubscribe()) !!};
-            subscribeToNotificationTopics(topics);
-        } catch (e) {
-            console.warn(e);
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            try {
+                // List of topics to subscribe to
+                const topics = {!! json_encode(getFCMTopicListToSubscribe()) !!};
+                subscribeToNotificationTopics(topics);
+            } catch (e) {
+                console.warn(e);
+            }
+        });
     </script>
 @endif
