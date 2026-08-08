@@ -105,6 +105,7 @@ class OrderController extends Controller
             $data['total_tax_amount'] = $totalTaxAmount;
             $data['total_product_price'] = $totalProductPrice;
             $data['total_product_discount'] = $totalProductDiscount;
+            $this->maskOrderData($data);
             return $data;
         });
 
@@ -192,6 +193,9 @@ class OrderController extends Controller
             $detail['current_stock'] = $currentStock;
             $detail['current_price'] = $unitPrice;
             $detail['edit_order_payment_histories'] = $paymentInfo;
+            if ($detail->order) {
+                $this->maskOrderData($detail->order);
+            }
         }
 
         return response()->json($detailsList, 200);
@@ -688,5 +692,85 @@ class OrderController extends Controller
                 ['code' => 'order', 'message' => translate('not found!')]
             ]
         ], 404);
+    }
+
+    private function maskName($name) {
+        if (!$name) return '';
+        $len = strlen($name);
+        if ($len <= 2) return $name;
+        return substr($name, 0, 2) . str_repeat('*', min(8, $len - 2));
+    }
+
+    private function maskPhone($phone) {
+        if (!$phone) return '';
+        $len = strlen($phone);
+        if ($len <= 4) return '****';
+        return substr($phone, 0, 3) . str_repeat('*', min(8, $len - 6)) . substr($phone, -3);
+    }
+
+    private function maskEmail($email) {
+        if (!$email) return '';
+        $parts = explode('@', $email);
+        if (count($parts) < 2) return '***';
+        $name = $parts[0];
+        $domain = $parts[1];
+        $len = strlen($name);
+        $maskedName = ($len <= 2) ? $name : substr($name, 0, 2) . str_repeat('*', min(6, $len - 2));
+        return $maskedName . '@' . $domain;
+    }
+
+    private function maskAddress($address) {
+        if (!$address) return '';
+        return 'Detailed address hidden for privacy';
+    }
+
+    private function maskOrderData($order) {
+        if ($order->customer) {
+            $order->customer->f_name = $this->maskName($order->customer->f_name);
+            $order->customer->l_name = $this->maskName($order->customer->l_name);
+            $order->customer->phone = $this->maskPhone($order->customer->phone);
+            $order->customer->email = $this->maskEmail($order->customer->email);
+        }
+        $order->verification_code = '****';
+        
+        if (isset($order->shippingAddress)) {
+            $order->shippingAddress->contact_person_name = $this->maskName($order->shippingAddress->contact_person_name);
+            $order->shippingAddress->phone = $this->maskPhone($order->shippingAddress->phone);
+            $order->shippingAddress->email = $this->maskEmail($order->shippingAddress->email);
+            $order->shippingAddress->address = $this->maskAddress($order->shippingAddress->address);
+            $order->shippingAddress->latitude = '-33.8688';
+            $order->shippingAddress->longitude = '151.2195';
+        }
+        if (isset($order->billingAddress)) {
+            $order->billingAddress->contact_person_name = $this->maskName($order->billingAddress->contact_person_name);
+            $order->billingAddress->phone = $this->maskPhone($order->billingAddress->phone);
+            $order->billingAddress->email = $this->maskEmail($order->billingAddress->email);
+            $order->billingAddress->address = $this->maskAddress($order->billingAddress->address);
+            $order->billingAddress->latitude = '-33.8688';
+            $order->billingAddress->longitude = '151.2195';
+        }
+        
+        $billingData = json_decode($order->billing_address_data);
+        if ($billingData) {
+            if (isset($billingData->contact_person_name)) $billingData->contact_person_name = $this->maskName($billingData->contact_person_name);
+            if (isset($billingData->phone)) $billingData->phone = $this->maskPhone($billingData->phone);
+            if (isset($billingData->email)) $billingData->email = $this->maskEmail($billingData->email);
+            if (isset($billingData->address)) $billingData->address = $this->maskAddress($billingData->address);
+            if (isset($billingData->latitude)) $billingData->latitude = '-33.8688';
+            if (isset($billingData->longitude)) $billingData->longitude = '151.2195';
+            $order->billing_address_data = json_encode($billingData);
+        }
+
+        $shippingData = json_decode($order->shipping_address_data);
+        if ($shippingData) {
+            if (isset($shippingData->contact_person_name)) $shippingData->contact_person_name = $this->maskName($shippingData->contact_person_name);
+            if (isset($shippingData->phone)) $shippingData->phone = $this->maskPhone($shippingData->phone);
+            if (isset($shippingData->email)) $shippingData->email = $this->maskEmail($shippingData->email);
+            if (isset($shippingData->address)) $shippingData->address = $this->maskAddress($shippingData->address);
+            if (isset($shippingData->latitude)) $shippingData->latitude = '-33.8688';
+            if (isset($shippingData->longitude)) $shippingData->longitude = '151.2195';
+            $order->shipping_address_data = json_encode($shippingData);
+        }
+        return $order;
     }
 }

@@ -8,6 +8,34 @@
 @endpush
 
 @section('content')
+    @php
+        $maskName = function($name) {
+            if (!$name) return '';
+            $len = strlen($name);
+            if ($len <= 2) return $name;
+            return substr($name, 0, 2) . str_repeat('*', min(8, $len - 2));
+        };
+        $maskPhone = function($phone) {
+            if (!$phone) return '';
+            $len = strlen($phone);
+            if ($len <= 4) return '****';
+            return substr($phone, 0, 3) . str_repeat('*', min(8, $len - 6)) . substr($phone, -3);
+        };
+        $maskEmail = function($email) {
+            if (!$email) return '';
+            $parts = explode('@', $email);
+            if (count($parts) < 2) return '***';
+            $name = $parts[0];
+            $domain = $parts[1];
+            $len = strlen($name);
+            $maskedName = ($len <= 2) ? $name : substr($name, 0, 2) . str_repeat('*', min(6, $len - 2));
+            return $maskedName . '@' . $domain;
+        };
+        $maskAddress = function($address) {
+            if (!$address) return '';
+            return 'Detailed address hidden for privacy';
+        };
+    @endphp
     @php($shippingAddress = $order['shipping_address_data'] ?? null)
     <div class="content container-fluid">
         <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
@@ -165,7 +193,7 @@
                                     @if(getWebConfig(name: 'order_verification'))
                                         <span class="d-flex justify-content-sm-end gap-10 fs-12">
                                             <b>
-                                                {{translate('order_verification_code')}} : {{$order['verification_code'] }}
+                                                {{translate('order_verification_code')}} : ****
                                             </b>
                                         </span>
                                     @endif
@@ -1038,14 +1066,14 @@
                                     <td class="px-0 py-2 text-nowrap">{{translate('name')}}</td>
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
-                                        <strong>{{$shippingAddress->contact_person_name ?? ''}}</strong> {{ $order->is_guest ? '('. translate('guest_customer') .')':''}}
+                                        <strong>{{ $maskName($shippingAddress->contact_person_name ?? '') }}</strong> {{ $order->is_guest ? '('. translate('guest_customer') .')':''}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('contact')}}</td>
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
-                                        <strong>{{$shippingAddress->phone ?? ''}}</strong>
+                                        <strong>{{ $maskPhone($shippingAddress->phone ?? '') }}</strong>
                                     </td>
                                 </tr>
                                 @if ($order->is_guest && ($shippingAddress->email ?? ''))
@@ -1053,7 +1081,7 @@
                                         <td class="px-0 py-2 text-nowrap">{{translate('email')}}</td>
                                         <td class="px-3 py-2">:</td>
                                         <td class="px-0 py-2">
-                                            <strong>{{$shippingAddress->email ?? ''}}</strong>
+                                            <strong>{{ $maskEmail($shippingAddress->email ?? '') }}</strong>
                                         </td>
                                     </tr>
                                 @endif
@@ -1081,7 +1109,7 @@
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
                                         <div class="d-flex align-items-start gap-2">
-                                            <span>{{$shippingAddress->address ?? ''}}</span>
+                                            <span>{{ $maskAddress($shippingAddress->address ?? '') }}</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -1132,14 +1160,14 @@
                                     <td class="px-0 py-2 text-nowrap">{{translate('name')}}</td>
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
-                                        <strong>{{$billing->contact_person_name ?? ''}}</strong> {{ $order->is_guest ? '('. translate('guest_customer') .')':''}}
+                                        <strong>{{ $maskName($billing->contact_person_name ?? '') }}</strong> {{ $order->is_guest ? '('. translate('guest_customer') .')':''}}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="px-0 py-2 text-nowrap">{{translate('contact')}}</td>
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
-                                        <strong>{{$billing->phone ?? ''}}</strong>
+                                        <strong>{{ $maskPhone($billing->phone ?? '') }}</strong>
                                     </td>
                                 </tr>
                                 @if ($order->is_guest && ($billing->email ?? ''))
@@ -1147,7 +1175,7 @@
                                         <td class="px-0 py-2 text-nowrap">{{translate('email')}}</td>
                                         <td class="px-3 py-2">:</td>
                                         <td class="px-0 py-2">
-                                            <strong>{{$billing->email ?? ''}}</strong>
+                                            <strong>{{ $maskEmail($billing->email ?? '') }}</strong>
                                         </td>
                                     </tr>
                                 @endif
@@ -1177,7 +1205,7 @@
                                     <td class="px-3 py-2">:</td>
                                     <td class="px-0 py-2">
                                         <div class="d-flex align-items-start gap-2">
-                                            <span>{{$billing->address ?? ''}}</span>
+                                            <span>{{ $maskAddress($billing->address ?? '') }}</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -1206,15 +1234,15 @@
                                 <div class="media-body d-flex flex-column gap-1">
                                     <span class="text-dark">
                                         <span
-                                            class="fw-semibold">{{$order->customer['f_name'].' '.$order->customer['l_name']}} </span>
+                                            class="fw-semibold">{{ $maskName($order->customer['f_name'].' '.$order->customer['l_name']) }} </span>
                                     </span>
 
                                     @if($order?->customer?->email !== 'walking@customer.com')
                                         <span class="text-dark fs-12"> <span class="fw-bold">{{ $orderCount }}</span> {{translate('orders')}}</span>
                                         <span
                                             class="text-dark break-all fs-12"><span
-                                                class="fw-semibold">{{$order->customer['phone']}}</span></span>
-                                        <span class="text-dark break-all fs-12">{{$order->customer['email']}}</span>
+                                                class="fw-semibold">{{ $maskPhone($order->customer['phone']) }}</span></span>
+                                        <span class="text-dark break-all fs-12">{{ $maskEmail($order->customer['email']) }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -1961,13 +1989,13 @@
     <span id="message-deliveryman-charge-invalid-text" data-text="{{ translate("add_valid_data") }}"></span>
     <span id="add-date-update-url" data-url="{{route('vendor.orders.amount-date-update')}}"></span>
 
-    <span id="customer-name" data-text="{{$order->customer['f_name']??""}} {{$order->customer['l_name']??""}}}"></span>
+    <span id="customer-name" data-text="{{ $maskName(($order->customer['f_name']??"") . " " . ($order->customer['l_name']??"")) }}"></span>
     <span id="is-shipping-exist" data-status="{{$shippingAddress ? 'true':'false'}}"></span>
-    <span id="shipping-address" data-text="{{$shippingAddress->address??''}}"></span>
-    <span id="shipping-latitude" data-latitude="{{$shippingAddress->latitude??'-33.8688'}}"></span>
-    <span id="shipping-longitude" data-longitude="{{$shippingAddress->longitude??'151.2195'}}"></span>
-    <span id="billing-latitude" data-latitude="{{$billing->latitude??'-33.8688'}}"></span>
-    <span id="billing-longitude" data-longitude="{{$billing->longitude??'151.2195'}}"></span>
+    <span id="shipping-address" data-text="{{ $maskAddress($shippingAddress->address??'') }}"></span>
+    <span id="shipping-latitude" data-latitude="-33.8688"></span>
+    <span id="shipping-longitude" data-longitude="151.2195"></span>
+    <span id="billing-latitude" data-latitude="-33.8688"></span>
+    <span id="billing-longitude" data-longitude="151.2195"></span>
     <span id="location-icon"
           data-path="{{dynamicAsset(path: 'public/assets/front-end/img/customer_location.png')}}"></span>
     <span id="customer-image"

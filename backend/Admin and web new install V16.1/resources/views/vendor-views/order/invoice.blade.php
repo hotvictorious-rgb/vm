@@ -1,9 +1,36 @@
-<!-- @php
+@php
     use Illuminate\Support\Facades\Session;
     $currencyCode = getCurrencyCode(type: 'default');
     $direction = Session::get('direction');
     $lang = getDefaultLanguage();
-@endphp -->
+
+    $maskName = function($name) {
+        if (!$name) return '';
+        $len = strlen($name);
+        if ($len <= 2) return $name;
+        return substr($name, 0, 2) . str_repeat('*', min(8, $len - 2));
+    };
+    $maskPhone = function($phone) {
+        if (!$phone) return '';
+        $len = strlen($phone);
+        if ($len <= 4) return '****';
+        return substr($phone, 0, 3) . str_repeat('*', min(8, $len - 6)) . substr($phone, -3);
+    };
+    $maskEmail = function($email) {
+        if (!$email) return '';
+        $parts = explode('@', $email);
+        if (count($parts) < 2) return '***';
+        $name = $parts[0];
+        $domain = $parts[1];
+        $len = strlen($name);
+        $maskedName = ($len <= 2) ? $name : substr($name, 0, 2) . str_repeat('*', min(6, $len - 2));
+        return $maskedName . '@' . $domain;
+    };
+    $maskAddress = function($address) {
+        if (!$address) return '';
+        return 'Detailed address hidden for privacy';
+    };
+@endphp
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{$direction}}"
       style="text-align: {{$direction === "rtl" ? 'right' : 'left'}};"
       xmlns="http://www.w3.org/1999/html">
@@ -675,118 +702,118 @@ $orderTotalPriceSummary = \App\Utils\OrderManager::getOrderTotalPriceSummary(ord
                         <td class="vertical-align-top border-{{$direction === "rtl" ? 'right' : 'left'}}">
                             <table>
                                 <tbody>
-                                @php($billingAddress = $order->billing_address_data)
-                                @if(!empty((array) $billingAddress))
-                                    <tr>
-                                        <td class="px-2" colspan="3">
-                                            <h5>{{ translate('Billing_address') }} <span class="fw-normal">({{ translate($billingAddress->address_type ?? '') }})</span>
-                                            </h5>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-danger">{{ $billingAddress->contact_person_name ?? '' }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $billingAddress->phone ?? '' }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1 text-nowrap">{{ translate('City_/_Zip') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $billingAddress->city ?? '' }} {{ $billingAddress->zip ?? '' }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1">{{ translate('Address') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $billingAddress->address ?? '' }}</span></td>
-                                    </tr>
-                                @endif
+                                 @php($billingAddress = $order->billing_address_data)
+                                 @if(!empty((array) $billingAddress))
+                                     <tr>
+                                         <td class="px-2" colspan="3">
+                                             <h5>{{ translate('Billing_address') }} <span class="fw-normal">({{ translate($billingAddress->address_type ?? '') }})</span>
+                                             </h5>
+                                         </td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-danger">{{ $maskName($billingAddress->contact_person_name ?? '') }}</span>
+                                         </td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-dark">{{ $maskPhone($billingAddress->phone ?? '') }}</span></td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1 text-nowrap">{{ translate('City_/_Zip') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-dark">{{ $billingAddress->city ?? '' }} {{ $billingAddress->zip ?? '' }}</span>
+                                         </td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1">{{ translate('Address') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-dark">{{ $maskAddress($billingAddress->address ?? '') }}</span></td>
+                                     </tr>
+                                 @endif
                                 </tbody>
                             </table>
                         </td>
                         <td class="vertical-align-top border-{{$direction === "rtl" ? 'right' : 'left'}}">
                             <table>
                                 <tbody>
-                                @php($shipping = $order->shipping_address_data)
-                                @if(!empty((array) $shipping))
-                                    <tr>
-                                        <td class="px-2" colspan="3">
-                                            <h5>{{ translate('Shipping_address') }} <span class="fw-normal">({{ translate($shipping->address_type ?? '') }})</span>
-                                            </h5>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-danger">{{ $shipping->contact_person_name ?? '' }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span class="text-dark">{{ $shipping->phone ?? '' }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1 text-nowrap">{{ translate('City_/_Zip') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $shipping->city ?? '' }} {{ $shipping->zip ?? '' }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-2 pt-1 pb-1">{{ translate('Address') }}</td>
-                                        <td class="pt-1 pb-1">:</td>
-                                        <td class="px-2 pt-1 pb-1"><span
-                                                class="text-dark">{{ $shipping->address ?? '' }}</span></td>
-                                    </tr>
-                                @else
-                                    <tr>
-                                        <td class="px-2" colspan="3">
-                                            <h5>{{ translate('Customer_Info') }}</h5>
-                                        </td>
-                                    </tr>
-                                    @if($order->is_guest)
-                                        <tr>
-                                            <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
-                                            <td class="pt-1 pb-1">:</td>
-                                            <td class="px-2 pt-1 pb-1"><span
-                                                    class="text-danger">{{translate('guest_User')}}</span></td>
-                                        </tr>
-                                    @else
-                                        <tr>
-                                            <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
-                                            <td class="pt-1 pb-1">:</td>
-                                            <td class="px-2 pt-1 pb-1"><span
-                                                    class="text-danger">{{ $order->customer !=null? $order->customer['f_name'].' '.$order->customer['l_name']:translate('name_not_found') }}</span>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                    @if (isset($order->customer) && $order->customer['id']!=0)
-                                        <tr>
-                                            <td class="px-2 pt-1 pb-1">{{ translate('Email') }}</td>
-                                            <td class="pt-1 pb-1">:</td>
-                                            <td class="px-2 pt-1 pb-1"><span
-                                                    class="text-dark">{{$order->customer !=null? $order->customer['email']: translate('email_not_found')}}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
-                                            <td class="pt-1 pb-1">:</td>
-                                            <td class="px-2 pt-1 pb-1"><span
-                                                    class="text-dark">{{$order->customer !=null? $order->customer['phone']: translate('phone_not_found')}}</span>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endif
+                                 @php($shipping = $order->shipping_address_data)
+                                 @if(!empty((array) $shipping))
+                                     <tr>
+                                         <td class="px-2" colspan="3">
+                                             <h5>{{ translate('Shipping_address') }} <span class="fw-normal">({{ translate($shipping->address_type ?? '') }})</span>
+                                             </h5>
+                                         </td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-danger">{{ $maskName($shipping->contact_person_name ?? '') }}</span></td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span class="text-dark">{{ $maskPhone($shipping->phone ?? '') }}</span>
+                                         </td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1 text-nowrap">{{ translate('City_/_Zip') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-dark">{{ $shipping->city ?? '' }} {{ $shipping->zip ?? '' }}</span></td>
+                                     </tr>
+                                     <tr>
+                                         <td class="px-2 pt-1 pb-1">{{ translate('Address') }}</td>
+                                         <td class="pt-1 pb-1">:</td>
+                                         <td class="px-2 pt-1 pb-1"><span
+                                                 class="text-dark">{{ $maskAddress($shipping->address ?? '') }}</span></td>
+                                     </tr>
+                                 @else
+                                     <tr>
+                                         <td class="px-2" colspan="3">
+                                             <h5>{{ translate('Customer_Info') }}</h5>
+                                         </td>
+                                     </tr>
+                                     @if($order->is_guest)
+                                         <tr>
+                                             <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
+                                             <td class="pt-1 pb-1">:</td>
+                                             <td class="px-2 pt-1 pb-1"><span
+                                                     class="text-danger">{{translate('guest_User')}}</span></td>
+                                         </tr>
+                                     @else
+                                         <tr>
+                                             <td class="px-2 pt-1 pb-1">{{ translate('Name') }}</td>
+                                             <td class="pt-1 pb-1">:</td>
+                                             <td class="px-2 pt-1 pb-1"><span
+                                                     class="text-danger">{{ $order->customer !=null? $maskName($order->customer['f_name'].' '.$order->customer['l_name']):translate('name_not_found') }}</span>
+                                             </td>
+                                         </tr>
+                                     @endif
+                                     @if (isset($order->customer) && $order->customer['id']!=0)
+                                         <tr>
+                                             <td class="px-2 pt-1 pb-1">{{ translate('Email') }}</td>
+                                             <td class="pt-1 pb-1">:</td>
+                                             <td class="px-2 pt-1 pb-1"><span
+                                                     class="text-dark">{{$order->customer !=null? $maskEmail($order->customer['email']): translate('email_not_found')}}</span>
+                                             </td>
+                                         </tr>
+                                         <tr>
+                                             <td class="px-2 pt-1 pb-1">{{ translate('Phone') }}</td>
+                                             <td class="pt-1 pb-1">:</td>
+                                             <td class="px-2 pt-1 pb-1"><span
+                                                     class="text-dark">{{$order->customer !=null? $maskPhone($order->customer['phone']): translate('phone_not_found')}}</span>
+                                             </td>
+                                         </tr>
+                                     @endif
+                                 @endif
                                 </tbody>
                             </table>
                         </td>
