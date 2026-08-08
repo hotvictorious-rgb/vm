@@ -10,7 +10,7 @@
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="video_option" id="video_option_upload" value="upload" checked>
                 <label class="form-check-label fw-semibold" for="video_option_upload">
-                    {{ translate('Upload_Video_File') }} <span class="text-info">({{ translate('Max_1_Min') }})</span>
+                    {{ translate('Upload_Video_File') }} <span class="text-info">({{ translate('Max_30MB,_1_Min') }})</span>
                 </label>
             </div>
             <div class="form-check form-check-inline">
@@ -36,7 +36,7 @@
                 <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
             </div>
             <small class="form-text text-muted mt-2 d-block">
-                {{ translate('Supported formats: MP4, WebM. Maximum duration: 60 seconds (1 minute). File will be uploaded directly to YouTube and removed from the server.') }}
+                {{ translate('Supported formats: MP4, WebM. Maximum size: 30MB. Maximum duration: 60 seconds (1 minute). File will be uploaded directly to YouTube and removed from the server.') }}
             </small>
         </div>
 
@@ -83,6 +83,18 @@
         videoInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
+
+            // Validate video size is <= 30MB
+            const maxSizeInBytes = 30 * 1024 * 1024;
+            if (file.size > maxSizeInBytes) {
+                toastr.error("{{ translate('Video file size exceeds 30MB! Please select a smaller file.') }}", {
+                    CloseButton: true,
+                    ProgressBar: true
+                });
+                videoInput.value = '';
+                videoInput.nextElementSibling.innerText = "{{ translate('choose_file') }}";
+                return;
+            }
 
             // Show filename in custom input label
             this.nextElementSibling.innerText = file.name;
