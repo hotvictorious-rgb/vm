@@ -39,6 +39,10 @@
                                                             <div class="flex-shrink-0">
                                                                 <img src="{{ getStorageImages(path: $vendorData->image_full_url, type: 'shop') }}"
                                                                      class="rounded-circle border"
+                                                                     width="80"
+                                                                     height="80"
+                                                                     alt="{{ $vendorData->name }}"
+                                                                     loading="lazy"
                                                                      style="width:80px; height:80px; object-fit:cover;">
                                                             </div>
                                                             @php($vendorItemType = $vendorData['id'] == 0 ? 'inhouse' : 'vendor')

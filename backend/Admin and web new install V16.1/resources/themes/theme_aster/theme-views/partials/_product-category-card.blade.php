@@ -17,16 +17,17 @@
                 <img width="10" height="18" src="{{theme_asset('assets/img/svg/power.svg')}}" alt="" class="svg text-white">
             </div>
         @endif
-        <a href="javascript:"
-           class="store-product d-flex flex-column gap-2 align-items-center text-center ov-hidden">
-           <div class="store-product__top border rounded-10 mb-2 aspect-1 overflow-hidden">
+        <div class="store-product d-flex flex-column gap-2 align-items-center text-center ov-hidden">
+           <div class="store-product__top border rounded-10 mb-2 aspect-1 overflow-hidden position-relative">
                 <span class="store-product__action preventDefault get-quick-view"
                       data-action="{{route('quick-view')}}"
                       data-product-id="{{$product['id']}}">
                     <i class="bi bi-eye fs-12"></i>
                 </span>
-                <img alt="" loading="lazy" class="dark-support rounded aspect-1 img-fit"
-                     src="{{ getStorageImages(path: $product?->thumbnail_full_url, type: 'product') }}">
+                <a href="{{route('product', $product->slug)}}" aria-label="{{ $product['name'] }}">
+                    <img alt="{{ $product['name'] }}" loading="lazy" class="dark-support rounded aspect-1 img-fit"
+                         src="{{ getStorageImages(path: $product?->thumbnail_full_url, type: 'product') }}">
+                </a>
             </div>
             <a class="fs-16 fw-bold text-truncate text-capitalize w-100 d-block text-center"  href="{{route('product', $product->slug)}}">
                 {{ Str::limit($product['name'], 18) }}
@@ -41,7 +42,7 @@
                     </ins>
                 </div>
             </a>
-        </a>
+        </div>
     </div>
 </div>
 
