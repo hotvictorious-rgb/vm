@@ -212,4 +212,4 @@ data-value="{{ isset($recaptcha) && $recaptcha['status'] == 1 ? $recaptcha['site
         });
     });
 </script>
-<script src="{{ theme_asset('assets/js/custom.js') }}"></script>
+<script defer src="{{ theme_asset('assets/js/custom.js') }}"></script>
