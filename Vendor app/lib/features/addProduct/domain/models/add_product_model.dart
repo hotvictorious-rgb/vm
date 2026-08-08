@@ -7,8 +7,9 @@ class AddProductModel{
   List<String?>? colorCodeList;
   List<String>? thumbnailList;
   String? videoUrl;
+  XFile? productVideo;
 
-  AddProductModel({this.titleList, this.descriptionList, this.languageList, this.colorCodeList, this.thumbnailList, this.videoUrl});
+  AddProductModel({this.titleList, this.descriptionList, this.languageList, this.colorCodeList, this.thumbnailList, this.videoUrl, this.productVideo});
 }
 
 

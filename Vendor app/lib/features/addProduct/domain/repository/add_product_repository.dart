@@ -323,12 +323,27 @@ class AddProductRepository implements AddProductRepositoryInterface{
       }
     } else {
       try {
-        Response response = await dioClient!.post('${AppConstants.baseUrl}${isAdd ? AppConstants.addProductUri : '${AppConstants.updateProductUri}/${product.id}'}',
-          data: requestData,
-        );
+        Response response;
+        if (addProduct.productVideo != null) {
+          List<MultipartWithKey> multiPartFiles = [];
+          MultipartFile multiPartFile = MultipartFile.fromBytes(
+            await addProduct.productVideo!.readAsBytes(),
+            filename: basename(addProduct.productVideo!.name),
+          );
+          multiPartFiles.add(MultipartWithKey(key: 'product_video', multipartFile: multiPartFile));
 
+          response = await dioClient!.postMultipart(
+            '${AppConstants.baseUrl}${isAdd ? AppConstants.addProductUri : '${AppConstants.updateProductUri}/${product.id}'}',
+            data: requestData,
+            files: multiPartFiles,
+          );
+        } else {
+          response = await dioClient!.post(
+            '${AppConstants.baseUrl}${isAdd ? AppConstants.addProductUri : '${AppConstants.updateProductUri}/${product.id}'}',
+            data: requestData,
+          );
+        }
         return ApiResponse.withSuccess(response);
-
       } catch (e) {
         return ApiResponse.withError(ApiErrorHandler.getMessage(e));
       }

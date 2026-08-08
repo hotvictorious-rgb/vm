@@ -108,6 +108,45 @@ class AddProductController extends ChangeNotifier {
   TextEditingController shippingCostController = TextEditingController();
   TextEditingController minimumOrderQuantityController = TextEditingController();
   TextEditingController youtubeLinkController = TextEditingController();
+  XFile? _selectedVideoFile;
+  bool _videoOptionUpload = true;
+  XFile? get selectedVideoFile => _selectedVideoFile;
+  bool get videoOptionUpload => _videoOptionUpload;
+
+  void setVideoOption(bool isUpload) {
+    _videoOptionUpload = isUpload;
+    notifyListeners();
+  }
+
+  void removeVideo() {
+    _selectedVideoFile = null;
+    notifyListeners();
+  }
+
+  Future<void> pickVideo(BuildContext context) async {
+    try {
+      final XFile? file = await picker.pickVideo(
+        source: ImageSource.gallery,
+        maxDuration: const Duration(seconds: 60),
+      );
+      if (file != null) {
+        final int sizeInBytes = await file.length();
+        final double sizeInMb = sizeInBytes / (1024 * 1024);
+        if (sizeInMb > 20) {
+          showCustomSnackBarWidget(
+            getTranslated('video_size_exceeds_20mb', Get.context!) ?? 'Video file size exceeds 20MB',
+            Get.context!,
+            sanckBarType: SnackBarType.warning,
+          );
+          return;
+        }
+        _selectedVideoFile = file;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error picking video: $e');
+    }
+  }
 
 
   @override

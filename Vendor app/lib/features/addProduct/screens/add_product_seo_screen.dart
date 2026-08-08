@@ -665,7 +665,7 @@ class AddProductSeoScreenState extends State<AddProductSeoScreen>  with Automati
                                             String? brandId = widget.brandyId;
                                             String metaTitle =_seoTitleController.text.trim();
                                             String metaDescription =_seoDescriptionController.text.trim();
-                                            String videoUrl = _youtubeLinkController.text.trim();
+                                            String videoUrl = resProvider.videoOptionUpload ? '' : resProvider.youtubeLinkController.text.trim();
                                             String multiPlyWithQuantity = resProvider.isMultiply?'1':'0';
                                             int multi = int.parse(multiPlyWithQuantity);
                                             String productCode = resProvider.productCode.text;
@@ -741,6 +741,7 @@ class AddProductSeoScreenState extends State<AddProductSeoScreen>  with Automati
                                               _addProduct!.titleList = titleList;
                                               _addProduct!.descriptionList = descriptionList;
                                               _addProduct!.videoUrl = videoUrl;
+                                              _addProduct!.productVideo = resProvider.selectedVideoFile;
                                               _product!.taxIds = widget.tax;
                                               _product!.taxModel = resProvider.taxTypeIndex == 0 ? 'include' : 'exclude';
                                               _product!.unitPrice = PriceConverter.systemCurrencyToDefaultCurrency(double.parse(widget.unitPrice!), context);
