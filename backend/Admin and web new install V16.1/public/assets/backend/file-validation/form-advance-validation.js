@@ -385,11 +385,16 @@ document.querySelectorAll('.form-advance-validation input[type="file"]').forEach
             // 🧩 Type check
             if (
                 accept.length &&
-                !accept.some(a =>
-                    a.startsWith('.')
-                        ? f.name.toLowerCase().endsWith(a)
-                        : f.type.toLowerCase() === a
-                )
+                !accept.some(a => {
+                    if (a.startsWith('.')) {
+                        return f.name.toLowerCase().endsWith(a);
+                    } else if (a.endsWith('/*')) {
+                        const typeGroup = a.split('/')[0];
+                        return f.type.toLowerCase().startsWith(typeGroup + '/');
+                    } else {
+                        return f.type.toLowerCase() === a;
+                    }
+                })
             ) {
                 isValid = false;
                 showErrorToast(`${f.name} has an invalid file type`);

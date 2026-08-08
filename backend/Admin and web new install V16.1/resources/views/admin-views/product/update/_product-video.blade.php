@@ -29,7 +29,7 @@
                 <span> ({{ translate('optional') }})</span>
             </div>
             <div class="custom-file text-left">
-                <input type="file" name="product_video" id="product_video_input" class="custom-file-input" accept="video/*">
+                <input type="file" name="product_video" id="product_video_input" class="custom-file-input" accept=".mp4,.webm,.mov,.avi,.mkv" data-max-size="30">
                 <label class="custom-file-label" for="product_video_input">{{ translate('choose_file') }}</label>
             </div>
             <div class="progress d-none mt-3" style="height: 10px;">
