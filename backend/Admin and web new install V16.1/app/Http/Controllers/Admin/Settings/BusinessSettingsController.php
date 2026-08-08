@@ -28,6 +28,7 @@ use App\Http\Requests\Admin\BusinessSettingRequest;
 use App\Contracts\Repositories\CurrencyRepositoryInterface;
 use App\Contracts\Repositories\BusinessSettingRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
+use App\Services\YouTubeService;
 
 class BusinessSettingsController extends BaseController
 {
@@ -568,5 +569,39 @@ class BusinessSettingsController extends BaseController
         $this->businessSettingRepo->updateOrInsert(type: 'offline_payment', value: json_encode(['status' => $request->get('offline_payment', 0)]));
 
         return null;
+    }
+
+    public function getYoutubeSettingsView(): View
+    {
+        return view('admin-views.business-settings.youtube-settings');
+    }
+
+    public function updateYoutubeSettings(Request $request): RedirectResponse
+    {
+        $this->businessSettingRepo->updateOrInsert(type: 'youtube_client_id', value: $request->input('youtube_client_id'));
+        $this->businessSettingRepo->updateOrInsert(type: 'youtube_client_secret', value: $request->input('youtube_client_secret'));
+        
+        ToastMagic::success(translate('YouTube credentials updated successfully'));
+        return back();
+    }
+
+    public function youtubeConnect(YouTubeService $youtubeService): RedirectResponse
+    {
+        if (!$youtubeService->hasCredentials()) {
+            ToastMagic::error(translate('Please save your client credentials first'));
+            return back();
+        }
+        return redirect()->away($youtubeService->getAuthUrl());
+    }
+
+    public function youtubeCallback(Request $request, YouTubeService $youtubeService): RedirectResponse
+    {
+        $code = $request->query('code');
+        if ($code && $youtubeService->handleCallback($code)) {
+            ToastMagic::success(translate('Successfully connected to YouTube channel'));
+        } else {
+            ToastMagic::error(translate('Failed to connect to YouTube channel'));
+        }
+        return redirect()->route('admin.third-party.youtube-integration.setup');
     }
 }

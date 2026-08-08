@@ -458,6 +458,32 @@ class Product extends Model
     {
         parent::boot();
 
+        static::saving(function ($model) {
+            if (request()->hasFile('product_video')) {
+                $youtubeService = resolve(\App\Services\YouTubeService::class);
+                if ($youtubeService->hasCredentials()) {
+                    $productName = $model->name;
+                    if (is_array($productName)) {
+                        $productName = $productName[array_search('en', request()->input('lang', []))] ?? 'Product Video';
+                    } elseif (is_string($productName) && strpos($productName, '[') !== false) {
+                        $decoded = json_decode($productName, true);
+                        if (is_array($decoded)) {
+                            $productName = $decoded[0]['value'] ?? 'Product Video';
+                        }
+                    }
+                    if (empty($productName)) {
+                        $productName = 'Product Video';
+                    }
+                    
+                    $uploadedUrl = $youtubeService->uploadVideo(request()->file('product_video')->getRealPath(), $productName);
+                    if ($uploadedUrl) {
+                        $model->video_url = $uploadedUrl;
+                        $model->video_provider = 'youtube';
+                    }
+                }
+            }
+        });
+
         static::saved(function ($model) {
             cacheRemoveByType(type: 'products');
         });

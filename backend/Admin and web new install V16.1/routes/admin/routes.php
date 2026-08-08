@@ -140,6 +140,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
         // return view('admin-views.vat-tax.admin-tax-report.details');
     });
 
+    Route::get('youtube-callback', [BusinessSettingsController::class, 'youtubeCallback'])->name('youtube.callback');
+
     Route::controller(AdvancedSearchController::class)->group(function () {
         Route::get('advanced-search', 'getSearch')->name('advanced-search');
         Route::post('advanced-search-recent', 'recentSearch')->name('advanced-search-recent');
@@ -934,6 +936,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
             Route::controller(GoogleMapAPIController::class)->group(function () {
                 Route::get('map-api', 'index')->name('map-api');
                 Route::post('map-api', 'update');
+            });
+
+            Route::group(['prefix' => 'youtube-integration', 'as' => 'youtube-integration.'], function () {
+                Route::controller(BusinessSettingsController::class)->group(function () {
+                    Route::get('setup', 'getYoutubeSettingsView')->name('setup');
+                    Route::post('setup', 'updateYoutubeSettings');
+                    Route::get('connect', 'youtubeConnect')->name('connect');
+                });
             });
         });
     });
