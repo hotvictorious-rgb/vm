@@ -28,7 +28,20 @@
             try {
                 // List of topics to subscribe to
                 const topics = {!! json_encode(getFCMTopicListToSubscribe()) !!};
-                subscribeToNotificationTopics(topics);
+                if (typeof Notification !== 'undefined') {
+                    if (Notification.permission === 'granted') {
+                        subscribeToNotificationTopics(topics);
+                    } else if (Notification.permission !== 'denied') {
+                        // Defer prompt to first user gesture
+                        const requestOnInit = () => {
+                            subscribeToNotificationTopics(topics);
+                            window.removeEventListener('click', requestOnInit);
+                            window.removeEventListener('touchstart', requestOnInit);
+                        };
+                        window.addEventListener('click', requestOnInit, { once: true });
+                        window.addEventListener('touchstart', requestOnInit, { once: true });
+                    }
+                }
             } catch (e) {
                 console.warn(e);
             }

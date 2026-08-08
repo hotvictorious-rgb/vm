@@ -59,13 +59,13 @@
 
 
                                                         <div class="w-100">
-                                                            <h5 class="mb-1" style="max-width: 350px;">
-                                                                <a class="text-truncate d-inline-block"
-                                                                   href="{{ route('vendor-shop',['slug'=>$vendorData['slug']]) }}"
-                                                                   style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                                                                    {{ $vendorData->name }}
-                                                                </a>
-                                                            </h5>
+                                                             <div class="mb-1 fw-bold fs-16" style="max-width: 350px;">
+                                                                 <a class="text-truncate d-inline-block"
+                                                                    href="{{ route('vendor-shop',['slug'=>$vendorData['slug']]) }}"
+                                                                    style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                                                     {{ $vendorData->name }}
+                                                                 </a>
+                                                             </div>
 
                                                             <div class="text-muted">{{ $vendorData->products_count }} {{ translate('products') }}</div>
 

@@ -52,7 +52,7 @@
                     <div class="media gap-3 absolute-white">
                         <i class="bi bi-telephone-forward fs-28"></i>
                         <div class="media-body">
-                            <h6 class="absolute-white mb-1">{{ translate('hotline') }}</h6>
+                            <div class="absolute-white mb-1 fw-bold fs-14">{{ translate('hotline') }}</div>
                             <a dir="ltr" href="tel:{{ $web_config['phone'] }}"
                                class="absolute-white">{{ $web_config['phone'] }}</a>
                         </div>

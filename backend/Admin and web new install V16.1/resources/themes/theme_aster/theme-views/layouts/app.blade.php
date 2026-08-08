@@ -68,6 +68,29 @@
             color: {{ $web_config['primary_color'] }} !important;
             --bs-btn-border-color: {{ $web_config['primary_color'] }} !important;
         }
+        /* Accessibility Contrast Overrides */
+        .header-top a, .header-top button {
+            color: #212529 !important;
+        }
+        .discount-badge, .product__save-amount {
+            color: #ffffff !important;
+            background-color: #d90429 !important;
+            font-weight: 700 !important;
+        }
+        ins.product__new-price, .product__new-price {
+            color: #111111 !important;
+            font-weight: 700 !important;
+        }
+        .btn-primary, #cookie-accept, #install-btn {
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+        h2.title.text-primary, .title.text-primary, span.text-primary, .text-primary {
+            color: #904b00 !important;
+        }
+        .media.absolute-white, .media.absolute-white a, .media.absolute-white div, .media.absolute-white i {
+            color: #000000 !important;
+        }
     </style>
 
     {!! getSystemDynamicPartials(type: 'analytics_script') !!}
