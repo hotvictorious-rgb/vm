@@ -40,10 +40,10 @@ import 'package:sixvalley_vendor_app/features/addProduct/widgets/title_and_descr
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/meta_seo_widget.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:sixvalley_vendor_app/features/addProduct/widgets/attribute_view_widget.dart';
-import 'package:sixvalley_vendor_app/features/addProduct/widgets/attribute_pricing_widget.dart';
+import 'package:sixvalley_vendor_app/common/basewidgets/attribute_view_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/color_variation_image_widget.dart';
-import 'package:sixvalley_vendor_app/features/addProduct/widgets/product_discount_text_field_widget.dart';
+import 'package:sixvalley_vendor_app/common/basewidgets/discount_text_field_widget.dart';
+import 'package:sixvalley_vendor_app/features/addProduct/domain/models/tax_vat_model.dart';
 import 'package:sixvalley_vendor_app/helper/price_converter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sixvalley_vendor_app/features/shop/controllers/shop_controller.dart';
@@ -1714,7 +1714,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
 
                                             if (widget.product != null) {
                                               if (addProductImageController.selectedLogoFile != null) {
-                                                await addProductImageController.addProductImage(context, addProductImageController.thumbnailImageModel, route, update: true);
+                                                await addProductImageController.addProductImage(context, addProductImageController.thumbnailImageModel!, route, update: true);
                                               }
                                               if (context.mounted) {
                                                 await addProductImageController.onUploadColorImages(
@@ -1733,7 +1733,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                               }
                                             } else {
                                               if (addProductImageController.selectedLogoFile != null) {
-                                                await addProductImageController.addProductImage(context, addProductImageController.thumbnailImageModel, route);
+                                                await addProductImageController.addProductImage(context, addProductImageController.thumbnailImageModel!, route);
                                               }
                                               if (addProductImageController.imagesWithColor.isNotEmpty) {
                                                 for (int i = 0; i < addProductImageController.imagesWithColor.length; i++) {
