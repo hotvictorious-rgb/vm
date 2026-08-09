@@ -8,21 +8,34 @@ on:
   workflow_dispatch: # Allows you to trigger the build manually from the GitHub webpage
 
 jobs:
-  build:
-    name: Build Android APK & AAB
+  detect-changes:
+    name: Detect Changed Apps
     runs-on: ubuntu-latest
+    outputs:
+      user_app: ${{ steps.filter.outputs.user_app }}
+      vendor_app: ${{ steps.filter.outputs.vendor_app }}
+      delivery_app: ${{ steps.filter.outputs.delivery_app }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    strategy:
-      matrix:
-        app_path: [ "User app", "Vendor app", "Delivery Man App" ]
-        include:
-          - app_path: "User app"
-            app_name: "Customer-App"
-          - app_path: "Vendor app"
-            app_name: "Vendor-App"
-          - app_path: "Delivery Man App"
-            app_name: "Delivery-App"
+      - name: Filter Paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            user_app:
+              - 'User app/**'
+            vendor_app:
+              - 'Vendor app/**'
+            delivery_app:
+              - 'Delivery Man App/**'
 
+  build-customer:
+    name: Build Customer App
+    needs: detect-changes
+    if: needs.detect-changes.outputs.user_app == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -49,23 +62,127 @@ jobs:
 
       - name: Get Dependencies
         run: |
-          cd "${{ matrix.app_path }}"
+          cd "User app"
           flutter pub get
 
       - name: Build APK and App Bundle
         run: |
-          cd "${{ matrix.app_path }}"
+          cd "User app"
           flutter build apk --release --no-pub
           flutter build appbundle --release --no-pub
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.app_name }}-APK
-          path: ${{ matrix.app_path }}/build/app/outputs/flutter-apk/app-release.apk
+          name: Customer-App-APK
+          path: User app/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload App Bundle (AAB) Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.app_name }}-AAB
-          path: ${{ matrix.app_path }}/build/app/outputs/bundle/release/app-release.aab
+          name: Customer-App-AAB
+          path: User app/build/app/outputs/bundle/release/app-release.aab
+
+  build-vendor:
+    name: Build Vendor App
+    needs: detect-changes
+    if: needs.detect-changes.outputs.vendor_app == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space
+        run: |
+          echo "Freeing up disk space on runner..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf /usr/share/swift
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: |
+          cd "Vendor app"
+          flutter pub get
+
+      - name: Build APK and App Bundle
+        run: |
+          cd "Vendor app"
+          flutter build apk --release --no-pub
+          flutter build appbundle --release --no-pub
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vendor-App-APK
+          path: Vendor app/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload App Bundle (AAB) Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vendor-App-AAB
+          path: Vendor app/build/app/outputs/bundle/release/app-release.aab
+
+  build-delivery:
+    name: Build Delivery App
+    needs: detect-changes
+    if: needs.detect-changes.outputs.delivery_app == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space
+        run: |
+          echo "Freeing up disk space on runner..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf /usr/share/swift
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.7'
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: |
+          cd "Delivery Man App"
+          flutter pub get
+
+      - name: Build APK and App Bundle
+        run: |
+          cd "Delivery Man App"
+          flutter build apk --release --no-pub
+          flutter build appbundle --release --no-pub
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Delivery-App-APK
+          path: Delivery Man App/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload App Bundle (AAB) Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Delivery-App-AAB
+          path: Delivery Man App/build/app/outputs/bundle/release/app-release.aab
