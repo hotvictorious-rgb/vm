@@ -94,10 +94,13 @@ class SplashController extends ChangeNotifier {
     bool isSuccess;
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       isSuccess = true;
-      _configModel = ConfigModel.fromJson(apiResponse.response!.data);
+      final feedData = apiResponse.response!.data;
+      final configJson = feedData['config'];
+      
+      _configModel = ConfigModel.fromJson(configJson);
       isConfigCall = true;
 
-      _baseUrls = ConfigModel.fromJson(apiResponse.response!.data).baseUrls;
+      _baseUrls = ConfigModel.fromJson(configJson).baseUrls;
 
       _configModel?.hasLocaldb = configLocalData != null;
 
@@ -153,22 +156,49 @@ class SplashController extends ChangeNotifier {
         }
       }
 
-      if(configLocalData != null) {
-        await database.updateCacheResponse(AppConstants.configUri, CacheResponseCompanion(
-          endPoint: const Value(AppConstants.configUri),
-          header: Value(jsonEncode(apiResponse.response!.headers.map)),
-          response: Value(jsonEncode(apiResponse.response!.data)),
-        ));
-      } else {
-        await database.insertCacheResponse(
-          CacheResponseCompanion(
-            endPoint: const Value(AppConstants.configUri),
-            header: Value(jsonEncode(apiResponse.response!.headers.map)),
-            response: Value(jsonEncode(apiResponse.response!.data)),
-          ),
-        );
-      }
-      _configModel = ConfigModel.fromJson(apiResponse.response!.data);
+      final headerJson = jsonEncode(apiResponse.response!.headers.map);
+
+      // Save Config Cache
+      await database.insertCacheResponse(CacheResponseCompanion(
+        endPoint: const Value(AppConstants.configUri),
+        header: Value(headerJson),
+        response: Value(jsonEncode(configJson)),
+      ));
+
+      // Save Banners Cache
+      await database.insertCacheResponse(CacheResponseCompanion(
+        endPoint: const Value(AppConstants.getBannerList),
+        header: Value(headerJson),
+        response: Value(jsonEncode(feedData['banners'])),
+      ));
+
+      // Save Categories Cache
+      await database.insertCacheResponse(CacheResponseCompanion(
+        endPoint: const Value('${AppConstants.categoriesUri}?guest_id=1'),
+        header: Value(headerJson),
+        response: Value(jsonEncode(feedData['categories'])),
+      ));
+
+      // Save Featured Deals Cache
+      await database.insertCacheResponse(CacheResponseCompanion(
+        endPoint: const Value(AppConstants.featuredDealUri),
+        header: Value(headerJson),
+        response: Value(jsonEncode(feedData['featured_deals'])),
+      ));
+
+      // Save Latest Products Cache (first page)
+      await database.insertCacheResponse(CacheResponseCompanion(
+        endPoint: const Value('/api/v1/products/latest?guest_id=1&limit=10&&offset=1'),
+        header: Value(headerJson),
+        response: Value(jsonEncode(feedData['latest_products'])),
+      ));
+
+      // Save Flash Deals Cache
+      await database.insertCacheResponse(CacheResponseCompanion(
+        endPoint: const Value('/api/v1/flash-deals'),
+        header: Value(headerJson),
+        response: Value(jsonEncode(feedData['flash_deals'])),
+      ));
 
       isSuccess = true;
     } else {

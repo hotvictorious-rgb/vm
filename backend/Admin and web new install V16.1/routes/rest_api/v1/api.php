@@ -31,6 +31,7 @@ use App\Http\Controllers\RestAPI\v1\SellerController;
 use App\Http\Controllers\RestAPI\v1\ShippingMethodController;
 use App\Http\Controllers\RestAPI\v1\UserLoyaltyController;
 use App\Http\Controllers\RestAPI\v1\UserWalletController;
+use App\Http\Controllers\RestAPI\v1\FeedSyncController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\PaymentController;
 
@@ -46,6 +47,10 @@ use App\Http\Controllers\Customer\PaymentController;
  */
 
 Route::group(['prefix' => 'v1', 'middleware' => ['api_lang']], function () {
+
+    Route::controller(FeedSyncController::class)->group(function () {
+        Route::get('feed/sync', 'getInitialFeed');
+    });
 
     Route::controller(ConfigController::class)->group(function () {
         Route::get('config', 'configuration');

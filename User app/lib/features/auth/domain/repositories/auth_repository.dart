@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_sixvalley_ecommerce/data/datasource/remote/dio/dio_client.dart';
 import 'package:flutter_sixvalley_ecommerce/data/datasource/remote/exception/api_error_handler.dart';
 import 'package:flutter_sixvalley_ecommerce/data/model/api_response.dart';
@@ -16,7 +17,60 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthRepository implements AuthRepoInterface{
   final DioClient? dioClient;
   final SharedPreferences? sharedPreferences;
-  AuthRepository({required this.dioClient, required this.sharedPreferences});
+  final FlutterSecureStorage secureStorage;
+
+  static String _token = "";
+  static String _password = "";
+  static String _userLogData = "";
+
+  AuthRepository({required this.dioClient, required this.sharedPreferences, required this.secureStorage}) {
+    _initStorage();
+  }
+
+  Future<void> _initStorage() async {
+    // 1. Migrate userLoginToken
+    String? sToken = await secureStorage.read(key: AppConstants.userLoginToken);
+    if (sToken == null) {
+      String? oldToken = sharedPreferences?.getString(AppConstants.userLoginToken);
+      if (oldToken != null) {
+        await secureStorage.write(key: AppConstants.userLoginToken, value: oldToken);
+        _token = oldToken;
+        await sharedPreferences?.remove(AppConstants.userLoginToken);
+      }
+    } else {
+      _token = sToken;
+    }
+
+    // 2. Migrate userPassword
+    String? sPassword = await secureStorage.read(key: AppConstants.userPassword);
+    if (sPassword == null) {
+      String? oldPassword = sharedPreferences?.getString(AppConstants.userPassword);
+      if (oldPassword != null) {
+        await secureStorage.write(key: AppConstants.userPassword, value: oldPassword);
+        _password = oldPassword;
+        await sharedPreferences?.remove(AppConstants.userPassword);
+      }
+    } else {
+      _password = sPassword;
+    }
+
+    // 3. Migrate userLogData
+    String? sLogData = await secureStorage.read(key: AppConstants.userLogData);
+    if (sLogData == null) {
+      String? oldLogData = sharedPreferences?.getString(AppConstants.userLogData);
+      if (oldLogData != null) {
+        await secureStorage.write(key: AppConstants.userLogData, value: oldLogData);
+        _userLogData = oldLogData;
+        await sharedPreferences?.remove(AppConstants.userLogData);
+      }
+    } else {
+      _userLogData = sLogData;
+    }
+
+    if (_token.isNotEmpty) {
+      dioClient?.updateHeader(_token, null);
+    }
+  }
 
 
   @override
@@ -117,9 +171,10 @@ class AuthRepository implements AuthRepoInterface{
 
   @override
   Future<void> saveUserToken(String token) async {
+    _token = token;
     dioClient!.updateHeader(token, null);
     try {
-      await sharedPreferences!.setString(AppConstants.userLoginToken, token);
+      await secureStorage.write(key: AppConstants.userLoginToken, value: token);
     } catch (e) {
       rethrow;
     }
@@ -138,7 +193,7 @@ class AuthRepository implements AuthRepoInterface{
 
   @override
   String getUserToken() {
-    return sharedPreferences!.getString(AppConstants.userLoginToken) ?? "";
+    return _token;
   }
 
   @override
@@ -170,12 +225,13 @@ class AuthRepository implements AuthRepoInterface{
 
   @override
   bool isLoggedIn() {
-    return sharedPreferences!.containsKey(AppConstants.userLoginToken);
+    return _token.isNotEmpty;
   }
 
   @override
   Future<bool> clearSharedData() async {
-    sharedPreferences?.remove(AppConstants.userLoginToken);
+    _token = "";
+    await secureStorage.delete(key: AppConstants.userLoginToken);
     sharedPreferences?.remove(AppConstants.guestId);
     return true;
   }
@@ -336,8 +392,9 @@ class AuthRepository implements AuthRepoInterface{
 
   @override
   Future<void> saveUserEmailAndPassword(String userData) async {
+    _userLogData = userData;
     try {
-      await sharedPreferences!.setString(AppConstants.userLogData, userData);
+      await secureStorage.write(key: AppConstants.userLogData, value: userData);
     } catch (e) {
       rethrow;
     }
@@ -345,18 +402,22 @@ class AuthRepository implements AuthRepoInterface{
 
   @override
   String getUserEmail() {
-    return sharedPreferences!.getString(AppConstants.userLogData) ?? "";
+    return _userLogData;
   }
 
   @override
   String getUserPassword() {
-    return sharedPreferences!.getString(AppConstants.userPassword) ?? "";
+    return _password;
   }
 
   @override
   Future<bool> clearUserEmailAndPassword() async {
-    await sharedPreferences!.remove(AppConstants.userPassword);
-    return await sharedPreferences!.remove(AppConstants.userEmail);
+    _password = "";
+    _userLogData = "";
+    await secureStorage.delete(key: AppConstants.userPassword);
+    await secureStorage.delete(key: AppConstants.userLogData);
+    await sharedPreferences!.remove(AppConstants.userEmail);
+    return true;
   }
 
   @override

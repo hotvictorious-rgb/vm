@@ -13,7 +13,7 @@ class SplashRepository implements SplashRepositoryInterface{
   @override
   Future<ApiResponseModel> getConfig() async {
     try {
-      final response = await dioClient!.get(AppConstants.configUri);
+      final response = await dioClient!.get('/api/v1/feed/sync');
       return ApiResponseModel.withSuccess(response);
     } catch (e) {
       return ApiResponseModel.withError(ApiErrorHandler.getMessage(e));

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_sixvalley_ecommerce/data/datasource/remote/dio/logging_interceptor.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:path_provider/path_provider.dart';
@@ -37,9 +38,18 @@ class DioClient {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
         AppConstants.langKey : countryCode == 'US'? 'en': countryCode!.toLowerCase(),
-
       };
     dio!.interceptors.add(loggingInterceptor);
+    _loadSecureToken();
+  }
+
+  Future<void> _loadSecureToken() async {
+    const secureStorage = FlutterSecureStorage();
+    String? secureToken = await secureStorage.read(key: AppConstants.userLoginToken);
+    if (secureToken != null) {
+      token = secureToken;
+      updateHeader(token, countryCode);
+    }
   }
 
   void updateHeader(String? token, String? countryCode) {
@@ -47,11 +57,9 @@ class DioClient {
     countryCode = countryCode == null ? this.countryCode == 'US' ? 'en': this.countryCode!.toLowerCase(): countryCode == 'US' ? 'en' : countryCode.toLowerCase();
     this.token = token;
     this.countryCode = countryCode;
-    dio!.options.headers = {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $token',
-      AppConstants.langKey: countryCode == 'US'? 'en':countryCode.toLowerCase(),
-    };
+    dio!.options.headers['Content-Type'] = 'application/json; charset=UTF-8';
+    dio!.options.headers['Authorization'] = 'Bearer $token';
+    dio!.options.headers[AppConstants.langKey] = countryCode == 'US'? 'en':countryCode.toLowerCase();
   }
 
   Future<Response> get(String uri, {
@@ -88,9 +96,9 @@ class DioClient {
     String? filePath,
   }) async {
     final directory = await getApplicationDocumentsDirectory();
-    final filePath = path.join(directory.path, 'order.pdf');
+    final String targetPath = filePath ?? path.join(directory.path, 'order.pdf');
     try {
-      var response = await dio!.download(uri, filePath);
+      var response = await dio!.download(uri, targetPath);
       return response;
     } on SocketException catch (e) {
       throw SocketException(e.toString());

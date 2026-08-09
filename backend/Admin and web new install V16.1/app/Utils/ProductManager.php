@@ -48,45 +48,55 @@ class ProductManager
     public static function get_latest_products($request, $limit = 10, $offset = 1): array
     {
         $user = Helpers::getCustomerInformation($request);
-        $paginator = Product::active()
-            ->with(['rating', 'tags', 'seller.shop', 'flashDealProducts.flashDeal', 'clearanceSale' => function ($query) {
-                return $query->active();
-            }])
-            ->withCount(['reviews', 'wishList' => function ($query) use ($user) {
-                $query->where('customer_id', $user != 'offline' ? $user->id : '0');
-            }])
-            ->orderBy('id', 'desc')
-            ->paginate($limit, ['*'], 'page', $offset);
+        $isGuest = $user == 'offline';
 
-        $currentDate = date('Y-m-d H:i:s');
-        $paginator?->map(function ($product) use ($currentDate) {
-            $flashDealStatus = 0;
-            $flashDealEndDate = 0;
-            if (count($product->flashDealProducts) > 0) {
-                $flashDeal = null;
-                foreach ($product->flashDealProducts as $flashDealData) {
-                    if ($flashDealData->flashDeal) {
-                        $flashDeal = $flashDealData->flashDeal;
+        $fetchLatest = function() use ($user, $limit, $offset) {
+            $paginator = Product::active()
+                ->with(['rating', 'tags', 'seller.shop', 'flashDealProducts.flashDeal', 'clearanceSale' => function ($query) {
+                    return $query->active();
+                }])
+                ->withCount(['reviews', 'wishList' => function ($query) use ($user) {
+                    $query->where('customer_id', $user != 'offline' ? $user->id : '0');
+                }])
+                ->orderBy('id', 'desc')
+                ->paginate($limit, ['*'], 'page', $offset);
+
+            $currentDate = date('Y-m-d H:i:s');
+            $paginator?->map(function ($product) use ($currentDate) {
+                $flashDealStatus = 0;
+                $flashDealEndDate = 0;
+                if (count($product->flashDealProducts) > 0) {
+                    $flashDeal = null;
+                    foreach ($product->flashDealProducts as $flashDealData) {
+                        if ($flashDealData->flashDeal) {
+                            $flashDeal = $flashDealData->flashDeal;
+                        }
+                    }
+                    if ($flashDeal) {
+                        $startDate = date('Y-m-d H:i:s', strtotime($flashDeal->start_date));
+                        $endDate = date('Y-m-d H:i:s', strtotime($flashDeal->end_date));
+                        $flashDealStatus = $flashDeal->status == 1 && (($currentDate >= $startDate) && ($currentDate <= $endDate)) ? 1 : 0;
+                        $flashDealEndDate = $flashDeal->end_date;
                     }
                 }
-                if ($flashDeal) {
-                    $startDate = date('Y-m-d H:i:s', strtotime($flashDeal->start_date));
-                    $endDate = date('Y-m-d H:i:s', strtotime($flashDeal->end_date));
-                    $flashDealStatus = $flashDeal->status == 1 && (($currentDate >= $startDate) && ($currentDate <= $endDate)) ? 1 : 0;
-                    $flashDealEndDate = $flashDeal->end_date;
-                }
-            }
-            $product['flash_deal_status'] = $flashDealStatus;
-            $product['flash_deal_end_date'] = $flashDealEndDate;
-            return $product;
-        });
+                $product['flash_deal_status'] = $flashDealStatus;
+                $product['flash_deal_end_date'] = $flashDealEndDate;
+                return $product;
+            });
 
-        return [
-            'total_size' => $paginator->total(),
-            'limit' => (int)$limit,
-            'offset' => (int)$offset,
-            'products' => $paginator->items()
-        ];
+            return [
+                'total_size' => $paginator->total(),
+                'limit' => (int)$limit,
+                'offset' => (int)$offset,
+                'products' => $paginator->items()
+            ];
+        };
+
+        if ($isGuest) {
+            return Cache::remember('latest_products_guest_limit_' . $limit . '_offset_' . $offset, 600, $fetchLatest);
+        }
+
+        return $fetchLatest();
     }
 
     public static function getNewArrivalProducts($request, $limit = 10, $offset = 1)

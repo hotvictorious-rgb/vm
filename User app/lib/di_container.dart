@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_sixvalley_ecommerce/data/datasource/remote/dio/dio_client.dart';
 import 'package:flutter_sixvalley_ecommerce/data/reposotories/data_sync_repo.dart';
 import 'package:flutter_sixvalley_ecommerce/data/reposotories/data_sync_repo_interface.dart';
@@ -191,6 +192,7 @@ Future<void> init() async {
   // Core
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => LoggingInterceptor());
   sl.registerLazySingleton(() => Connectivity());
@@ -213,7 +215,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ProductRepository(dioClient: sl(), dataSyncRepoInterface: sl()));
   sl.registerLazySingleton(() => BannerRepository(dioClient: sl(), dataSyncRepoInterface: sl()));
   sl.registerLazySingleton(() => OnBoardingRepository(dioClient: sl()));
-  sl.registerLazySingleton(() => AuthRepository(dioClient: sl(), sharedPreferences: sl()));
+  sl.registerLazySingleton(() => AuthRepository(dioClient: sl(), sharedPreferences: sl(), secureStorage: sl()));
   sl.registerLazySingleton(() => ProductDetailsRepository(dioClient: sl()));
   sl.registerLazySingleton(() => SearchProductRepository(dioClient: sl(), sharedPreferences: sl()));
   sl.registerLazySingleton(() => OrderRepository(dioClient: sl()));
@@ -287,7 +289,7 @@ Future<void> init() async {
   AddressServiceInterface addressServiceInterface = AddressService(addressRepoInterface: sl());
   sl.registerLazySingleton(() => addressServiceInterface);
 
-  AuthRepoInterface authRepoInterface = AuthRepository(dioClient: sl(), sharedPreferences: sl());
+  AuthRepoInterface authRepoInterface = AuthRepository(dioClient: sl(), sharedPreferences: sl(), secureStorage: sl());
   sl.registerLazySingleton(() => authRepoInterface);
   AuthServiceInterface authServiceInterface = AuthService(authRepoInterface: sl());
   sl.registerLazySingleton(() => authServiceInterface);

@@ -23,13 +23,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<int> insertCacheResponse(CacheResponseCompanion entry) async {
-    // final existing = await (select(cacheResponse)..where((tbl) => tbl.endPoint.equals(entry.endPoint as String))).getSingleOrNull();
-    // if (existing == null) {
-    //   return await into(cacheResponse).insert(entry);
-    // } else {
-    //   await update(cacheResponse).replace(entry);
-    // }
-    return await into(cacheResponse).insert(entry);
+    return await into(cacheResponse).insertOnConflictUpdate(entry);
   }
 
 
