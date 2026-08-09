@@ -137,6 +137,17 @@ class _HomePageState extends State<HomePage> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
+            SliverAppBar(
+              floating: true,
+              elevation: 0,
+              centerTitle: false,
+              automaticallyImplyLeading: false,
+              backgroundColor: Theme.of(context).primaryColor,
+              title: Text(
+                'CALL TO ORDER: ${configModel?.companyPhone ?? ''}',
+                style: textBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge),
+              )),
+              
             SliverToBoxAdapter(child: Provider.of<SplashController>(context, listen: false).configModel!.announcement!.status == '1'?
             Consumer<SplashController>(
               builder: (context, announcement, _){
@@ -151,19 +162,6 @@ class _HomePageState extends State<HomePage> {
               ),
             )),
 
-            SliverToBoxAdapter(
-              child: Container(
-                width: double.infinity,
-                color: Theme.of(context).primaryColor,
-                padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
-                child: Center(
-                  child: Text(
-                    'CALL TO ORDER: ${configModel?.companyPhone ?? ''}',
-                    style: textBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge),
-                  ),
-                ),
-              ),
-            ),
 
 
             SliverToBoxAdapter(child: BannersWidget()),

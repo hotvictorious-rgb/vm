@@ -21,17 +21,17 @@ class SearchHomePageWidget extends StatelessWidget {
           height: 50,
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: Provider.of<ThemeController>(context, listen: false).darkTheme ? Theme.of(context).cardColor : Colors.grey[200],
+            color: Colors.white,
             borderRadius: BorderRadius.circular(25), // Pill shape like Jumia
           ),
           child: Row(
             children: [
-              Icon(Icons.search, color: Theme.of(context).hintColor, size: 24),
+              const Icon(Icons.search, color: Colors.black, size: 24),
               const SizedBox(width: Dimensions.paddingSizeSmall),
               Text(
                 'Search on Victorious MARKET',
                 style: textRegular.copyWith(
-                  color: Theme.of(context).hintColor,
+                  color: Colors.black,
                   fontSize: Dimensions.fontSizeLarge,
                 ),
               ),

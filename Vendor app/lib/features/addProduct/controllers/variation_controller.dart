@@ -58,7 +58,7 @@ class VariationController extends ChangeNotifier {
 
     ApiResponse response = await addProductServiceInterface.getAttributeList(language);
 
-    if (response.response != null || response.response!.statusCode != 200) {
+    if (response.response != null && response.response!.statusCode == 200) {
 
 
       _attributeList = _initializeAttributeList();

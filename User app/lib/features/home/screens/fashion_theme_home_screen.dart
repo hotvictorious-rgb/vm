@@ -160,8 +160,11 @@ class _FashionThemeHomePageState extends State<FashionThemeHomePage> {
                 elevation: 0,
                 centerTitle: false,
                 automaticallyImplyLeading: false,
-                backgroundColor: Theme.of(context).highlightColor,
-                title: Image.asset(Images.logoWithNameImage, height: 35)),
+                backgroundColor: Theme.of(context).primaryColor,
+                title: Text(
+                  'CALL TO ORDER: ${Provider.of<SplashController>(context, listen: false).configModel?.companyPhone ?? ''}',
+                  style: textBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge),
+                )),
 
             SliverToBoxAdapter(child: Provider.of<SplashController>(context, listen: false).configModel!.announcement!.status == '1'?
             Consumer<SplashController>(
