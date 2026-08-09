@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/controllers/add_product_image_controller.dart';
@@ -177,6 +178,7 @@ Future<void> init() async {
   // External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => LoggingInterceptor());
 
@@ -305,7 +307,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => orderEditServiceInterface);
 
   // Repository
-  sl.registerLazySingleton(() => AuthRepository(sharedPreferences: sl(), dioClient: sl()));
+  sl.registerLazySingleton(() => AuthRepository(sharedPreferences: sl(), dioClient: sl(), secureStorage: sl()));
   sl.registerLazySingleton(() => SplashRepository(sharedPreferences: sl(), dioClient: sl()));
   sl.registerLazySingleton(() => ProfileRepository(dioClient: sl(), sharedPreferences: sl()));
   sl.registerLazySingleton(() => ShopRepository(dioClient: sl(), sharedPreferences: sl()));

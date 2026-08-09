@@ -31,7 +31,6 @@ class InboxScreen extends StatefulWidget {
 class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStateMixin{
 
   TextEditingController searchController = TextEditingController();
-  late TabController _tabController;
 
   late bool isGuestMode;
   @override
@@ -43,13 +42,12 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
 
     isGuestMode = !Provider.of<AuthController>(context, listen: false).isLoggedIn();
     if(!isGuestMode) {
-      _tabController = TabController(vsync: this, length: 2, initialIndex: widget.initIndex);
+      // TabController removed since Vendor tab is gone.
     }
 
     if(widget.fromNotification) {
-      chatController.setUserTypeIndex(context, widget.initIndex, isUpdate: false);
+      chatController.setUserTypeIndex(context, 0, isUpdate: false);
       chatController.getChatList(1, reload: false, userType: 0);
-      chatController.getChatList(1, reload: false, userType: 1);
     }
 
     if (!isGuestMode && !widget.fromDashboard) {
@@ -84,11 +82,7 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
                   child: SearchInboxWidget(hintText: getTranslated('search', context)));
               }),
 
-            if(!isGuestMode)
-            Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall,
-              Dimensions.paddingSizeDefault, Dimensions.paddingSizeDefault, Dimensions.paddingSizeSmall),
-              child: ConversationListTabview(tabController: _tabController),
-            ),
+            // ConversationListTabview removed to hide Vendor tab
 
             Expanded(child: isGuestMode ? NotLoggedInWidget(message: getTranslated('to_communicate_with_vendors', context),
               fromPage: widget.fromDashboard ? '${RouterHelper.dashboardScreen}?page=inbox' : RouterHelper.inboxScreen,
@@ -97,31 +91,20 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
               } : null,
             ) :
 
-              RefreshIndicator(
-                onRefresh: () async {
-                  searchController.clear();
-                  await chat.getChatList(1, userType: _tabController.index);
-                },
-              child: Consumer<ChatController>(
-                builder: (context, chatProvider, child) {
-                  // ChatModel? _cahtModel = _tabController.index == 0 ?  chatProvider.isSearchComplete ?
-                  // chatProvider.searchDeliverymanChatModel : chatProvider.deliverymanChatModel :
-                  // chatProvider.isSearchComplete ? chatProvider.searchChatModel : chatProvider.chatModel;
-                  ChatModel? cahtModel;
+                RefreshIndicator(
+                  onRefresh: () async {
+                    searchController.clear();
+                    await chat.getChatList(1, userType: 0);
+                  },
+                child: Consumer<ChatController>(
+                  builder: (context, chatProvider, child) {
+                    ChatModel? cahtModel;
 
-                  if(_tabController.index == 0) {
                     if(chatProvider.isSearchComplete) {
                       cahtModel = chatProvider.searchDeliverymanChatModel;
                     } else {
                       cahtModel = chatProvider.deliverymanChatModel;
                     }
-                  } else {
-                    if(chatProvider.isSearchComplete) {
-                      cahtModel = chatProvider.searchChatModel;
-                    } else {
-                      cahtModel = chatProvider.chatModel;
-                    }
-                  }
 
                   return cahtModel != null ? (cahtModel.chat != null && cahtModel.chat!.isNotEmpty) ?
                     ListView.builder(
@@ -132,18 +115,10 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
                           chat: cahtModel?.chat![index],
                           chatProvider: chat,
                           callBack: (){
-                            if(_tabController.index == 0){
-                              if(chatProvider.isSearchComplete){
-                                chatProvider.searchDeliverymanChatModel!.chat![index].unseenMessageCount = 0;
-                              } else {
-                                chatProvider.deliverymanChatModel!.chat![index].unseenMessageCount = 0;
-                              }
-                            } else{
-                              if(chatProvider.isSearchComplete){
-                                chatProvider.searchChatModel!.chat![index].unseenMessageCount = 0;
-                              } else {
-                                chatProvider.chatModel!.chat![index].unseenMessageCount = 0;
-                              }
+                            if(chatProvider.isSearchComplete){
+                              chatProvider.searchDeliverymanChatModel!.chat![index].unseenMessageCount = 0;
+                            } else {
+                              chatProvider.deliverymanChatModel!.chat![index].unseenMessageCount = 0;
                             }
                           },
                         );
@@ -151,8 +126,8 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
                     ) :  NoInternetOrDataScreenWidget(
                     padding: EdgeInsets.only(top: size.height * 0.15),
                     isNoInternet: false,
-                    message: _tabController.index == 0 ? 'no_deliveryman_found' : 'no_vendor_found',
-                    icon: _tabController.index == 0 ?  Images.deliverymanPlaceholder : Images.sellerPlaceholder,
+                    message: 'no_deliveryman_found',
+                    icon: Images.deliverymanPlaceholder,
                   ) : const InboxShimmerWidget();
                 })
               )

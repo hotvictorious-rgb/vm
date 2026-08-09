@@ -84,9 +84,6 @@ class _TitleAndDescriptionWidgetState extends State<TitleAndDescriptionWidget> {
             hintText: getTranslated('product_name', context),
             border: true,
             borderColor: Theme.of(context).primaryColor.withValues(alpha: .25),
-            onChanged: (String text) {
-              widget.resProvider.setTitle(widget.index, text);
-            },
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
@@ -146,7 +143,6 @@ class _TitleAndDescriptionWidgetState extends State<TitleAndDescriptionWidget> {
             required: true,
             isDescription: true,
             controller: widget.resProvider.descriptionControllerList[widget.index],
-            onChanged: (String text) => widget.resProvider.setDescription(widget.index, text),
             textInputType: TextInputType.multiline,
             maxLine: 3,
             border: true,

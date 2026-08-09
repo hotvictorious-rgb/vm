@@ -241,7 +241,6 @@ class MetaSeoWidget extends StatelessWidget {
                           hintText: getTranslated('input_snippet_value', context),
                           onChanged: (value) {
                             resProvider.metaSeoInfo?.metaMaxSnippetValue = value;
-                            resProvider.updateState();
                           },
                         ),
                       ],
@@ -311,7 +310,6 @@ class MetaSeoWidget extends StatelessWidget {
                           hintText: getTranslated('input_max_video_preview_value', context),
                           onChanged: (value) {
                             resProvider.metaSeoInfo?.metaMaxVideoPreviewValue = value;
-                            resProvider.updateState();
                           },
                         ),
                       ],

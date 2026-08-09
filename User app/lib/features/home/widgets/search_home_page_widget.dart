@@ -13,29 +13,30 @@ class SearchHomePageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraExtraSmall),
-      child: Container(padding:  const EdgeInsets.symmetric(horizontal: Dimensions.homePagePadding, vertical: Dimensions.paddingSizeSmall),
-
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.homePagePadding, vertical: Dimensions.paddingSizeSmall),
         alignment: Alignment.center,
-        child: Container(padding:  EdgeInsets.only(
-          left: Provider.of<LocalizationController>(context, listen: false).isLtr?
-          Dimensions.homePagePadding : Dimensions.paddingSizeExtraSmall,
-            right: Provider.of<LocalizationController>(context, listen: false).isLtr? Dimensions.paddingSizeExtraSmall : Dimensions.homePagePadding),
-          height: 60, alignment: Alignment.centerLeft,
-          decoration: BoxDecoration(color: Theme.of(context).cardColor,
-            boxShadow: Provider.of<ThemeController>(context).darkTheme ? null :
-            [BoxShadow(color: Theme.of(context).hintColor.withValues(alpha:.1), spreadRadius: 1, blurRadius: 1, offset: const Offset(0,0))],
-            borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),),
-          child: Row(mainAxisAlignment : MainAxisAlignment.spaceBetween, children: [
-
-            Text(getTranslated('search_hint', context)??'', style: textRegular.copyWith(color: Theme.of(context).hintColor)),
-
-            Container(width: 40,height: 40,decoration: BoxDecoration(color: Theme.of(context).primaryColor,
-              borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeExtraSmall))),
-              child: Icon(Icons.search, color: Provider.of<ThemeController>(context, listen: false).darkTheme?
-              Colors.white : Theme.of(context).cardColor, size: Dimensions.iconSizeSmall),
-            ),
-
-          ]),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+          height: 50,
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: Provider.of<ThemeController>(context, listen: false).darkTheme ? Theme.of(context).cardColor : Colors.grey[200],
+            borderRadius: BorderRadius.circular(25), // Pill shape like Jumia
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.search, color: Theme.of(context).hintColor, size: 24),
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              Text(
+                'Search on Victorious MARKET',
+                style: textRegular.copyWith(
+                  color: Theme.of(context).hintColor,
+                  fontSize: Dimensions.fontSizeLarge,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

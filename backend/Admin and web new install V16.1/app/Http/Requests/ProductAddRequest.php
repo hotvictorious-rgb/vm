@@ -45,7 +45,6 @@ class ProductAddRequest extends Request
             'code' => 'required' . '|' . 'regex:/^[a-zA-Z0-9]+$/' . '|' . 'min' . ':6|' . 'max' . ':20|' . 'unique' . ':products',
             'minimum_order_qty' => 'required' . '|' . 'numeric' . '|' . 'min' . ':1',
             'video_url' => 'nullable|url',
-            'product_video' => 'nullable|file|mimes:mp4,webm,mov,avi,mkv|max:20480',
         ];
 
         if (!isset($this['existing_thumbnail'])) {
@@ -70,8 +69,6 @@ class ProductAddRequest extends Request
             'digital_product_type' . '.' . 'required_if' => translate('digital_product_type_is_required!'),
             'shipping_cost' . '.' . 'required_if' => translate('shipping_cost_is_required!'),
             'video_url.url' => translate('please_provide_a_valid_video_url'),
-            'product_video.mimes' => translate('The_product_video_must_be_a_file_of_type:_mp4,_webm,_mov,_avi,_mkv.'),
-            'product_video.max' => translate('The_product_video_must_not_exceed_20MB.'),
         ];
     }
 

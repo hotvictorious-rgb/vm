@@ -10,12 +10,14 @@ import 'package:sixvalley_vendor_app/data/model/response/base/api_response.dart'
 import 'package:sixvalley_vendor_app/features/auth/domain/repositories/auth_repository_interface.dart';
 import 'package:sixvalley_vendor_app/utill/app_constants.dart';
 import 'package:path/path.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthRepository implements AuthRepositoryInterface{
   final DioClient? dioClient;
   final SharedPreferences? sharedPreferences;
-  AuthRepository({required this.dioClient, required this.sharedPreferences});
+  final FlutterSecureStorage? secureStorage;
+  AuthRepository({required this.dioClient, required this.sharedPreferences, this.secureStorage});
 
   @override
   Future<ApiResponse> login({String? emailAddress, String? password}) async {
@@ -111,6 +113,7 @@ class AuthRepository implements AuthRepositoryInterface{
     dioClient!.dio!.options.headers = {'Content-Type': 'application/json; charset=UTF-8', 'Authorization': 'Bearer $token'};
 
     try {
+      await secureStorage?.write(key: AppConstants.token, value: token);
       await sharedPreferences!.setString(AppConstants.token, token);
     } catch (e) {
       rethrow;
@@ -132,6 +135,7 @@ class AuthRepository implements AuthRepositoryInterface{
     try{
       await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
       await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.maintenanceModeTopic);
+      await secureStorage?.delete(key: AppConstants.token);
     }catch(e) {
       if (kDebugMode) {
         print("====Execption====>>$e");
@@ -143,6 +147,8 @@ class AuthRepository implements AuthRepositoryInterface{
   @override
   Future<void> saveUserCredentials(String number, String password) async {
     try {
+      await secureStorage?.write(key: AppConstants.userPassword, value: password);
+      await secureStorage?.write(key: AppConstants.userEmail, value: number);
       await sharedPreferences!.setString(AppConstants.userPassword, password);
       await sharedPreferences!.setString(AppConstants.userEmail, number);
     } catch (e) {
@@ -162,6 +168,8 @@ class AuthRepository implements AuthRepositoryInterface{
 
   @override
   Future<bool> clearUserNumberAndPassword() async {
+    await secureStorage?.delete(key: AppConstants.userPassword);
+    await secureStorage?.delete(key: AppConstants.userEmail);
     await sharedPreferences!.remove(AppConstants.userPassword);
     return await sharedPreferences!.remove(AppConstants.userEmail);
   }

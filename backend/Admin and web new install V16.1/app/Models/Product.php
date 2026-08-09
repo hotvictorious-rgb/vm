@@ -490,56 +490,7 @@ class Product extends Model
                 $model->meta_image = $model->thumbnail;
             }
 
-            if (request()->hasFile('product_video')) {
-                $youtubeService = resolve(\App\Services\YouTubeService::class);
-                if ($youtubeService->hasCredentials()) {
-                    $productName = $model->name;
-                    if (is_array($productName)) {
-                        $productName = $productName[array_search('en', request()->input('lang', []))] ?? 'Product Video';
-                    } elseif (is_string($productName) && strpos($productName, '[') !== false) {
-                        $decoded = json_decode($productName, true);
-                        if (is_array($decoded)) {
-                            $productName = $decoded[0]['value'] ?? 'Product Video';
-                        }
-                    }
-                    if (empty($productName) || !is_string($productName)) {
-                        $productName = 'Product Video';
-                    }
 
-                    $productDescription = $model->details;
-                    if (is_array($productDescription)) {
-                        $productDescription = $productDescription[array_search('en', request()->input('lang', []))] ?? '';
-                    } elseif (is_string($productDescription) && strpos($productDescription, '[') !== false) {
-                        $decoded = json_decode($productDescription, true);
-                        if (is_array($decoded)) {
-                            $productDescription = $decoded[0]['value'] ?? '';
-                        }
-                    }
-                    if (!is_string($productDescription)) {
-                        $productDescription = '';
-                    }
-
-                    $cleanDescription = trim(strip_tags($productDescription));
-                    $productSlug = $model->slug ?? \Illuminate\Support\Str::slug($productName);
-                    $productLink = route('product', $productSlug);
-
-                    $videoDescription = "Product: " . $productName . "\n\n";
-                    if ($cleanDescription) {
-                        $videoDescription .= $cleanDescription . "\n\n";
-                    }
-                    $videoDescription .= "Buy it here: " . $productLink;
-
-                    $uploadedUrl = $youtubeService->uploadVideo(
-                        request()->file('product_video')->getRealPath(),
-                        $productName,
-                        $videoDescription
-                    );
-                    if ($uploadedUrl) {
-                        $model->video_url = $uploadedUrl;
-                        $model->video_provider = 'youtube';
-                    }
-                }
-            }
         });
 
         static::saved(function ($model) {

@@ -1067,191 +1067,20 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
 
                             AddProductSectionWidget(
                               title: getTranslated('product_video', context) ?? 'Product Video',
-                              subTitle: getTranslated('choose_video_option', context) ?? 'Upload a video file or paste a YouTube link',
+                              subTitle: getTranslated('paste_youtube_link', context) ?? 'Paste a YouTube link',
                               childrens: <Widget>[
                                 const SizedBox(height: Dimensions.paddingSizeSmall),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () => resProvider.setVideoOption(true),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 10),
-                                            decoration: BoxDecoration(
-                                              color: resProvider.videoOptionUpload
-                                                  ? Theme.of(context).primaryColor
-                                                  : Theme.of(context).cardColor,
-                                              border: Border.all(
-                                                color: resProvider.videoOptionUpload
-                                                    ? Theme.of(context).primaryColor
-                                                    : Theme.of(context).hintColor.withValues(alpha: .3),
-                                              ),
-                                              borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                getTranslated('Upload_Video_File', context) ?? 'Upload Video',
-                                                style: robotoMedium.copyWith(
-                                                  color: resProvider.videoOptionUpload
-                                                      ? Colors.white
-                                                      : Theme.of(context).textTheme.bodyLarge?.color,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () => resProvider.setVideoOption(false),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 10),
-                                            decoration: BoxDecoration(
-                                              color: !resProvider.videoOptionUpload
-                                                  ? Theme.of(context).primaryColor
-                                                  : Theme.of(context).cardColor,
-                                              border: Border.all(
-                                                color: !resProvider.videoOptionUpload
-                                                    ? Theme.of(context).primaryColor
-                                                    : Theme.of(context).hintColor.withValues(alpha: .3),
-                                              ),
-                                              borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                getTranslated('Paste_YouTube_Link', context) ?? 'YouTube Link',
-                                                style: robotoMedium.copyWith(
-                                                  color: !resProvider.videoOptionUpload
-                                                      ? Colors.white
-                                                      : Theme.of(context).textTheme.bodyLarge?.color,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: CustomTextFieldWidget(
+                                    border: true,
+                                    maxLine: 1,
+                                    textInputType: TextInputType.text,
+                                    controller: resProvider.youtubeLinkController,
+                                    textInputAction: TextInputAction.done,
+                                    hintText: getTranslated('youtube_video_link', context) ?? 'YouTube video link',
                                   ),
                                 ),
-                                const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                                if (resProvider.videoOptionUpload)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                                    child: resProvider.selectedVideoFile != null
-                                        ? Stack(
-                                            children: [
-                                              Container(
-                                                padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context).cardColor,
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: .5)),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Icon(Icons.video_library_rounded, color: Theme.of(context).primaryColor, size: 40),
-                                                    const SizedBox(width: Dimensions.paddingSizeSmall),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            resProvider.selectedVideoFile!.name,
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: robotoMedium,
-                                                          ),
-                                                          const SizedBox(height: 4),
-                                                          FutureBuilder<int>(
-                                                            future: resProvider.selectedVideoFile!.length(),
-                                                            builder: (context, snapshot) {
-                                                              if (snapshot.hasData) {
-                                                                double sizeMb = snapshot.data! / (1024 * 1024);
-                                                                return Text(
-                                                                  '${sizeMb.toStringAsFixed(2)} MB',
-                                                                  style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
-                                                                );
-                                                              }
-                                                              return const SizedBox.shrink();
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Positioned(
-                                                top: 5,
-                                                right: 5,
-                                                child: InkWell(
-                                                  onTap: () => resProvider.removeVideo(),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      shape: BoxShape.circle,
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.grey.withValues(alpha: 0.3),
-                                                          spreadRadius: 1,
-                                                          blurRadius: 1,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    padding: const EdgeInsets.all(4),
-                                                    child: const Icon(Icons.close, color: Colors.red, size: 20),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : InkWell(
-                                            onTap: () => resProvider.pickVideo(context),
-                                            child: DottedBorder(
-                                              options: RoundedRectDottedBorderOptions(
-                                                dashPattern: const [4, 5],
-                                                color: Theme.of(context).hintColor,
-                                                radius: const Radius.circular(10),
-                                              ),
-                                              child: Container(
-                                                height: 120,
-                                                width: double.infinity,
-                                                alignment: Alignment.center,
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(Icons.video_call_rounded, size: 40, color: Theme.of(context).hintColor),
-                                                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                                                    Text(
-                                                      getTranslated('click_to_upload_video', context) ?? 'Click to Upload Video',
-                                                      style: robotoMedium.copyWith(color: Theme.of(context).hintColor),
-                                                    ),
-                                                    Text(
-                                                      '${getTranslated('max_size_20mb', context) ?? 'Max size 20MB'}, 1 Min',
-                                                      style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                  )
-                                else
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                                    child: CustomTextFieldWidget(
-                                      border: true,
-                                      maxLine: 1,
-                                      textInputType: TextInputType.text,
-                                      controller: resProvider.youtubeLinkController,
-                                      textInputAction: TextInputAction.done,
-                                      hintText: getTranslated('youtube_video_link', context) ?? 'YouTube video link',
-                                    ),
-                                  ),
                                 const SizedBox(height: Dimensions.paddingSizeDefault),
                               ],
                             ),
@@ -1647,13 +1476,8 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
 
                                             addProductModel.titleList = titleList;
                                             addProductModel.descriptionList = descriptionList;
-                                            if (resProvider.videoOptionUpload) {
-                                              addProductModel.productVideo = resProvider.selectedVideoFile;
-                                              addProductModel.videoUrl = '';
-                                            } else {
-                                              addProductModel.productVideo = null;
-                                              addProductModel.videoUrl = resProvider.youtubeLinkController.text.trim();
-                                            }
+                                            addProductModel.productVideo = null;
+                                            addProductModel.videoUrl = resProvider.youtubeLinkController.text.trim();
 
                                             productModel.taxIds = Provider.of<AddProductTaxController>(context, listen: false).selectedTaxList.map((tax) => tax.id).toList();
                                             productModel.taxModel = resProvider.taxTypeIndex == 0 ? 'include' : 'exclude';

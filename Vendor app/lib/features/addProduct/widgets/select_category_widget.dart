@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sixvalley_vendor_app/features/product/controllers/category_controller.dart';
@@ -16,258 +15,144 @@ class SelectCategoryWidget extends StatefulWidget {
 }
 
 class SelectCategoryWidgetState extends State<SelectCategoryWidget> {
+  Widget _buildDropdown<T>({
+    required BuildContext context,
+    required String title,
+    required int? value,
+    required List<DropdownMenuItem<int>> items,
+    required void Function(int?) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge?.color),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+            border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: .25)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int>(
+              value: value,
+              items: items,
+              onChanged: onChanged,
+              isExpanded: true,
+              icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).hintColor),
+            ),
+          ),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeMedium),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    log("category section===>");
     return Consumer<CategoryController>(
-      builder: (context, categoryController, child) {
-        String selectedCategoryName = getTranslated('select_category', context)!;
-        if (categoryController.categoryIndex != null && categoryController.categoryIndex! > 0 && categoryController.categoryList != null) {
-          selectedCategoryName = categoryController.categoryList![categoryController.categoryIndex! - 1].name!;
-          if (categoryController.subCategoryIndex != null && categoryController.subCategoryIndex! > 0 && categoryController.subCategoryList != null && categoryController.subCategoryList!.isNotEmpty) {
-            selectedCategoryName += ' > ${categoryController.subCategoryList![categoryController.subCategoryIndex! - 1].name!}';
-            if (categoryController.subSubCategoryIndex != null && categoryController.subSubCategoryIndex! > 0 && categoryController.subSubCategoryList != null && categoryController.subSubCategoryList!.isNotEmpty) {
-              selectedCategoryName += ' > ${categoryController.subSubCategoryList![categoryController.subSubCategoryIndex! - 1].name!}';
-            }
+      builder: (context, catController, child) {
+        if (catController.categoryList == null) {
+          return const SizedBox();
+        }
+
+        // Category items
+        List<DropdownMenuItem<int>> categoryItems = [
+          DropdownMenuItem(
+            value: 0,
+            child: Text(getTranslated('select_category', context) ?? 'Select Category', style: robotoRegular),
+          ),
+        ];
+        if (catController.categoryList != null) {
+          for (int i = 0; i < catController.categoryList!.length; i++) {
+            categoryItems.add(DropdownMenuItem(
+              value: i + 1,
+              child: Text(catController.categoryList![i].name ?? '', style: robotoRegular),
+            ));
+          }
+        }
+
+        // Sub Category items
+        List<DropdownMenuItem<int>> subCategoryItems = [
+          DropdownMenuItem(
+            value: 0,
+            child: Text(getTranslated('select_sub_category', context) ?? 'Select Sub Category', style: robotoRegular),
+          ),
+        ];
+        if (catController.subCategoryList != null) {
+          for (int i = 0; i < catController.subCategoryList!.length; i++) {
+            subCategoryItems.add(DropdownMenuItem(
+              value: i + 1,
+              child: Text(catController.subCategoryList![i].name ?? '', style: robotoRegular),
+            ));
+          }
+        }
+
+        // Sub Sub Category items
+        List<DropdownMenuItem<int>> subSubCategoryItems = [
+          DropdownMenuItem(
+            value: 0,
+            child: Text(getTranslated('select_sub_sub_category', context) ?? 'Select Sub Sub Category', style: robotoRegular),
+          ),
+        ];
+        if (catController.subSubCategoryList != null) {
+          for (int i = 0; i < catController.subSubCategoryList!.length; i++) {
+            subSubCategoryItems.add(DropdownMenuItem(
+              value: i + 1,
+              child: Text(catController.subSubCategoryList![i].name ?? '', style: robotoRegular),
+            ));
           }
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              getTranslated('category', context)!,
-              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge?.color),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-            InkWell(
-              onTap: () {
-                if (categoryController.categoryList == null) return;
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.paddingSizeDefault)),
-                  ),
-                  builder: (context) {
-                    String searchQuery = '';
-                    return StatefulBuilder(
-                      builder: (context, setSheetState) {
-                        return DraggableScrollableSheet(
-                          expand: false,
-                          initialChildSize: 0.7,
-                          maxChildSize: 0.9,
-                          builder: (context, scrollController) {
-                            return Consumer<CategoryController>(
-                              builder: (context, catController, _) {
-                                final filteredCategories = catController.categoryList!.where((category) {
-                                  bool matchesCategory = category.name!.toLowerCase().contains(searchQuery.toLowerCase());
-                                  bool matchesSubCategory = category.subCategories!.any((sub) => sub.name!.toLowerCase().contains(searchQuery.toLowerCase()));
-                                  bool matchesSubSubCategory = category.subCategories!.any((sub) => sub.subSubCategories!.any((subSub) => subSub.name!.toLowerCase().contains(searchQuery.toLowerCase())));
-                                  return matchesCategory || matchesSubCategory || matchesSubSubCategory;
-                                }).toList();
-
-                                return Column(
-                                  children: [
-                                    AppBar(
-                                      title: Text(getTranslated('select_category', context)!, style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)),
-                                      automaticallyImplyLeading: false,
-                                      actions: [
-                                        IconButton(
-                                          icon: const Icon(Icons.close),
-                                          onPressed: () => Navigator.pop(context),
-                                        ),
-                                      ],
-                                      elevation: 0,
-                                      backgroundColor: Colors.transparent,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraSmall),
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText: getTranslated('search_category', context) ?? 'Search Category...',
-                                          prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryColor),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                            borderSide: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: .25)),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                            borderSide: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: .25)),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                                          ),
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeMedium, vertical: Dimensions.paddingSizeSmall),
-                                        ),
-                                        onChanged: (val) {
-                                          setSheetState(() {
-                                            searchQuery = val;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(height: Dimensions.paddingSizeSmall),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        controller: scrollController,
-                                        itemCount: filteredCategories.length,
-                                        itemBuilder: (context, index) {
-                                          final category = filteredCategories[index];
-                                          final catIndex = catController.categoryList!.indexOf(category);
-                                          final isSelectedCat = catController.categoryIndex == (catIndex + 1);
-
-                                      return ExpansionTile(
-                                        key: PageStorageKey<String>('cat_${category.id}'),
-                                        initiallyExpanded: isSelectedCat,
-                                        title: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                category.name!,
-                                                style: robotoMedium.copyWith(
-                                                  color: isSelectedCat ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge?.color,
-                                                ),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                catController.setCategoryIndex(catIndex + 1, false);
-                                                catController.setSubCategoryIndex(0, false);
-                                                catController.setSubSubCategoryIndex(0, true);
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text(getTranslated('select', context)!, style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
-                                            ),
-                                          ],
-                                        ),
-                                        children: category.subCategories!.map((subCategory) {
-                                          final subIndex = category.subCategories!.indexOf(subCategory);
-                                          final isSelectedSub = isSelectedCat && catController.subCategoryIndex == (subIndex + 1);
-
-                                          final subSubCategories = subCategory.subSubCategories ?? [];
-
-                                          if (subSubCategories.isEmpty) {
-                                            return ListTile(
-                                              title: Padding(
-                                                padding: const EdgeInsets.only(left: 16.0),
-                                                child: Text(
-                                                  subCategory.name!,
-                                                  style: robotoRegular.copyWith(
-                                                    color: isSelectedSub ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyMedium?.color,
-                                                  ),
-                                                ),
-                                              ),
-                                              trailing: TextButton(
-                                                onPressed: () {
-                                                  catController.setCategoryIndex(catIndex + 1, false);
-                                                  catController.getSubCategoryList(context, catIndex + 1, false, null);
-                                                  catController.setSubCategoryIndex(subIndex + 1, false);
-                                                  catController.setSubSubCategoryIndex(0, true);
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text(getTranslated('select', context)!, style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
-                                              ),
-                                            );
-                                          }
-
-                                          return ExpansionTile(
-                                            key: PageStorageKey<String>('sub_${subCategory.id}'),
-                                            initiallyExpanded: isSelectedSub,
-                                            title: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(left: 16.0),
-                                                    child: Text(
-                                                      subCategory.name!,
-                                                      style: robotoMedium.copyWith(
-                                                        color: isSelectedSub ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyMedium?.color,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    catController.setCategoryIndex(catIndex + 1, false);
-                                                    catController.getSubCategoryList(context, catIndex + 1, false, null);
-                                                    catController.setSubCategoryIndex(subIndex + 1, false);
-                                                    catController.setSubSubCategoryIndex(0, true);
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(getTranslated('select', context)!, style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
-                                                ),
-                                              ],
-                                            ),
-                                            children: subSubCategories.map((subSubCategory) {
-                                              final subSubIndex = subSubCategories.indexOf(subSubCategory);
-                                              final isSelectedSubSub = isSelectedSub && catController.subSubCategoryIndex == (subSubIndex + 1);
-
-                                              return ListTile(
-                                                title: Padding(
-                                                  padding: const EdgeInsets.only(left: 32.0),
-                                                  child: Text(
-                                                    subSubCategory.name!,
-                                                    style: robotoRegular.copyWith(
-                                                      color: isSelectedSubSub ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyMedium?.color,
-                                                    ),
-                                                  ),
-                                                ),
-                                                trailing: TextButton(
-                                                  onPressed: () {
-                                                    catController.setCategoryIndex(catIndex + 1, false);
-                                                    catController.getSubCategoryList(context, catIndex + 1, false, null);
-                                                    catController.setSubCategoryIndex(subIndex + 1, false);
-                                                    catController.getSubSubCategoryList(subIndex + 1, false);
-                                                    catController.setSubSubCategoryIndex(subSubIndex + 1, true);
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(getTranslated('select', context)!, style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
-                                                ),
-                                              );
-                                            }).toList(),
-                                          );
-                                        }).toList(),
-                                      );
-                                    },
-                                  ),
-                                ),
-                               ],
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                );
+            _buildDropdown(
+              context: context,
+              title: getTranslated('category', context) ?? 'Category',
+              value: catController.categoryIndex,
+              items: categoryItems,
+              onChanged: (val) {
+                if (val != null) {
+                  catController.setCategoryIndex(val, true);
+                  catController.getSubCategoryList(context, val, true, null);
+                  catController.setSubCategoryIndex(0, true);
+                  catController.setSubSubCategoryIndex(0, true);
+                }
               },
-            );
-          },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeMedium),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: .25)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        selectedCategoryName,
-                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Icon(Icons.arrow_drop_down, color: Theme.of(context).hintColor),
-                  ],
-                ),
-              ),
             ),
-            const SizedBox(height: Dimensions.paddingSizeMedium),
+
+            if (catController.categoryIndex != null && catController.categoryIndex! > 0 && catController.subCategoryList != null && catController.subCategoryList!.isNotEmpty)
+              _buildDropdown(
+                context: context,
+                title: getTranslated('sub_category', context) ?? 'Sub Category',
+                value: catController.subCategoryIndex,
+                items: subCategoryItems,
+                onChanged: (val) {
+                  if (val != null) {
+                    catController.setSubCategoryIndex(val, true);
+                    catController.getSubSubCategoryList(val, true);
+                    catController.setSubSubCategoryIndex(0, true);
+                  }
+                },
+              ),
+
+            if (catController.subCategoryIndex != null && catController.subCategoryIndex! > 0 && catController.subSubCategoryList != null && catController.subSubCategoryList!.isNotEmpty)
+              _buildDropdown(
+                context: context,
+                title: getTranslated('sub_sub_category', context) ?? 'Sub Sub Category',
+                value: catController.subSubCategoryIndex,
+                items: subSubCategoryItems,
+                onChanged: (val) {
+                  if (val != null) {
+                    catController.setSubSubCategoryIndex(val, true);
+                  }
+                },
+              ),
           ],
         );
       },

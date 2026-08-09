@@ -49,16 +49,24 @@ class _ProductDetailsState extends State<ProductDetails> {
   Size widgetSize = const Size(100, 400);
 
   Future<void> _loadData( BuildContext context) async {
-    Provider.of<ProductDetailsController>(context, listen: false).getProductDetails(context, widget.slug.toString(), widget.slug.toString());
     Provider.of<ReviewController>(context, listen: false).removePrevReview();
     Provider.of<ProductDetailsController>(context, listen: false).removePrevLink();
-    Provider.of<ReviewController>(context, listen: false).getReviewList(widget.slug, context);
     Provider.of<ProductController>(context, listen: false).removePrevRelatedProduct();
-    Provider.of<ProductController>(context, listen: false).initRelatedProductList(widget.slug.toString(), context);
-    Provider.of<ProductDetailsController>(context, listen: false).getCount(widget.slug.toString(), context);
-    Provider.of<ProductDetailsController>(context, listen: false).getSharableLink(widget.slug.toString(), context);
     Provider.of<ProductDetailsController>(context, listen: false).setImageSliderSelectedIndex(0, isUpdate: false);
     Provider.of<ShopController>(context, listen: false).emptyProductDetailsSeller();
+
+    // Await critical UI data first
+    await Provider.of<ProductDetailsController>(context, listen: false).getProductDetails(context, widget.slug.toString(), widget.slug.toString());
+
+    // Lazy load secondary data to prevent 5-second UI freeze
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if(mounted) {
+        Provider.of<ReviewController>(context, listen: false).getReviewList(widget.slug, context);
+        Provider.of<ProductController>(context, listen: false).initRelatedProductList(widget.slug.toString(), context);
+        Provider.of<ProductDetailsController>(context, listen: false).getCount(widget.slug.toString(), context);
+        Provider.of<ProductDetailsController>(context, listen: false).getSharableLink(widget.slug.toString(), context);
+      }
+    });
   }
 
   @override

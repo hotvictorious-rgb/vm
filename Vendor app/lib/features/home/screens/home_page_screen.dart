@@ -35,29 +35,36 @@ class HomePageScreen extends StatefulWidget {
 class _HomePageScreenState extends State<HomePageScreen> {
   final ScrollController _scrollController = ScrollController();
   Future<void> _loadData(BuildContext context, bool reload) async {
-    Provider.of<ProfileController>(context, listen: false).getSellerInfo();
-    Provider.of<BankInfoController>(context, listen: false).getBankInfo(context);
+    await Provider.of<ProfileController>(context, listen: false).getSellerInfo();
+    await Provider.of<BankInfoController>(context, listen: false).getBankInfo(context);
+    
     if(Provider.of<OrderController>(context, listen: false).orderModel == null || reload) {
-      Provider.of<OrderController>(context, listen: false).getOrderList(context,1,'all', null, reload: reload);
+      await Provider.of<OrderController>(context, listen: false).getOrderList(context,1,'all', null, reload: reload);
     }
-    Provider.of<BankInfoController>(context, listen: false).getAnalyticsFilterData(context, 'overall');
-    Provider.of<SplashController>(context,listen: false).getColorList();
-    Provider.of<ProductController>(context,listen: false).getStockOutProductList(1, 'en', reload: reload);
 
-    Provider.of<ProductController>(context,listen: false).getTopSellingProductList(1, context, 'en', reload: reload);
-    Provider.of<ShippingController>(context,listen: false).getCategoryWiseShippingMethod();
-    Provider.of<ShippingController>(context,listen: false).getSelectedShippingMethodType(context);
-    Provider.of<DeliveryManController>(context, listen: false).getTopDeliveryManList(context);
-    Provider.of<BankInfoController>(context, listen: false).getDashboardRevenueData(context,'yearEarn');
+    await Future.delayed(const Duration(milliseconds: 150));
+    await Provider.of<BankInfoController>(context, listen: false).getAnalyticsFilterData(context, 'overall');
+    await Provider.of<SplashController>(context,listen: false).getColorList();
+    await Provider.of<ProductController>(context,listen: false).getStockOutProductList(1, 'en', reload: reload);
 
+    await Future.delayed(const Duration(milliseconds: 150));
+    await Provider.of<ProductController>(context,listen: false).getTopSellingProductList(1, context, 'en', reload: reload);
+    await Provider.of<ShippingController>(context,listen: false).getCategoryWiseShippingMethod();
+    await Provider.of<ShippingController>(context,listen: false).getSelectedShippingMethodType(context);
+
+    await Future.delayed(const Duration(milliseconds: 150));
+    await Provider.of<DeliveryManController>(context, listen: false).getTopDeliveryManList(context);
+    await Provider.of<BankInfoController>(context, listen: false).getDashboardRevenueData(context,'yearEarn');
     Provider.of<BankInfoController>(context, listen: false).setRevenueFilterType(0, false);
-    Provider.of<NotificationController>(context, listen: false).getNotificationList(1);
-    Provider.of<ProductController>(context, listen: false).getStockLimitStatus(context);
+    
+    await Future.delayed(const Duration(milliseconds: 150));
+    await Provider.of<NotificationController>(context, listen: false).getNotificationList(1);
+    await Provider.of<ProductController>(context, listen: false).getStockLimitStatus(context);
     Provider.of<ProductController>(context,listen: false).setShowCookie(true, notify: false);
 
-    Provider.of<ProductController>(context,listen: false).getMostPopularProductList(1, context, 'en', reload: reload);
-
-    Provider.of<ProductReviewController>(context, listen: false).getReviewList(context);
+    await Future.delayed(const Duration(milliseconds: 150));
+    await Provider.of<ProductController>(context,listen: false).getMostPopularProductList(1, context, 'en', reload: reload);
+    await Provider.of<ProductReviewController>(context, listen: false).getReviewList(context);
   }
 
   @override

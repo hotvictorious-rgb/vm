@@ -68,38 +68,41 @@ class HomePage extends StatefulWidget {
       // await flashDealController.getFlashDealList(reload, false);
     }
 
-    splashController.initConfig(Get.context!, null, null);
-    categoryController.getCategoryList(reload);
-    bannerController.getBannerList();
+    await splashController.initConfig(Get.context!, null, null);
+    await categoryController.getCategoryList(reload);
+    await bannerController.getBannerList();
 
-    Future.delayed(const Duration(milliseconds: 100), () {
-      shopController.getAllSellerList(offset: 1, isUpdate: reload);
-      shopController.getTopSellerList(offset: 1, isUpdate: reload);
-      addressController.getAddressList();
-      cartController.getCartData(Get.context!);
-      productController.getHomeCategoryProductList(reload);
-      brandController.getBrandList(offset: 1, isUpdate: reload);
-      featuredDealController.getFeaturedDealList();
-    });
+    // Stagger secondary API calls to prevent HTTP 508 / 429 server crashes (Client-Side DDoS fix)
+    await Future.delayed(const Duration(milliseconds: 150));
+    await shopController.getAllSellerList(offset: 1, isUpdate: reload);
+    await shopController.getTopSellerList(offset: 1, isUpdate: reload);
+    await addressController.getAddressList();
+    
+    await Future.delayed(const Duration(milliseconds: 150));
+    await cartController.getCartData(Get.context!);
+    await productController.getHomeCategoryProductList(reload);
+    await brandController.getBrandList(offset: 1, isUpdate: reload);
+    await featuredDealController.getFeaturedDealList();
 
-    Future.delayed(const Duration(milliseconds: 250), () {
-      productController.getLatestProductList(1, isUpdate: reload);
-      productController.getSelectedProductModel(1, isUpdate: reload);
-      productController.getFeaturedProductModel(1, isUpdate: reload);
-      productController.getRecommendedProduct();
-      productController.getClearanceAllProductList(1, isUpdate: reload);
+    await Future.delayed(const Duration(milliseconds: 150));
+    await productController.getLatestProductList(1, isUpdate: reload);
+    await productController.getSelectedProductModel(1, isUpdate: reload);
+    await productController.getFeaturedProductModel(1, isUpdate: reload);
+    
+    await Future.delayed(const Duration(milliseconds: 150));
+    await productController.getRecommendedProduct();
+    await productController.getClearanceAllProductList(1, isUpdate: reload);
 
-      if(notificationController.notificationModel == null ||
-        (notificationController.notificationModel != null &&
-          notificationController.notificationModel!.notification!.isEmpty) || reload) {
-        notificationController.getNotificationList(1);
-      }
+    await Future.delayed(const Duration(milliseconds: 150));
+    if(notificationController.notificationModel == null ||
+      (notificationController.notificationModel != null &&
+        notificationController.notificationModel!.notification!.isEmpty) || reload) {
+      await notificationController.getNotificationList(1);
+    }
 
-      if(Provider.of<AuthController>(Get.context!, listen: false).isLoggedIn() && profileController.userInfoModel == null) {
-        profileController.getUserInfo(Get.context!);
-      }
-    });
-
+    if(Provider.of<AuthController>(Get.context!, listen: false).isLoggedIn() && profileController.userInfoModel == null) {
+      await profileController.getUserInfo(Get.context!);
+    }
   }
 }
 
@@ -134,15 +137,6 @@ class _HomePageState extends State<HomePage> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            SliverAppBar(
-              floating: true,
-              elevation: 0,
-              centerTitle: false,
-              automaticallyImplyLeading: false,
-              backgroundColor: Theme.of(context).highlightColor,
-              title: Image.asset(Images.logoWithNameImage, height: 35),
-            ),
-
             SliverToBoxAdapter(child: Provider.of<SplashController>(context, listen: false).configModel!.announcement!.status == '1'?
             Consumer<SplashController>(
               builder: (context, announcement, _){
@@ -156,6 +150,20 @@ class _HomePageState extends State<HomePage> {
                 child: const Hero(tag: 'search', child: Material(child: SearchHomePageWidget())),
               ),
             )),
+
+            SliverToBoxAdapter(
+              child: Container(
+                width: double.infinity,
+                color: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+                child: Center(
+                  child: Text(
+                    'CALL TO ORDER: ${configModel?.companyPhone ?? ''}',
+                    style: textBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge),
+                  ),
+                ),
+              ),
+            ),
 
 
             SliverToBoxAdapter(child: BannersWidget()),
