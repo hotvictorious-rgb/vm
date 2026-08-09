@@ -1,15 +1,12 @@
-<div class="additional-image-column-section col-md-12">
+<div class="additional-image-column-section">
     <div class="card card-body h-100">
-        <div class="mb-20">
-            <h3 class="mb-1">{{ translate('Product_Additional_Images') }}</h3>
-            <p class="fs-12 mb-0">
-                {{ translate('Upload_additional_images_for_this_product_from_here.') }}
-                <span class="text-info">
-                    {{ getFileUploadFormats(skip: '.svg,.gif', asBladeMessage: true).' '. translate('Image_size'). ' : '. translate('Max').' '. getFileUploadMaxSize() . 'MB' }}
-                    ({{ THEME_RATIO[theme_root_path()]['Product Image'] }})
-                </span>
-            </p>
+        <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <div>
+                <label class="form-label fw-bold mb-0">{{ translate('upload_additional_image') }}</label>
+                <span class="badge badge-info text-bg-info">{{ THEME_RATIO[theme_root_path()]['Product Image'] }}</span>
+            </div>
         </div>
+        <p class="text-muted fs-12">{{ translate('upload_additional_product_images') }}</p>
         <div class="d-flex flex-column bg-section rounded-10" id="additional_Image_Section">
             <div class="position-relative">
                 <div class="multi_image_picker d-flex gap-4 p-3"
