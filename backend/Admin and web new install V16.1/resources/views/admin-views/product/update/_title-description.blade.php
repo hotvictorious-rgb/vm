@@ -102,7 +102,7 @@
                     <div class="outline-wrapper" id="editor-container-{{ getLanguageCode($language) }}">
                         <textarea name="description[]" id="description-{{getLanguageCode($language)}}"
                                     class="form-control {{ $language == $defaultLanguage ? 'product-description-default-language' : '' }}"
-                                    rows="6" data-required-msg="{{ translate('Description_field_is_required') }}" required>{!! $translate[$language]['description']??$product['details'] !!}</textarea>
+                                    rows="6" data-required-msg="{{ translate('Description_field_is_required') }}" required>{{ strip_tags($translate[$language]['description'] ?? $product['details']) }}</textarea>
                         <div class="blue-fire-animation"></div>
                     </div>
                 </div>
