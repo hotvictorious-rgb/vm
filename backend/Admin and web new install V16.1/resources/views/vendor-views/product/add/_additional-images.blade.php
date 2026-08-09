@@ -1,5 +1,6 @@
 <div class="additional-image-column-section">
     <div class="card card-body h-100">
+        <label class="form-label fw-semibold mb-2">{{ translate('Add_Photos') }}</label>
         <div class="d-flex flex-column bg-section rounded-10" id="additional_Image_Section">
             <div class="position-relative">
                 <div class="multi_image_picker d-flex gap-4 p-3"
