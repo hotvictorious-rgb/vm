@@ -183,7 +183,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => LoggingInterceptor());
 
   // Interface
-  AuthRepositoryInterface authRepoInterface = AuthRepository(dioClient: sl(), sharedPreferences: sl());
+  AuthRepositoryInterface authRepoInterface = AuthRepository(dioClient: sl(), sharedPreferences: sl(), secureStorage: sl());
   sl.registerLazySingleton(() => authRepoInterface);
   BankInfoRepositoryInterface bankInfoRepoInterface = BankInfoRepository(dioClient: sl(), sharedPreferences: sl());
   sl.registerLazySingleton(() => bankInfoRepoInterface);
