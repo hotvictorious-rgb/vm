@@ -1,12 +1,5 @@
 <div class="additional-image-column-section">
     <div class="card card-body h-100">
-        <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-            <div>
-                <label class="form-label fw-bold mb-0">{{ translate('upload_additional_image') }}</label>
-                <span class="badge badge-info text-bg-info">{{ THEME_RATIO[theme_root_path()]['Product Image'] }}</span>
-            </div>
-        </div>
-        <p class="text-muted fs-12">{{ translate('upload_additional_product_images') }}</p>
         <div class="d-flex flex-column bg-section rounded-10" id="additional_Image_Section">
             <div class="position-relative">
                 <div class="multi_image_picker d-flex gap-4 p-3"
