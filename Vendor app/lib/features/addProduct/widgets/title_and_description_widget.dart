@@ -78,7 +78,7 @@ class _TitleAndDescriptionWidgetState extends State<TitleAndDescriptionWidget> {
           CustomTextFieldWidget(
             formProduct: true,
             textInputAction: TextInputAction.next,
-            controller: TextEditingController(text: widget.resProvider.titleControllerList[widget.index].text),
+            controller: widget.resProvider.titleControllerList[widget.index],
             textInputType: TextInputType.name,
             required: true,
             hintText: getTranslated('product_name', context),
@@ -145,7 +145,7 @@ class _TitleAndDescriptionWidgetState extends State<TitleAndDescriptionWidget> {
             formProduct: true,
             required: true,
             isDescription: true,
-            controller: TextEditingController(text: widget.resProvider.descriptionControllerList[widget.index].text),
+            controller: widget.resProvider.descriptionControllerList[widget.index],
             onChanged: (String text) => widget.resProvider.setDescription(widget.index, text),
             textInputType: TextInputType.multiline,
             maxLine: 3,

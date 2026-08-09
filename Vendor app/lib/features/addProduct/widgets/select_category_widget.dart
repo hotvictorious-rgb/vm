@@ -50,34 +50,73 @@ class SelectCategoryWidgetState extends State<SelectCategoryWidget> {
                     borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.paddingSizeDefault)),
                   ),
                   builder: (context) {
-                    return DraggableScrollableSheet(
-                      expand: false,
-                      initialChildSize: 0.7,
-                      maxChildSize: 0.9,
-                      builder: (context, scrollController) {
-                        return Consumer<CategoryController>(
-                          builder: (context, catController, _) {
-                            return Column(
-                              children: [
-                                AppBar(
-                                  title: Text(getTranslated('select_category', context)!, style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)),
-                                  automaticallyImplyLeading: false,
-                                  actions: [
-                                    IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () => Navigator.pop(context),
+                    String searchQuery = '';
+                    return StatefulBuilder(
+                      builder: (context, setSheetState) {
+                        return DraggableScrollableSheet(
+                          expand: false,
+                          initialChildSize: 0.7,
+                          maxChildSize: 0.9,
+                          builder: (context, scrollController) {
+                            return Consumer<CategoryController>(
+                              builder: (context, catController, _) {
+                                final filteredCategories = catController.categoryList!.where((category) {
+                                  bool matchesCategory = category.name!.toLowerCase().contains(searchQuery.toLowerCase());
+                                  bool matchesSubCategory = category.subCategories!.any((sub) => sub.name!.toLowerCase().contains(searchQuery.toLowerCase()));
+                                  bool matchesSubSubCategory = category.subCategories!.any((sub) => sub.subSubCategories!.any((subSub) => subSub.name!.toLowerCase().contains(searchQuery.toLowerCase())));
+                                  return matchesCategory || matchesSubCategory || matchesSubSubCategory;
+                                }).toList();
+
+                                return Column(
+                                  children: [
+                                    AppBar(
+                                      title: Text(getTranslated('select_category', context)!, style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)),
+                                      automaticallyImplyLeading: false,
+                                      actions: [
+                                        IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () => Navigator.pop(context),
+                                        ),
+                                      ],
+                                      elevation: 0,
+                                      backgroundColor: Colors.transparent,
                                     ),
-                                  ],
-                                  elevation: 0,
-                                  backgroundColor: Colors.transparent,
-                                ),
-                                Expanded(
-                                  child: ListView.builder(
-                                    controller: scrollController,
-                                    itemCount: catController.categoryList!.length,
-                                    itemBuilder: (context, catIndex) {
-                                      final category = catController.categoryList![catIndex];
-                                      final isSelectedCat = catController.categoryIndex == (catIndex + 1);
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraSmall),
+                                      child: TextField(
+                                        decoration: InputDecoration(
+                                          hintText: getTranslated('search_category', context) ?? 'Search Category...',
+                                          prefixIcon: Icon(Icons.search, color: Theme.of(context).primaryColor),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                            borderSide: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: .25)),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                            borderSide: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: .25)),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeMedium, vertical: Dimensions.paddingSizeSmall),
+                                        ),
+                                        onChanged: (val) {
+                                          setSheetState(() {
+                                            searchQuery = val;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: Dimensions.paddingSizeSmall),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        controller: scrollController,
+                                        itemCount: filteredCategories.length,
+                                        itemBuilder: (context, index) {
+                                          final category = filteredCategories[index];
+                                          final catIndex = catController.categoryList!.indexOf(category);
+                                          final isSelectedCat = catController.categoryIndex == (catIndex + 1);
 
                                       return ExpansionTile(
                                         key: PageStorageKey<String>('cat_${category.id}'),
@@ -194,7 +233,7 @@ class SelectCategoryWidgetState extends State<SelectCategoryWidget> {
                                     },
                                   ),
                                 ),
-                              ],
+                               ],
                             );
                           },
                         );
@@ -203,6 +242,8 @@ class SelectCategoryWidgetState extends State<SelectCategoryWidget> {
                   },
                 );
               },
+            );
+          },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeMedium),
                 decoration: BoxDecoration(

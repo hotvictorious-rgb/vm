@@ -664,7 +664,6 @@ class AddProductController extends ChangeNotifier {
     required String unitPrice,
     required String currentStock,
     required String orderQuantity,
-    required String shippingCost,
     required bool isUpdate,
   }) {
 
@@ -763,10 +762,6 @@ class AddProductController extends ChangeNotifier {
     }
     else if (blankVariantQuantity) {
       showCustomSnackBarWidget(getTranslated('enter_quantity_for_every_variant', context), context, sanckBarType: SnackBarType.warning);
-      return false;
-    }
-    else if (productTypeIndex == 0 && shippingCost.isEmpty) {
-      showCustomSnackBarWidget(getTranslated('enter_shipping_cost', context), context, sanckBarType: SnackBarType.warning);
       return false;
     }
     else if((isUpdate || !isUpdate) && productTypeIndex == 1 && digitalProductController.digitalProductTypeIndex == 1 && isFileEmpty) {

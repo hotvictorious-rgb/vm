@@ -37,6 +37,7 @@ import 'package:sixvalley_vendor_app/common/basewidgets/custom_snackbar_widget.d
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/digital_product_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/select_category_widget.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/title_and_description_widget.dart';
+import 'package:sixvalley_vendor_app/features/addProduct/widgets/meta_seo_widget.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/widgets/attribute_view_widget.dart';
@@ -1419,6 +1420,8 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                                     formProduct: true,
                                                   ),
                                                   const SizedBox(height: Dimensions.paddingSizeLarge),
+
+
                                                 ],
                                               ),
                                             ),
@@ -1629,7 +1632,6 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                               unitPrice: resProvider.unitPriceController.text.trim(),
                                               currentStock: variationController.totalQuantityController.text.trim(),
                                               orderQuantity: resProvider.minimumOrderQuantityController.text.trim(),
-                                              shippingCost: "0",
                                               isUpdate: widget.product != null,
                                             );
                                           }

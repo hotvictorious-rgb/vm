@@ -38,8 +38,8 @@ class AddProductImageController extends ChangeNotifier {
 
 
 
-  late ImageModel thumbnailImageModel;
-  late ImageModel metaImageModel;
+  ImageModel? thumbnailImageModel;
+  ImageModel? metaImageModel;
   List<ImageModel> imagesWithColor = [];
   List<ColorImage> previousColorImage = [];
   List<ImageModel> withoutColor = [];
