@@ -43,7 +43,7 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
 
     isGuestMode = !Provider.of<AuthController>(context, listen: false).isLoggedIn();
     if(!isGuestMode) {
-      _tabController = TabController(length: 3, initialIndex: widget.initIndex, vsync: this);
+      _tabController = TabController(length: 2, initialIndex: widget.initIndex, vsync: this);
       _tabController?.addListener((){
         if(chatController.searchController.text.isNotEmpty){
           chatController.searchController.clear();
@@ -110,11 +110,9 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
 
                     if(chatProvider.isSearchComplete) {
                       if (chatProvider.userTypeIndex == 0) cahtModel = chatProvider.searchDeliverymanChatModel;
-                      else if (chatProvider.userTypeIndex == 1) cahtModel = chatProvider.searchChatModel;
                       else cahtModel = chatProvider.searchAdminChatModel;
                     } else {
                       if (chatProvider.userTypeIndex == 0) cahtModel = chatProvider.deliverymanChatModel;
-                      else if (chatProvider.userTypeIndex == 1) cahtModel = chatProvider.chatModel;
                       else cahtModel = chatProvider.adminChatModel;
                     }
 

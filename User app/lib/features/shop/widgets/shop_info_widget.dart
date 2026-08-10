@@ -122,46 +122,6 @@ class ShopInfoWidget extends StatelessWidget {
                           Expanded(child: Text(sellerName, style: textMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge?.color),
                             maxLines: 2, overflow: TextOverflow.ellipsis,),),
 
-                          Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                            child: InkWell(onTap: () {
-                              if(temporaryClose) {
-                                showCustomSnackBarWidget("${getTranslated("this_shop_is_close_now", context)}", context, snackBarType: SnackBarType.warning);
-                              }else{
-                                if(!Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
-                                  showModalBottomSheet(context: context, builder: (_) => NotLoggedInBottomSheetWidget(
-                                    fromPage: RouterHelper.topSellerScreen,
-                                    onLoginSuccess: () {
-                                      RouterHelper.getTopSellerRoute(
-                                        action: RouteAction.pushReplacement,
-                                        slug: slug,
-                                        sellerId: sellerId,
-                                        temporaryClose: temporaryClose,
-                                        vacationStatus: vacationIsOn,
-                                        vacationEndDate: vacationEndDate,
-                                        vacationStartDate: vacationStartDate,
-                                        vacationDurationType: vacationDurationType,
-                                        name: sellerName,
-                                        banner: banner,
-                                        image: shopImage,
-                                        fromMore: fromMore,
-                                        totalReview: totalReview,
-                                        totalProduct: totalProduct,
-                                      );
-                                    },
-                                  ));
-                                }else  {
-                                  Provider.of<ChatController>(context, listen: false).setUserTypeIndex(context, 1);
-                                  RouterHelper.getChatScreenRoute(
-                                    action: RouteAction.push,
-                                    id: sellerId,
-                                    name: sellerName,
-                                    userType: 1,
-                                    isShopOnVacation: vacationIsOn,
-                                    image: sellerId == 0 ? splashController.configModel?.inHouseShop?.imageFullUrl?.path ?? '' : shopImage,
-                                  );
-                                }
-                              }
-                            }, child : const CustomAssetImageWidget(Images.storeChatIcon, height: 20, width: 20)),
                           )]),
 
 

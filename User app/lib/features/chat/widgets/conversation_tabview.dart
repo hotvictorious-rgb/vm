@@ -47,16 +47,6 @@ class ConversationListTabview extends StatelessWidget {
                   child:  Center(
                     child: Row(
                       children: [
-                        Text(getTranslated('vendor', context)!),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 35,
-                  child:  Center(
-                    child: Row(
-                      children: [
                         Text('Admin'), // getTranslated('admin', context) if available
                       ],
                     ),

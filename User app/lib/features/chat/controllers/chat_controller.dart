@@ -102,8 +102,6 @@ class ChatController extends ChangeNotifier {
       if(offset == 1 && userType == 0){
         deliverymanChatModel = null;
       }else if (offset == 1 && userType == 1) {
-        chatModel = null;
-      }else if (offset == 1 && userType == 2) {
         adminChatModel = null;
       }
       if(userType == null){
@@ -111,11 +109,10 @@ class ChatController extends ChangeNotifier {
       }
     }
 
-    String chatType = 'seller';
+    String chatType = 'admin';
     int typeIndex = userType != null ? userType : _userTypeIndex;
     if (typeIndex == 0) chatType = 'delivery-man';
-    else if (typeIndex == 1) chatType = 'seller';
-    else if (typeIndex == 2) chatType = 'admin';
+    else if (typeIndex == 1) chatType = 'admin';
 
     ApiResponseModel apiResponse = await chatServiceInterface!.getChatList(chatType, offset);
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
@@ -124,9 +121,6 @@ class ChatController extends ChangeNotifier {
           deliverymanChatModel = null;
           deliverymanChatModel = ChatModel.fromJson(apiResponse.response!.data);
         }else if (userType == 1) {
-          chatModel = null;
-          chatModel = ChatModel.fromJson(apiResponse.response!.data);
-        }else if (userType == 2) {
           adminChatModel = null;
           adminChatModel = ChatModel.fromJson(apiResponse.response!.data);
         }
@@ -136,10 +130,6 @@ class ChatController extends ChangeNotifier {
           deliverymanChatModel?.offset  = (ChatModel.fromJson(apiResponse.response!.data).offset!);
           deliverymanChatModel?.totalSize  = (ChatModel.fromJson(apiResponse.response!.data).totalSize!);
         } else if (userType == 1) {
-          chatModel?.chat?.addAll(ChatModel.fromJson(apiResponse.response!.data).chat!);
-          chatModel?.offset  = (ChatModel.fromJson(apiResponse.response!.data).offset!);
-          chatModel?.totalSize  = (ChatModel.fromJson(apiResponse.response!.data).totalSize!);
-        } else if (userType == 2) {
           adminChatModel?.chat?.addAll(ChatModel.fromJson(apiResponse.response!.data).chat!);
           adminChatModel?.offset  = (ChatModel.fromJson(apiResponse.response!.data).offset!);
           adminChatModel?.totalSize  = (ChatModel.fromJson(apiResponse.response!.data).totalSize!);
@@ -159,20 +149,20 @@ class ChatController extends ChangeNotifier {
     searchDeliverymanChatModel = null;
 
     notifyListeners();
-    ApiResponseModel apiResponse = await chatServiceInterface!.searchChat(userIndex == 0? 'seller' : 'delivery-man', search);
+    ApiResponseModel apiResponse = await chatServiceInterface!.searchChat(userIndex == 0? 'delivery-man' : 'admin', search);
     if (apiResponse.response != null && apiResponse.response?.statusCode == 200 && apiResponse.response is !List) {
       if(userIndex == 0) {
-        searchChatModel = null;
-        searchChatModel = ChatModel(totalSize: 1, limit: '10', offset: '1', chat: []);
-
-        apiResponse.response!.data.forEach((chat) => searchChatModel!.chat!.add(Chat.fromJson(chat)));
-        searchChatModel?.chat = searchChatModel!.chat;
-      } else {
         searchDeliverymanChatModel = null;
         searchDeliverymanChatModel = ChatModel(totalSize: 1, limit: '10', offset: '1', chat: []);
 
         apiResponse.response!.data.forEach((chat) => searchDeliverymanChatModel!.chat!.add(Chat.fromJson(chat)));
         searchDeliverymanChatModel?.chat = searchDeliverymanChatModel!.chat;
+      } else if (userIndex == 1) {
+        searchAdminChatModel = null;
+        searchAdminChatModel = ChatModel(totalSize: 1, limit: '10', offset: '1', chat: []);
+
+        apiResponse.response!.data.forEach((chat) => searchAdminChatModel!.chat!.add(Chat.fromJson(chat)));
+        searchAdminChatModel?.chat = searchAdminChatModel!.chat;
       }
     } else {
       _isLoading = false;
@@ -193,7 +183,7 @@ class ChatController extends ChangeNotifier {
       messageModel = null;
     }
     _isLoading = true;
-    ApiResponseModel apiResponse = await chatServiceInterface!.getMessageList(userType != null ? userType == 0 ? 'delivery-man' : 'seller' : _userTypeIndex == 0? 'delivery-man' : 'seller', id, offset);
+    ApiResponseModel apiResponse = await chatServiceInterface!.getMessageList(userType != null ? userType == 0 ? 'delivery-man' : 'admin' : _userTypeIndex == 0? 'delivery-man' : 'admin', id, offset);
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
 
       final model = MessageModel.fromJson(apiResponse.response?.data);
@@ -223,7 +213,7 @@ class ChatController extends ChangeNotifier {
     _isSending = true;
     notifyListeners();
 
-    http.StreamedResponse response = await chatServiceInterface!.sendMessage(messageBody, userType != null ? userType == 0 ? 'delivery-man' : 'seller' : _userTypeIndex == 0? 'delivery-man' : 'seller', getXFileFromMediaFileModel(pickedMediaStored ?? []) ?? [], pickedFiles ?? []);
+    http.StreamedResponse response = await chatServiceInterface!.sendMessage(messageBody, userType != null ? userType == 0 ? 'delivery-man' : 'admin' : _userTypeIndex == 0? 'delivery-man' : 'admin', getXFileFromMediaFileModel(pickedMediaStored ?? []) ?? [], pickedFiles ?? []);
 
     if (response.statusCode == 200) {
       getMessageList(Get.context!, messageBody.id, 1, reload: false, userType: userType);
@@ -244,7 +234,7 @@ class ChatController extends ChangeNotifier {
 
 
   Future<ApiResponseModel> seenMessage(BuildContext context, int? sellerId, int? deliveryId) async {
-    ApiResponseModel apiResponse = await chatServiceInterface!.seenMessage(_userTypeIndex == 0? sellerId!: deliveryId!, _userTypeIndex == 0? 'delivery-man' : 'seller');
+    ApiResponseModel apiResponse = await chatServiceInterface!.seenMessage(_userTypeIndex == 0? sellerId!: deliveryId!, _userTypeIndex == 0? 'delivery-man' : 'admin');
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       // await getChatList(1);
     } else {

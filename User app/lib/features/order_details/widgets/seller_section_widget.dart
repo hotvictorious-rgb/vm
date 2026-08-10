@@ -43,49 +43,38 @@ class SellerSectionWidget extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
-          child: InkWell(onTap: () {
-            if(Provider.of<AuthController>(context, listen: false).isLoggedIn()){
-              Provider.of<ChatController>(context, listen: false).setUserTypeIndex(context, 1);
-              if((order!.orderDetails![0].seller != null && ((order!.orderDetails![0].seller?.shop?.temporaryClose ?? false)))) {
-                showCustomSnackBarWidget(getTranslated("this_shop_is_close_now", context), context, snackBarType: SnackBarType.error);
-              } else if(order!.orderDetails![0].seller != null) {
-                RouterHelper.getChatScreenRoute(
-                  action: RouteAction.push,
-                  id: order!.orderDetails![0].order?.sellerIs == 'admin'
-                      ? 0
-                      : order!.orderDetails![0].seller!.id,
-                  name: order!.orderDetails![0].order?.sellerIs == 'admin'
-                      ? "${Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.name}"
-                      : order!.orderDetails![0].seller!.shop!.name,
-                  image: order!.orderDetails![0].order?.sellerIs == 'admin'
-                      ? "${Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.imageFullUrl?.path}"
-                      : order!.orderDetails![0].seller?.shop?.imageFullUrl?.path,
-                  isShopOnVacation: isVacationActive,
-                  isShopTemporaryClosed: order!.orderDetails![0].seller?.shop?.temporaryClose ?? false,
-                );
-              } else {
-                showCustomSnackBarWidget(getTranslated('seller_not_available', context), Get.context!, snackBarType: SnackBarType.error);
-              }
-            }else{
-              showModalBottomSheet(backgroundColor: Colors.transparent, context: context, builder: (_)=> const NotLoggedInBottomSheetWidget());}
-            },
-              child: Padding(padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
-                child: Row(children: [
-                  CustomAssetImageWidget(Images.vendorIcon, color: Theme.of(context).primaryColor, height: 20),
-                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                  if( order != null && order!.orderDetails != null && order!.orderDetails != null && order!.orderDetails!.isNotEmpty)
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.6,
-                    child: Text(maxLines: 1, overflow: TextOverflow.ellipsis,
-                      (order?.orderDetails != null && order!.orderDetails!.isNotEmpty && order!.orderDetails![0].order?.sellerIs == 'admin' ) ? '${Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.name}' :
-                      '${order?.orderDetails?[0].seller?.shop?.name??'${getTranslated('seller_not_available', context)}'} ',
-                      style: textRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)
-                    )
-                  ),
-                  const Spacer(),
-                  const SizedBox(width: Dimensions.iconSizeDefault, child: CustomAssetImageWidget(Images.storeChatIcon, height: 20, width: 20))
-                ]),
+          child: Padding(padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+            child: Row(children: [
+              CustomAssetImageWidget(Images.vendorIcon, color: Theme.of(context).primaryColor, height: 20),
+              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+              if( order != null && order!.orderDetails != null && order!.orderDetails != null && order!.orderDetails!.isNotEmpty)
+              SizedBox(width: MediaQuery.of(context).size.width * 0.6,
+                child: Text(maxLines: 1, overflow: TextOverflow.ellipsis,
+                  (order?.orderDetails != null && order!.orderDetails!.isNotEmpty && order!.orderDetails![0].order?.sellerIs == 'admin' ) ? '${Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.name}' :
+                  '${order?.orderDetails?[0].seller?.shop?.name??'${getTranslated('seller_not_available', context)}'} ',
+                  style: textRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)
+                )
               ),
-            ),
+              const Spacer(),
+              if (order?.orderDetails != null && order!.orderDetails!.isNotEmpty && order!.orderDetails![0].order?.sellerIs == 'admin')
+                InkWell(onTap: () {
+                  if(Provider.of<AuthController>(context, listen: false).isLoggedIn()){
+                    Provider.of<ChatController>(context, listen: false).setUserTypeIndex(context, 1);
+                    RouterHelper.getChatScreenRoute(
+                      action: RouteAction.push,
+                      id: 0,
+                      name: "${Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.name}",
+                      userType: 1,
+                      image: "${Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.imageFullUrl?.path}",
+                      isShopOnVacation: isVacationActive,
+                      isShopTemporaryClosed: false,
+                    );
+                  }else{
+                    showModalBottomSheet(backgroundColor: Colors.transparent, context: context, builder: (_)=> const NotLoggedInBottomSheetWidget());
+                  }
+                }, child: const SizedBox(width: Dimensions.iconSizeDefault, child: CustomAssetImageWidget(Images.storeChatIcon, height: 20, width: 20)))
+            ]),
+          ),
         ),
 
         Divider(thickness: .25, color: Theme.of(context).primaryColor.withValues(alpha:0.50)),

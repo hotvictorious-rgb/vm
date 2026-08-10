@@ -43,43 +43,44 @@ class CallAndChatWidget extends StatelessWidget {
           ),
         ),
 
-        InkWell(
-          onTap: (){
-            Provider.of<ChatController>(context, listen: false).setUserTypeIndex(context, 1);
-            RouterHelper.getChatScreenRoute(
-              action: RouteAction.push,
-              image: image,
-              id: id,
-              name: name ?? '',
-              userType: isSeller ? 1 : 0,
-              isShopTemporaryClosed: isSeller
-                  ? orderProvider!.orderDetails![0].seller?.shop?.temporaryClose ?? false
-                  : false,
-              isShopOnVacation: isSeller ?
-                ShopHelper.isVacationActive(
-                  context,
-                  startDate: orderProvider?.orderDetails?[0].seller?.shop?.vacationStartDate,
-                  endDate: orderProvider?.orderDetails?[0].seller?.shop?.vacationEndDate,
-                  vacationDurationType: orderProvider?.orderDetails?[0].seller?.shop?.vacationDurationType,
-                  vacationStatus: orderProvider?.orderDetails?[0].seller?.shop?.vacationStatus,
-                  isInHouseSeller: false,
-                ) : false,
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-            child: Container(
-              width: 40,
-              decoration: BoxDecoration(
-                color: Theme.of(context).hintColor.withValues(alpha:.0525),
-                border: Border.all(color: Theme.of(context).hintColor),
-                borderRadius: BorderRadius.circular(50),
+        if (!isSeller)
+          InkWell(
+            onTap: (){
+              Provider.of<ChatController>(context, listen: false).setUserTypeIndex(context, 1);
+              RouterHelper.getChatScreenRoute(
+                action: RouteAction.push,
+                image: image,
+                id: id,
+                name: name ?? '',
+                userType: isSeller ? 1 : 0,
+                isShopTemporaryClosed: isSeller
+                    ? orderProvider!.orderDetails![0].seller?.shop?.temporaryClose ?? false
+                    : false,
+                isShopOnVacation: isSeller ?
+                  ShopHelper.isVacationActive(
+                    context,
+                    startDate: orderProvider?.orderDetails?[0].seller?.shop?.vacationStartDate,
+                    endDate: orderProvider?.orderDetails?[0].seller?.shop?.vacationEndDate,
+                    vacationDurationType: orderProvider?.orderDetails?[0].seller?.shop?.vacationDurationType,
+                    vacationStatus: orderProvider?.orderDetails?[0].seller?.shop?.vacationStatus,
+                    isInHouseSeller: false,
+                  ) : false,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+              child: Container(
+                width: 40,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).hintColor.withValues(alpha:.0525),
+                  border: Border.all(color: Theme.of(context).hintColor),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                child: Image.asset(Images.smsIcon, color: Theme.of(context).primaryColor),
               ),
-              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-              child: Image.asset(Images.smsIcon, color: Theme.of(context).primaryColor),
             ),
           ),
-        ),
       ],
     );
   }
