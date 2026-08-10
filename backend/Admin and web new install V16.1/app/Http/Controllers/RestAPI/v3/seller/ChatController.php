@@ -31,6 +31,9 @@ class ChatController extends Controller
         } elseif ($type == 'delivery-man') {
             $withParam = 'deliveryMan';
             $idParam = 'delivery_man_id';
+        } elseif ($type == 'admin') {
+            $withParam = 'admin';
+            $idParam = 'admin_id';
         } else {
             return response()->json(['message' => translate('Invalid Chatting Type!')], 403);
         }
@@ -103,6 +106,10 @@ class ChatController extends Controller
                             ->orWhere('l_name', 'like', '%' . $term . '%');
                     }
                 })->pluck('id')->toArray();
+        } elseif ($type == 'admin') {
+            $with_param = 'admin';
+            $id_param = 'admin_id';
+            $users = [0]; // Admin is 0
         } else {
             return response()->json(['message' => translate('Invalid Chatting Type!')], 403);
         }
@@ -148,7 +155,10 @@ class ChatController extends Controller
             $id_param = 'delivery_man_id';
             $sent_by = 'sent_by_delivery_man';
             $with = 'deliveryMan';
-
+        } elseif ($type == 'admin') {
+            $id_param = 'admin_id';
+            $sent_by = 'sent_by_admin';
+            $with = 'admin';
         } else {
             return response()->json(['message' => translate('Invalid Chatting Type!')], 403);
         }
@@ -240,6 +250,10 @@ class ChatController extends Controller
 
             $customer = User::find($request->id);
             event(new ChattingEvent(key: 'message_from_seller', type: 'customer', userData: $customer, messageForm: $messageForm));
+        } elseif ($type == 'admin') {
+            $chatting->admin_id = 0;
+            $chatting->seen_by_admin = 0;
+            $chatting->notification_receiver = 'admin';
         } else {
             return response()->json(translate('Invalid_Chatting_Type'), 403);
         }

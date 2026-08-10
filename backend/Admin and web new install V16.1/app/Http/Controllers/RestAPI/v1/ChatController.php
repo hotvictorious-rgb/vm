@@ -30,10 +30,9 @@ class ChatController extends Controller
         } elseif ($type == 'seller') {
             $id_param = 'seller_id';
             $with = 'sellerInfo.shops';
-
-            $admin = $this->getAdminChatList($request);
-            $admin_size = $admin['admin_size'];
-            $admin_chat_id = $admin['admin_chat_id'];
+        } elseif ($type == 'admin') {
+            $id_param = 'admin_id';
+            $with = 'admin';
         } else {
             return response()->json(['message' => 'Invalid Chatting Type!'], 403);
         }
@@ -43,7 +42,7 @@ class ChatController extends Controller
                 ->select($id_param)
                 ->distinct()
                 ->get()
-                ->count() + $admin_size;
+                ->count();
 
         $all_chat_ids = Chatting::where(['user_id' => $request->user()->id])
             ->whereNotNull($id_param)
@@ -56,16 +55,7 @@ class ChatController extends Controller
         $unique_chat_ids = array_slice(array_values($all_chat_ids), $request->offset - 1, $request->limit);
 
         $chats = array();
-        if ($type == 'seller' && $admin_chat_id) {
-            $user_chatting = Chatting::with([$with])
-                ->where(['user_id' => $request->user()->id, 'admin_id' => '0'])
-                ->whereNotNull('admin_id')
-                ->latest()
-                ->first();
-
-            $user_chatting->unseen_message_count = Chatting::where(['user_id' => $user_chatting->user_id, 'admin_id' => $user_chatting->admin_id, 'seen_by_customer' => '0'])->count();
-            $chats[] = $user_chatting;
-        }
+        // removed mixed admin chat logic from seller
 
         if ($unique_chat_ids) {
             foreach ($unique_chat_ids as $unique_chat_id) {
@@ -125,6 +115,10 @@ class ChatController extends Controller
                         ->orWhere('l_name', 'like', '%' . $term . '%');
                 }
             })->pluck('id')->toArray();
+        } elseif ($type == 'admin') {
+            $with_param = 'admin';
+            $id_param = 'admin_id';
+            $users = [0]; // Admin is 0
         } else {
             return response()->json(['message' => translate('Invalid Chatting Type!')], 403);
         }
@@ -170,10 +164,13 @@ class ChatController extends Controller
             $sent_by = 'sent_by_delivery_man';
             $with = 'deliveryMan';
         } elseif ($type == 'seller') {
-            $id_param = $id == 0 ? 'admin_id' : 'seller_id';
+            $id_param = 'seller_id';
             $sent_by = 'sent_by_seller';
             $with = 'sellerInfo.shops';
-
+        } elseif ($type == 'admin') {
+            $id_param = 'admin_id';
+            $sent_by = 'sent_by_admin';
+            $with = 'admin';
         } else {
             return response()->json(['message' => translate('Invalid Chatting Type!')], 403);
         }
@@ -250,16 +247,30 @@ class ChatController extends Controller
         $messageForm = User::find($request->user()->id);
         if ($type == 'seller') {
             $seller = Seller::with('shop')->find($request->id);
-            $chatting->seller_id = $request->id == 0 ? null : $request->id;
-            $chatting->admin_id = $request->id == 0 ? 0 : null;
+            $chatting->seller_id = $request->id;
+            $chatting->admin_id = null;
             $chatting->shop_id = isset($seller->shop->id) ? $seller->shop->id : null;
             $chatting->seen_by_seller = 0;
-            $chatting->notification_receiver = $request->id == 0 ? 'admin' : 'seller';
+            $chatting->notification_receiver = 'seller';
 
             if ($request->id != 0) {
                 event(new ChattingEvent(key: 'message_from_customer', type: 'seller', userData: $seller, messageForm: $messageForm));
             }
+        } elseif ($type == 'admin') {
+            $chatting->admin_id = 0;
+            $chatting->seller_id = null;
+            $chatting->shop_id = null;
+            $chatting->seen_by_admin = 0;
+            $chatting->notification_receiver = 'admin';
         } elseif ($type == 'delivery-man') {
+            // Gating: Only allow if an order is assigned
+            $orderExists = \App\Models\Order::where('customer_id', $request->user()->id)
+                                            ->where('delivery_man_id', $request->id)
+                                            ->exists();
+            if (!$orderExists) {
+                return response()->json(['message' => translate('You can only chat with your assigned delivery man')], 403);
+            }
+
             $chatting->delivery_man_id = $request->id;
             $chatting->seen_by_delivery_man = 0;
             $chatting->notification_receiver = 'deliveryman';

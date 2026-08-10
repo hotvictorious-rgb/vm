@@ -229,6 +229,14 @@ class ChatController extends Controller
             $seller = Seller::find($request->id);
             event(new ChattingEvent(key: 'message_from_delivery_man', type: 'seller', userData: $seller, messageForm: $deliveryMan));
         } elseif ($type == 'customer') {
+            // Gating: Only allow if an order is assigned
+            $orderExists = \App\Models\Order::where('customer_id', $request->id)
+                                            ->where('delivery_man_id', $deliveryMan->id)
+                                            ->exists();
+            if (!$orderExists) {
+                return response()->json(['message' => translate('You can only chat with your assigned customer')], 403);
+            }
+
             $chatting->user_id = $request->id;
             $chatting->seen_by_customer = 0;
             $chatting->notification_receiver = 'customer';
