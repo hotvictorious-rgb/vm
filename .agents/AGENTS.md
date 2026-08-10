@@ -33,3 +33,31 @@ Any time you make a functional change, fix a bug, or complete a feature, you **M
 ## 4. UI / UX Standards
 - The platform uses a specific color scheme (Purple & Gold). Use the predefined theme colors.
 - Maintain smooth 60fps performance on mobile apps. Use `cached_network_image` for all network images.
+
+## 5. Mandatory Git Commit Rule ⚠️
+**This is non-negotiable.** Every AI MUST commit all changes to Git upon completing any task, feature, fix, or audit. Leaving changes uncommitted is STRICTLY FORBIDDEN.
+
+### Commit Format
+Use descriptive, atomic commits grouped by component. Follow this convention:
+
+```
+<type>(<scope>): <short description> [AI]
+
+- Bullet point of what changed
+- Another bullet point
+```
+
+**Types:** `feat`, `fix`, `security`, `perf`, `refactor`, `chore`
+**Scopes:** `user-app`, `vendor-app`, `delivery-man`, `backend`, `ai-governance`
+
+### Commit Procedure
+After completing any change:
+1. `git add <specific files>` — Stage only the files you changed (do NOT use `git add .` blindly).
+2. `git commit -m "<message> [AI]"` — Include `[AI]` tag so human developers know it was AI-authored.
+3. Log the changes in `AI_CHANGELOG.md` **before** committing (so the changelog itself is part of the commit).
+4. Verify with `git status` that the working tree is clean before ending your session.
+
+### Grouping Strategy
+- Group commits by **component** (one commit per app, one for backend).
+- Do NOT mix Flutter app changes with Laravel backend changes in a single commit.
+- New untracked files (widgets, screens) must be explicitly staged with `git add <path>`.
