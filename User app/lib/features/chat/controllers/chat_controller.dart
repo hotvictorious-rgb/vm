@@ -52,6 +52,8 @@ class ChatController extends ChangeNotifier {
 
   ChatModel? searchChatModel;
   ChatModel? searchDeliverymanChatModel;
+  ChatModel? adminChatModel;
+  ChatModel? searchAdminChatModel;
 
   bool sellerChatCall= false;
   bool deliveryChatCall= false;
@@ -101,31 +103,46 @@ class ChatController extends ChangeNotifier {
         deliverymanChatModel = null;
       }else if (offset == 1 && userType == 1) {
         chatModel = null;
+      }else if (offset == 1 && userType == 2) {
+        adminChatModel = null;
       }
       if(userType == null){
         notifyListeners();
       }
     }
 
-    ApiResponseModel apiResponse = await chatServiceInterface!.getChatList(userType!= null ? userType  == 0 ? 'delivery-man' : 'seller' : _userTypeIndex == 0 ? 'delivery-man' : 'seller', offset);
+    String chatType = 'seller';
+    int typeIndex = userType != null ? userType : _userTypeIndex;
+    if (typeIndex == 0) chatType = 'delivery-man';
+    else if (typeIndex == 1) chatType = 'seller';
+    else if (typeIndex == 2) chatType = 'admin';
+
+    ApiResponseModel apiResponse = await chatServiceInterface!.getChatList(chatType, offset);
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       if(offset == 1){
         if(userType == 0) {
           deliverymanChatModel = null;
           deliverymanChatModel = ChatModel.fromJson(apiResponse.response!.data);
-        }else {
+        }else if (userType == 1) {
           chatModel = null;
           chatModel = ChatModel.fromJson(apiResponse.response!.data);
+        }else if (userType == 2) {
+          adminChatModel = null;
+          adminChatModel = ChatModel.fromJson(apiResponse.response!.data);
         }
       }else{
         if(userType == 0) {
           deliverymanChatModel?.chat?.addAll(ChatModel.fromJson(apiResponse.response!.data).chat!);
           deliverymanChatModel?.offset  = (ChatModel.fromJson(apiResponse.response!.data).offset!);
           deliverymanChatModel?.totalSize  = (ChatModel.fromJson(apiResponse.response!.data).totalSize!);
-        } else {
+        } else if (userType == 1) {
           chatModel?.chat?.addAll(ChatModel.fromJson(apiResponse.response!.data).chat!);
           chatModel?.offset  = (ChatModel.fromJson(apiResponse.response!.data).offset!);
           chatModel?.totalSize  = (ChatModel.fromJson(apiResponse.response!.data).totalSize!);
+        } else if (userType == 2) {
+          adminChatModel?.chat?.addAll(ChatModel.fromJson(apiResponse.response!.data).chat!);
+          adminChatModel?.offset  = (ChatModel.fromJson(apiResponse.response!.data).offset!);
+          adminChatModel?.totalSize  = (ChatModel.fromJson(apiResponse.response!.data).totalSize!);
         }
       }
     } else {

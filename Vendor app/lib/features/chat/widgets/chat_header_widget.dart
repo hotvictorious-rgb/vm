@@ -59,7 +59,13 @@ class _ChatHeaderWidgetState extends State<ChatHeaderWidget> {
                         index: 1,
                         onPressEvent: ()=> _textEditingController.clear(),
                       ),
+                      const SizedBox(width: Dimensions.paddingSizeDefault),
 
+                      ChatTypeButtonWidget(
+                        text: 'Admin', // getTranslated('admin', context) if translation available
+                        index: 2,
+                        onPressEvent: ()=> _textEditingController.clear(),
+                      ),
                     ],
                   )),
 

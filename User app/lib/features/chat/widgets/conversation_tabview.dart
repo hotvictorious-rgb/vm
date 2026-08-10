@@ -52,6 +52,16 @@ class ConversationListTabview extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 35,
+                  child:  Center(
+                    child: Row(
+                      children: [
+                        Text('Admin'), // getTranslated('admin', context) if available
+                      ],
+                    ),
+                  ),
+                ),
               ],
               onTap: (index){
                 if(chatProvider.isActiveSuffixIcon){

@@ -58,3 +58,12 @@ Always append your completed tasks here in chronological order. Include the date
   - Confirmed Backend pi.php enforces strict 	hrottle:10,1 on all auth routes.
   - Audited ProductController and CategoryController for N+1 queries. Backend successfully uses extensive Eager Loading and Cache::remember() for high-traffic endpoints.
   - Temporarily pointed User App AppConstants.baseUrl to http://127.0.0.1:8000 for local MySQL/Laravel testing.
+
+### [2026-08-10] Cross-Party Chat & Voice Notes Implementation
+* **Component:** Global (Backend, User App, Vendor App, Delivery Man App)
+* **Action:** Implemented order-gating for delivery man chats and cross-party admin chat support.
+* **Details:**
+  - **Voice Notes (Delivery App):** Added udioplayers and ecord packages, created VoiceNoteBottomSheet and AudioPlayerWidget, and integrated into MessageBubbleWidget and ChatController.
+  - **Order Gating (Backend):** Modified 1/ChatController.php (Customer) and 2/delivery_man/ChatController.php (Delivery Man) to prevent direct messaging unless an active order links the Customer and Delivery Man.
+  - **Admin Chat (Backend & Apps):** Separated dmin from seller in 1 backend endpoints. Added dmin routing to 3/seller endpoints. Re-instated TabController in User App and added Admin tabs to both Vendor and User app chat headers to enable direct messaging with Admin.
+

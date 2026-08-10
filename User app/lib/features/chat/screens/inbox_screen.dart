@@ -31,6 +31,7 @@ class InboxScreen extends StatefulWidget {
 class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStateMixin{
 
   TextEditingController searchController = TextEditingController();
+  TabController? _tabController;
 
   late bool isGuestMode;
   @override
@@ -42,7 +43,13 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
 
     isGuestMode = !Provider.of<AuthController>(context, listen: false).isLoggedIn();
     if(!isGuestMode) {
-      // TabController removed since Vendor tab is gone.
+      _tabController = TabController(length: 3, initialIndex: widget.initIndex, vsync: this);
+      _tabController?.addListener((){
+        if(chatController.searchController.text.isNotEmpty){
+          chatController.searchController.clear();
+          chatController.resetIsSearchComplete(isUpdate: false);
+        }
+      });
     }
 
     if(widget.fromNotification) {
@@ -82,7 +89,8 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
                   child: SearchInboxWidget(hintText: getTranslated('search', context)));
               }),
 
-            // ConversationListTabview removed to hide Vendor tab
+            if(!isGuestMode)
+              ConversationListTabview(tabController: _tabController),
 
             Expanded(child: isGuestMode ? NotLoggedInWidget(message: getTranslated('to_communicate_with_vendors', context),
               fromPage: widget.fromDashboard ? '${RouterHelper.dashboardScreen}?page=inbox' : RouterHelper.inboxScreen,
@@ -101,9 +109,13 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
                     ChatModel? cahtModel;
 
                     if(chatProvider.isSearchComplete) {
-                      cahtModel = chatProvider.searchDeliverymanChatModel;
+                      if (chatProvider.userTypeIndex == 0) cahtModel = chatProvider.searchDeliverymanChatModel;
+                      else if (chatProvider.userTypeIndex == 1) cahtModel = chatProvider.searchChatModel;
+                      else cahtModel = chatProvider.searchAdminChatModel;
                     } else {
-                      cahtModel = chatProvider.deliverymanChatModel;
+                      if (chatProvider.userTypeIndex == 0) cahtModel = chatProvider.deliverymanChatModel;
+                      else if (chatProvider.userTypeIndex == 1) cahtModel = chatProvider.chatModel;
+                      else cahtModel = chatProvider.adminChatModel;
                     }
 
                   return cahtModel != null ? (cahtModel.chat != null && cahtModel.chat!.isNotEmpty) ?
@@ -126,8 +138,8 @@ class _InboxScreenState extends State<InboxScreen> with SingleTickerProviderStat
                     ) :  NoInternetOrDataScreenWidget(
                     padding: EdgeInsets.only(top: size.height * 0.15),
                     isNoInternet: false,
-                    message: 'no_deliveryman_found',
-                    icon: Images.deliverymanPlaceholder,
+                    message: chatProvider.userTypeIndex == 0 ? 'no_deliveryman_found' : chatProvider.userTypeIndex == 1 ? 'no_vendor_found' : 'no_admin_found',
+                    icon: chatProvider.userTypeIndex == 0 ? Images.deliverymanPlaceholder : Images.chatImage,
                   ) : const InboxShimmerWidget();
                 })
               )
