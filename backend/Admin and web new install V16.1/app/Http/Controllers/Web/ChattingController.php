@@ -123,6 +123,13 @@ class ChattingController extends BaseController
         $customerId = auth('customer')->id();
         $customer = $this->customerRepo->getFirstWhere(params: ['id' => $customerId]);
         if ($request->has(key: 'delivery_man_id')) {
+            $orderExists = \App\Models\Order::where('customer_id', $customerId)
+                                            ->where('delivery_man_id', $request['delivery_man_id'])
+                                            ->exists();
+            if (!$orderExists) {
+                return response()->json(['message' => translate('You can only chat with your assigned delivery man')], 403);
+            }
+
             $this->chattingRepo->add(
                 data: $this->chattingService->addChattingDataForWeb(
                     request: $request,

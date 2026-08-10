@@ -67,3 +67,9 @@ Always append your completed tasks here in chronological order. Include the date
   - **Order Gating (Backend):** Modified 1/ChatController.php (Customer) and 2/delivery_man/ChatController.php (Delivery Man) to prevent direct messaging unless an active order links the Customer and Delivery Man.
   - **Admin Chat (Backend & Apps):** Separated dmin from seller in 1 backend endpoints. Added dmin routing to 3/seller endpoints. Re-instated TabController in User App and added Admin tabs to both Vendor and User app chat headers to enable direct messaging with Admin.
 
+
+### [2026-08-10] Web Panel Chat Security
+* **Component:** Customer Web Frontend (Web/ChattingController.php)
+* **Action:** Added order-gating to delivery man chat.
+* **Details:** Added Order::exists() check to ddMessage() in Web/ChattingController.php to prevent customers from chatting with delivery men without an active order assignment, mirroring the logic introduced in the mobile REST API.
+
