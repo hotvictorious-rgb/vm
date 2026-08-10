@@ -48,22 +48,15 @@ class _ChatHeaderWidgetState extends State<ChatHeaderWidget> {
                   SizedBox(height: 40, child: Row(
                     children: [
                       ChatTypeButtonWidget(
-                        text: getTranslated('customer', context),
+                        text: getTranslated('delivery-man', context),
                         index: 0,
                         onPressEvent: ()=> _textEditingController.clear(),
                       ),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
 
                       ChatTypeButtonWidget(
-                        text: getTranslated('delivery-man', context),
-                        index: 1,
-                        onPressEvent: ()=> _textEditingController.clear(),
-                      ),
-                      const SizedBox(width: Dimensions.paddingSizeDefault),
-
-                      ChatTypeButtonWidget(
                         text: 'Admin', // getTranslated('admin', context) if translation available
-                        index: 2,
+                        index: 1,
                         onPressEvent: ()=> _textEditingController.clear(),
                       ),
                     ],

@@ -86,7 +86,7 @@ class ChatController extends ChangeNotifier {
       messageModel = null;
     }
 
-    ApiResponse apiResponse = await chatServiceInterface.getMessageList(_userTypeIndex == 0 ? 'customer' : (_userTypeIndex == 1 ? 'delivery-man' : 'admin'), offset, id);
+    ApiResponse apiResponse = await chatServiceInterface.getMessageList(_userTypeIndex == 0 ? 'delivery-man' : 'admin', offset, id);
 
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       if(offset == 1) {
@@ -110,7 +110,7 @@ class ChatController extends ChangeNotifier {
       _chatModel = null;
     }
     _isLoading = true;
-    ApiResponse apiResponse = await chatServiceInterface.getChatList(_userTypeIndex == 0 ? 'customer' : (_userTypeIndex == 1 ? 'delivery-man' : 'admin'), offset);
+    ApiResponse apiResponse = await chatServiceInterface.getChatList(_userTypeIndex == 0 ? 'delivery-man' : 'admin', offset);
 
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       if(offset == 1) {
@@ -130,7 +130,7 @@ class ChatController extends ChangeNotifier {
   }
 
   Future<void> searchedChatList(BuildContext context, String search) async {
-    ApiResponse apiResponse = await chatServiceInterface.searchChat(_userTypeIndex == 0 ? 'customer' : (_userTypeIndex == 1 ? 'delivery-man' : 'admin'), search);
+    ApiResponse apiResponse = await chatServiceInterface.searchChat(_userTypeIndex == 0 ? 'delivery-man' : 'admin', search);
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
       _chatModel = ChatModel(totalSize: 10, limit: '10', offset: '1', chat: []);
       apiResponse.response!.data.forEach((chat) {_chatModel!.chat!.add(Chat.fromJson(chat));});
@@ -148,7 +148,7 @@ class ChatController extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    http.StreamedResponse response = await chatServiceInterface.sendMessage(messageBody, _userTypeIndex == 0 ? 'customer' : (_userTypeIndex == 1 ? 'delivery-man' : 'admin') , getXFileFromMediaFileModel(pickedMediaFileModelList ?? []) ?? [], pickedFiles ?? []);
+    http.StreamedResponse response = await chatServiceInterface.sendMessage(messageBody, _userTypeIndex == 0 ? 'delivery-man' : 'admin' , getXFileFromMediaFileModel(pickedMediaFileModelList ?? []) ?? [], pickedFiles ?? []);
     if (response.statusCode == 200) {
       getMessageList(messageBody.userId, 1, reload: false);
       _emptyAllPickedData();

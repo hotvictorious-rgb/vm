@@ -110,8 +110,8 @@ class _InboxScreenState extends State<InboxScreen> {
             ) :
             Expanded(child: NoDataScreen(
               padding: EdgeInsets.only(top: size.height * 0.15),
-              title: chatProvider.userTypeIndex == 0 ? 'no_customer_found' : chatProvider.userTypeIndex == 1 ? 'no_deliveryman_found' : 'no_admin_found',
-              image: chatProvider.userTypeIndex == 0 ? Images.noCustomerPlaceHolder : chatProvider.userTypeIndex == 1 ? Images.deliverymanPlaceHolder : Images.noCustomerPlaceHolder, // Reusing noCustomerPlaceHolder for admin since no specific image exists
+              title: chatProvider.userTypeIndex == 0 ? 'no_deliveryman_found' : 'no_admin_found',
+              image: chatProvider.userTypeIndex == 0 ? Images.deliverymanPlaceHolder : Images.noCustomerPlaceHolder, 
             )),
           ]);
         }),
