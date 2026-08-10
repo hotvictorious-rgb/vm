@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'package:sixvalley_delivery_boy/features/auth/controllers/auth_controller.dart';
@@ -76,12 +77,14 @@ import 'package:sixvalley_delivery_boy/utill/app_constants.dart';
 Future<Map<String, Map<String, String>>> init() async {
   // Core
   final sharedPreferences = await SharedPreferences.getInstance();
+  const secureStorage = FlutterSecureStorage();
   Get.lazyPut(() => sharedPreferences);
-  Get.lazyPut(() => ApiClient(appBaseUrl: AppConstants.baseUri, sharedPreferences: Get.find()));
+  Get.lazyPut(() => secureStorage);
+  Get.lazyPut(() => ApiClient(appBaseUrl: AppConstants.baseUri, sharedPreferences: Get.find(), secureStorage: secureStorage));
 
 
   ///Interface
-  AuthRepositoryInterface authRepoInterface = AuthRepository(apiClient: Get.find(), sharedPreferences: Get.find());
+  AuthRepositoryInterface authRepoInterface = AuthRepository(apiClient: Get.find(), sharedPreferences: Get.find(), secureStorage: secureStorage);
   Get.lazyPut(() => authRepoInterface);
   ChatRepositoryInterface chatRepoInterface = ChatRepository(apiClient: Get.find(), sharedPreferences: Get.find());
   Get.lazyPut(()=> chatRepoInterface);
@@ -93,7 +96,7 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(()=> orderRepoInterface);
   ProfileRepositoryInterface profileRepoInterface = ProfileRepository(apiClient: Get.find(), sharedPreferences: Get.find());
   Get.lazyPut(()=> profileRepoInterface);
-  SplashRepositoryInterface splashRepoInterface = SplashRepository(sharedPreferences: Get.find(), apiClient: Get.find());
+  SplashRepositoryInterface splashRepoInterface = SplashRepository(sharedPreferences: Get.find(), apiClient: Get.find(), secureStorage: secureStorage);
   Get.lazyPut(()=> splashRepoInterface);
   WalletRepositoryInterface walletRepoInterface = WalletRepository(apiClient: Get.find());
   Get.lazyPut(()=> walletRepoInterface);
@@ -149,11 +152,11 @@ Future<Map<String, Map<String, String>>> init() async {
 
 
   /// Repository
-  Get.lazyPut(() => SplashRepository(sharedPreferences: Get.find(), apiClient: Get.find()));
+  Get.lazyPut(() => SplashRepository(sharedPreferences: Get.find(), apiClient: Get.find(), secureStorage: secureStorage));
   Get.lazyPut(() => OnBoardingRepository());
   Get.lazyPut(() => LanguageRepository());
   Get.lazyPut(() => ProfileRepository(apiClient: Get.find(), sharedPreferences: sharedPreferences));
-  Get.lazyPut(() => AuthRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut(() => AuthRepository(apiClient: Get.find(), sharedPreferences: Get.find(), secureStorage: secureStorage));
   Get.lazyPut(() => OrderRepository(apiClient: Get.find(), sharedPreferences: Get.find()));
   Get.lazyPut(() => ChatRepository(apiClient: Get.find(), sharedPreferences:  Get.find()));
   Get.lazyPut(() => NotificationRepository(apiClient: Get.find(), sharedPreferences:  Get.find()));

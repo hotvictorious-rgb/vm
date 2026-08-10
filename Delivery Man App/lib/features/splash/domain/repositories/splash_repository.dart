@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sixvalley_delivery_boy/data/api/api_client.dart';
@@ -7,7 +8,8 @@ import 'package:sixvalley_delivery_boy/utill/app_constants.dart';
 class SplashRepository implements SplashRepositoryInterface{
   ApiClient apiClient;
   final SharedPreferences sharedPreferences;
-  SplashRepository({required this.sharedPreferences, required this.apiClient});
+  final FlutterSecureStorage secureStorage;
+  SplashRepository({required this.sharedPreferences, required this.apiClient, required this.secureStorage});
 
   @override
   Future<Response> getConfigData() async {
@@ -50,7 +52,8 @@ class SplashRepository implements SplashRepositoryInterface{
   }
 
   @override
-  Future<bool> removeSharedData() {
+  Future<bool> removeSharedData() async {
+    await secureStorage.delete(key: AppConstants.token);
     return sharedPreferences.remove(AppConstants.token);
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sixvalley_delivery_boy/data/api/api_client.dart';
@@ -11,7 +12,8 @@ import 'package:sixvalley_delivery_boy/utill/app_constants.dart';
 class AuthRepository implements AuthRepositoryInterface{
   final ApiClient apiClient;
   final SharedPreferences sharedPreferences;
-  AuthRepository({required this.apiClient, required this.sharedPreferences});
+  final FlutterSecureStorage secureStorage;
+  AuthRepository({required this.apiClient, required this.sharedPreferences, required this.secureStorage});
 
   @override
   Future<Response> login(String countryCode, String phone, String password) async {
@@ -30,6 +32,9 @@ class AuthRepository implements AuthRepositoryInterface{
   Future<bool> saveUserToken(String token) async {
     apiClient.token = token;
     apiClient.updateHeader(token, sharedPreferences.getString(AppConstants.languageCode));
+    // Store token securely in encrypted storage
+    await secureStorage.write(key: AppConstants.token, value: token);
+    // Keep SharedPreferences in sync for backward compatibility
     return await sharedPreferences.setString(AppConstants.token, token);
   }
 
@@ -52,12 +57,17 @@ class AuthRepository implements AuthRepositoryInterface{
     if(!GetPlatform.isWeb) {
       FirebaseMessaging.instance.subscribeToTopic('six_valley_delivery');
     }
+
+    // Read token from secure storage first, fall back to SharedPreferences
+    String? authToken = await secureStorage.read(key: AppConstants.token);
+    authToken ??= sharedPreferences.getString(AppConstants.token);
+
     return await apiClient.postData(AppConstants.tokenUri,
 
         {"_method": "put", "fcm_token": _deviceToken},
       headers:  {
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${sharedPreferences.get(AppConstants.token)}'
+        'Authorization': 'Bearer $authToken'
       },
     );
   }
@@ -86,6 +96,8 @@ class AuthRepository implements AuthRepositoryInterface{
     if(!GetPlatform.isWeb) {
       apiClient.postData(AppConstants.tokenUri, {"_method": "put", "fcm_token": 'no'});
     }
+    // Clear token from both secure storage and SharedPreferences
+    await secureStorage.delete(key: AppConstants.token);
     await sharedPreferences.remove(AppConstants.token);
     return true;
   }
@@ -93,7 +105,11 @@ class AuthRepository implements AuthRepositoryInterface{
   @override
   Future<void> saveUserCredentials(String countryCode, String number, String password) async {
     try {
-      await sharedPreferences.setString(AppConstants.userPassword, password);
+      // Store credentials securely in encrypted storage
+      await secureStorage.write(key: AppConstants.userPassword, value: password);
+      await secureStorage.write(key: AppConstants.userEmail, value: number);
+      await secureStorage.write(key: AppConstants.userCountryCode, value: countryCode);
+      // Keep SharedPreferences in sync for non-sensitive read access
       await sharedPreferences.setString(AppConstants.userEmail, number);
       await sharedPreferences.setString(AppConstants.userCountryCode, countryCode);
     } catch (e) {
@@ -144,6 +160,7 @@ class AuthRepository implements AuthRepositoryInterface{
   }
 
   Future<bool> clearUserEmailAndPassword() async {
+    await secureStorage.delete(key: AppConstants.userPassword);
     await sharedPreferences.remove(AppConstants.userPassword);
     return await sharedPreferences.remove(AppConstants.userEmail);
   }
@@ -151,6 +168,9 @@ class AuthRepository implements AuthRepositoryInterface{
 
   @override
   Future<bool> clearUserCredentials() async{
+    await secureStorage.delete(key: AppConstants.userPassword);
+    await secureStorage.delete(key: AppConstants.userCountryCode);
+    await secureStorage.delete(key: AppConstants.userEmail);
     await sharedPreferences.remove(AppConstants.userPassword);
     await sharedPreferences.remove(AppConstants.userCountryCode);
     return await sharedPreferences.remove(AppConstants.userEmail);
@@ -182,3 +202,4 @@ class AuthRepository implements AuthRepositoryInterface{
   }
 
 }
+

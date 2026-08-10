@@ -55,6 +55,7 @@ dependencies:
   chewie: ^1.10.0
   get_thumbnail_video: ^0.7.3
   dotted_line: ^3.2.3
+  flutter_secure_storage: ^10.3.1
 
 
 
