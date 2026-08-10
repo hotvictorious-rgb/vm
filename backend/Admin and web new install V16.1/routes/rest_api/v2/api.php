@@ -130,7 +130,7 @@ Route::group(['namespace' => 'RestAPI\v2', 'prefix' => 'v2', 'middleware' => ['a
 
     Route::group(['prefix' => 'delivery-man', 'namespace' => 'delivery_man'], function () {
 
-        Route::group(['prefix' => 'auth', 'namespace' => 'auth'], function () {
+        Route::group(['prefix' => 'auth', 'namespace' => 'auth', 'middleware' => ['throttle:10,1']], function () {
             Route::controller(DeliveryManLoginController::class)->group(function () {
                 Route::post('login', 'login');
                 Route::post('forgot-password', 'reset_password_request');

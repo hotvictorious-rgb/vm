@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 |*/
 
 Route::group(['namespace' => 'RestAPI\v3\seller', 'prefix' => 'v3/seller', 'middleware' => ['api_lang']], function () {
-    Route::group(['prefix' => 'auth', 'namespace' => 'auth'], function () {
+    Route::group(['prefix' => 'auth', 'namespace' => 'auth', 'middleware' => ['throttle:10,1']], function () {
 
         Route::controller(VendorLoginController::class)->group(function () {
             Route::post('login', 'login');

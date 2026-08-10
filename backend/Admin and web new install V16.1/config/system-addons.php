@@ -1,19 +1,14 @@
 <?php return array (
-  'admin_panel' =>
+  'admin_panel' => 
   array (
     'active' => '1',
-    'name' => 'Test User',
-    'identifier' => 'test@gmail.com',
-    'username' => '',
-    'purchase_key' => '',
+    'username' => 'victory',
+    'purchase_key' => '1234',
     'software_id' => 'MzE0NDg1OTc=',
-    'domain' => 'localhost/6Valley',
+    'domain' => '127.0.0.1:8000',
     'software_type' => 'product',
-    'errors' =>
-    array (
-    ),
   ),
-  'vendor_panel' =>
+  'vendor_panel' => 
   array (
     'active' => '0',
     'username' => '',
@@ -22,7 +17,7 @@
     'domain' => '',
     'software_type' => 'addon',
   ),
-  'user_app' =>
+  'user_app' => 
   array (
     'active' => '0',
     'username' => '',
@@ -31,7 +26,7 @@
     'domain' => '',
     'software_type' => 'addon',
   ),
-  'vendor_app' =>
+  'vendor_app' => 
   array (
     'active' => '0',
     'username' => '',
@@ -40,7 +35,7 @@
     'domain' => '',
     'software_type' => 'addon',
   ),
-  'deliveryman_app' =>
+  'deliveryman_app' => 
   array (
     'active' => '1',
     'name' => '',
@@ -50,11 +45,11 @@
     'software_id' => 'MzYwODUwNDE=',
     'domain' => '',
     'software_type' => 'addon',
-    'errors' =>
+    'errors' => 
     array (
     ),
   ),
-  'theme_lifestyle' =>
+  'theme_lifestyle' => 
   array (
     'active' => '0',
     'username' => '',
