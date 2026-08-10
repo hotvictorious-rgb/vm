@@ -100,10 +100,14 @@ $(document).ready(() => {
     function ajaxFormRenderChattingMessages() {
         $(".chatting-messages-ajax-form").on("submit", async function(event) {
             event.preventDefault();
-            let totalFilesCount =
-                selectedFiles?.length + selectedImages?.length;
-            if (!await validateFormHelper($(this))) return false;
             let formData = new FormData(this);
+            let isVoiceMessage = (typeof window.recordedAudioBlob !== 'undefined' && window.recordedAudioBlob !== null);
+            if (isVoiceMessage) {
+                formData.append('file[]', window.recordedAudioBlob, 'voice_message.webm');
+            }
+            let totalFilesCount =
+                selectedFiles?.length + selectedImages?.length + (isVoiceMessage ? 1 : 0);
+            if (!isVoiceMessage && !await validateFormHelper($(this))) return false;
             $.ajaxSetup({
                 headers: {
                     "X-XSRF-TOKEN": $('meta[name="csrf-token"]').attr("content")
@@ -156,6 +160,11 @@ $(document).ready(() => {
                         response.chattingMessages
                     );
                     $("#msgInputValue").val("");
+                    if (isVoiceMessage) {
+                        window.recordedAudioBlob = null;
+                        let audioPreview = document.getElementById("audio-preview-badge");
+                        if (audioPreview) audioPreview.remove();
+                    }
                     $(".image-array").empty();
                     $(".file-array").empty();
                     let container = document.getElementById(
@@ -476,6 +485,43 @@ $(document).ready(() => {
             reinitTooltips();
         });
     }
-
     manipulateTooltip();
+
+    // Voice Message Recording Logic
+    window.recordedAudioBlob = null;
+    let mediaRecorder;
+    let audioChunks = [];
+    let isRecording = false;
+
+    $(document).on('click', '#record-audio-btn', function() {
+        if (!isRecording) {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                isRecording = true;
+                
+                $(this).find('svg path, svg line, svg polygon').attr('stroke', 'red');
+                $(this).find('svg').css('background', '#ffebeb').css('border-radius', '50%');
+                $('#msgInputValue').attr('placeholder', 'Recording audio... Click stop to save.');
+
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    audioChunks.push(event.data);
+                });
+
+                mediaRecorder.addEventListener("stop", () => {
+                    window.recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    audioChunks = [];
+                    $('#msgInputValue').attr('placeholder', 'Voice message recorded. Click send to upload.');
+                });
+            }).catch(err => {
+                console.error("Microphone access denied: ", err);
+                toastMagic.error("Microphone access denied or not available");
+            });
+        } else {
+            mediaRecorder.stop();
+            isRecording = false;
+            $(this).find('svg path, svg line, svg polygon').attr('stroke', '#1455AC');
+            $(this).find('svg').css('background', 'transparent');
+        }
+    });
 });

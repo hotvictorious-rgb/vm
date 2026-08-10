@@ -1,32 +1,39 @@
 "use strict";
 
-$(document).ready(function () {
+// let selectedImage = [];
+$(document).on("ready", function () {
     ajaxFormRenderChattingMessages();
 
-    $("#myInput").on("keyup", function (e) {
+    $("#myInput").on("keyup keypress change", function () {
         var value = $(this).val().toLowerCase();
-        $(".list_filter").filter(function () {
+
+        $(".list_filter").each(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
+
+        let visibleUsers = $(".list_filter:visible").length;
+
+        if (visibleUsers > 0) {
+            $('.empty-state-for-chatting-msg').addClass('d-none').removeClass('d-flex');
+        } else {
+            $('.empty-state-for-chatting-msg').removeClass('d-none').addClass('d-flex');
+        }
     });
+
 
     $("#chat-search-form").on("submit", function (e) {
         e.preventDefault();
     });
 
-
     $(".get-ajax-message-view").on("click", function () {
-        $(".get-ajax-message-view").removeClass("active");
-
-        $(this).addClass("active");
+        $(".get-ajax-message-view").removeClass("bg-soft-secondary active");
+        $(this).addClass("bg-soft-secondary active");
         let userId = $(this).data("user-id");
+        $(".notify-alert-" + userId).remove();
         let actionURL = $("#chatting-post-url").data("url") + userId;
         $("#count-unread-messages-" + userId).remove();
-        if ($("#count-unread-messages-" + userId).length > 0) {
-            $(".get-ajax-message-view .chat_ib h5").addClass("active-text");
-        } else {
-            $(this).find(".chat_ib h5").removeClass("active-text");
-        }
+        $(".get-ajax-message-view").find(".chat_ib h5").addClass("font-weight-normal");
+        $(this).find(".chat_ib h5").removeClass("font-weight-normal");
         $.ajaxSetup({
             headers: {
                 "X-XSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -41,25 +48,14 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.userData) {
                     $("#chatting-messages-section").html(response.chattingMessages);
-                    $(".profile-image").attr("src", response.userData.image);
-                    $(".profile-name").html(response.userData.name);
+                    $("#profile_image").attr("src", response.userData.image);
+                    $("#profile_name").html(response.userData.name);
                     $("#profile_phone").html(response.userData.phone);
-                    if (
-                        parseInt(response.userData["temporary-close-status"]) === 1
-                    ) {
-                        $(".temporarily-closed-sticky-alert")
-                            .removeClass("d-none")
-                            .css({
-                                display: "",
-                            });
-                    } else {
-                        $(".temporarily-closed-sticky-alert")
-                            .addClass("d-none")
-                            .css({
-                                display: "none",
-                            });
-                    }
                     $("#current-user-hidden-id").val(userId);
+                    $(".user-details-route").attr(
+                        "href",
+                        response.userData.detailsRoute
+                    );
                     $(".get-ajax-message-view.active")[0].scrollIntoView({
                         behavior: "auto",
                         block: "nearest",
@@ -69,7 +65,6 @@ $(document).ready(function () {
                     toggleVideo();
                     downloadZip();
                     namePdf();
-                    toggleDropdown();
                     manipulateTooltip();
                 }
             },
@@ -81,23 +76,15 @@ $(document).ready(function () {
     });
 
     function ajaxFormRenderChattingMessages() {
-        $(".chatting-messages-form").on("submit", function (event) {
+        $(".chatting-messages-ajax-form").on("submit", async function (event) {
             event.preventDefault();
-            let userId = $(".get-ajax-message-view.active").data("user-id");
-            let actionURL = $("#chatting-post-url").data("url") + userId;
             let formData = new FormData(this);
             let isVoiceMessage = (typeof window.recordedAudioBlob !== 'undefined' && window.recordedAudioBlob !== null);
             if (isVoiceMessage) {
                 formData.append('file[]', window.recordedAudioBlob, 'voice_message.webm');
             }
             let totalFilesCount = selectedFiles?.length + selectedImages?.length + (isVoiceMessage ? 1 : 0);
-            
-            // basic check to prevent empty send if no text and no files
-            let messageText = formData.get('message') ? formData.get('message').trim() : '';
-            if (messageText === '' && totalFilesCount === 0) {
-                toastr.error('Please type a message or choose a file.');
-                return false;
-            }
+            if (!isVoiceMessage && !await validateFormHelper($(this))) return false;
             $.ajaxSetup({
                 headers: {
                     "X-XSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -105,7 +92,7 @@ $(document).ready(function () {
             });
             $.ajax({
                 type: "POST",
-                url: actionURL,
+                url: $("#chatting-post-url").data("url"),
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -136,11 +123,12 @@ $(document).ready(function () {
                     return xhr;
                 },
                 beforeSend: function () {
-                    $("#msgSendBtn").attr("disabled", true).addClass('opacity-25');
+                    $("#msgSendBtn").attr("disabled", true);
+                    $("#loading").fadeIn();
                 },
                 success: function (response) {
                     if (response?.status?.toString() === 'error' && response?.message?.toString() !== '') {
-                        toastr.error(response?.message);
+                        toastMagic.error(response?.message);
                         return;
                     }
 
@@ -167,31 +155,18 @@ $(document).ready(function () {
                     toggleVideo();
                     downloadZip();
                     namePdf();
-                    toggleDropdown();
                     manipulateTooltip();
-
-                    if (response.errors) {
-                        for (
-                            let index = 0;
-                            index < response.errors.length;
-                            index++
-                        ) {
-                            toastr.error(response.errors[index].message);
-                        }
-                    } else if (response.error) {
-                        toastr.error(response.error);
-                    }
-
                     setTimeout(() => {
                         $(".circle-progress").find(".text").text(`Uploaded ${totalFilesCount} files`);
                         $(".circle-progress").hide();
                     }, 1000)
                 },
                 complete: function () {
+                    $("#loading").fadeOut();
                     $(".circle-progress").hide();
-                    $("#msgSendBtn").removeAttr("disabled").removeClass('opacity-25');
+                    $("#msgSendBtn").removeAttr("disabled");
                     $('[data-toggle="tooltip"]').tooltip();
-
+                    formSubmitCleanup($(this));
                     setTimeout(() => {
                         $(".circle-progress").find(".text").text(`Uploaded ${totalFilesCount} files`);
                         $(".circle-progress").hide();
@@ -199,13 +174,13 @@ $(document).ready(function () {
                 },
                 error: function (error) {
                     if (error.status === 413) {
-                        toastr.warning($('#message-media-error').data("text"));
+                        toastMagic.warning($('#message-media-error').data("text"));
                     } else {
                         try {
                             let errorData = JSON.parse(error.responseText);
-                            toastr.warning(errorData.message);
+                            toastMagic.warning(errorData.message);
                         } catch (e) {
-                            toastr.error($('#message-media-error').data("text"));
+                            toastMagic.error($('#message-media-error').data("text"));
                         }
                     }
 
@@ -302,6 +277,7 @@ $(document).ready(function () {
     imageSlider();
 
     function toggleVideo() {
+
         $(".modal_video-play-btn").on("click", function () {
             const videoElement = $(this).siblings("video")[0];
 
@@ -412,7 +388,7 @@ $(document).ready(function () {
             });
 
             Promise.all(mediaPromises)
-                .then(() => zip.generateAsync({type: "blob"}))
+                .then(() => zip.generateAsync({ type: "blob" }))
                 .then((content) => saveAs(content, "files.zip"))
                 .catch((error) => console.error("Error generating ZIP:", error));
         });
@@ -444,16 +420,6 @@ $(document).ready(function () {
     }
 
     namePdf();
-
-    function toggleDropdown() {
-        $("#viewDetailsDropdown").on("click", function (e) {
-            // Prevent dropdown from closing immediately on click
-            e.stopPropagation();
-            $(this).next(".dropdown-menu").toggle();
-        });
-    }
-
-    toggleDropdown();
 
     function manipulateTooltip() {
         // Dispose of tooltips when the modal is shown
@@ -496,7 +462,7 @@ $(document).ready(function () {
                 });
             }).catch(err => {
                 console.error("Microphone access denied: ", err);
-                toastr.error("Microphone access denied or not available");
+                toastMagic.error("Microphone access denied or not available");
             });
         } else {
             mediaRecorder.stop();
