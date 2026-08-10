@@ -28,8 +28,7 @@ class ChatController extends Controller
             $id_param = 'delivery_man_id';
             $with = 'deliveryMan';
         } elseif ($type == 'seller') {
-            $id_param = 'seller_id';
-            $with = 'sellerInfo.shops';
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } elseif ($type == 'admin') {
             $id_param = 'admin_id';
             $with = 'admin';
@@ -98,15 +97,7 @@ class ChatController extends Controller
     {
         $terms = explode(" ", $request->input('search'));
         if ($type == 'seller') {
-            $id_param = 'seller_id';
-            $with_param = 'sellerInfo.shops';
-            $users = Shop::when($request->search, function ($query) use ($terms) {
-                foreach ($terms as $term) {
-                    $query->where('name', 'like', '%' . $term . '%');
-                }
-            })->pluck('seller_id')->toArray();
-
-        } elseif ($type == 'delivery-man') {
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);        } elseif ($type == 'delivery-man') {
             $with_param = 'deliveryMan';
             $id_param = 'delivery_man_id';
             $users = DeliveryMan::when($request->search, function ($query) use ($terms) {
@@ -164,9 +155,7 @@ class ChatController extends Controller
             $sent_by = 'sent_by_delivery_man';
             $with = 'deliveryMan';
         } elseif ($type == 'seller') {
-            $id_param = 'seller_id';
-            $sent_by = 'sent_by_seller';
-            $with = 'sellerInfo.shops';
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } elseif ($type == 'admin') {
             $id_param = 'admin_id';
             $sent_by = 'sent_by_admin';
@@ -246,16 +235,7 @@ class ChatController extends Controller
         $chatting->seen_by_customer = 1;
         $messageForm = User::find($request->user()->id);
         if ($type == 'seller') {
-            $seller = Seller::with('shop')->find($request->id);
-            $chatting->seller_id = $request->id;
-            $chatting->admin_id = null;
-            $chatting->shop_id = isset($seller->shop->id) ? $seller->shop->id : null;
-            $chatting->seen_by_seller = 0;
-            $chatting->notification_receiver = 'seller';
-
-            if ($request->id != 0) {
-                event(new ChattingEvent(key: 'message_from_customer', type: 'seller', userData: $seller, messageForm: $messageForm));
-            }
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } elseif ($type == 'admin') {
             $chatting->admin_id = 0;
             $chatting->seller_id = null;
@@ -298,7 +278,7 @@ class ChatController extends Controller
         if ($type == 'delivery-man') {
             $id_param = 'delivery_man_id';
         } elseif ($type == 'seller') {
-            $id_param = $request->id == 0 ? 'admin_id' : 'seller_id';
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } else {
             return response()->json(['message' => 'Invalid Chatting Type'], 403);
         }

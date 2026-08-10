@@ -107,7 +107,7 @@
             @php($business_mode = getWebConfig(name: 'business_mode'))
             <div>
                 <div class="widget-title">
-                    <a class="{{Request::is('chat/vendor')?'active-menu': '' }} {{Request::is('chat/delivery-man')?'active-menu': '' }}" href="{{route('chat', ['type' => $business_mode == 'multi' ? 'vendor' : 'delivery-man'])}}">
+                    <a class="{{Request::is('chat/delivery-man')?'active-menu': '' }}" href="{{route('chat', ['type' => 'delivery-man'])}}">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <g clip-path="url(#clip0_776_10801)">

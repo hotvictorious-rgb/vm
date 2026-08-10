@@ -161,6 +161,8 @@ class ChattingController extends BaseController
             $relation = ['admin'];
             $type = 'admin';
         } else {
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
+            
             $vendorData = $this->vendorRepo->getFirstWhere(params: ['id' => $request['vendor_id']], relations: ['shop']);
 
             $this->chattingRepo->add(

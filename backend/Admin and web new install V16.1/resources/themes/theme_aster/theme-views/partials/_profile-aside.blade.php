@@ -96,8 +96,8 @@
                             </a>
                         </li>
                     @endif
-                    <li class="{{Request::is ('chat/vendor') || Request::is ('chat/delivery-man') ? 'active' : ''}}">
-                        <a href="{{route('chat', ['type' => 'vendor'])}}">
+                    <li class="{{Request::is ('chat/delivery-man') ? 'active' : ''}}">
+                        <a href="{{route('chat', ['type' => 'delivery-man'])}}">
                             <img width="20" src="{{theme_asset('assets/img/icons/profile-icon7.png')}}"
                                  class="dark-support" alt="">
                             <span>{{translate('inbox')}}</span>

@@ -28,9 +28,9 @@
                         </form>
                         <ul class="nav nav-tabs gap-3 border-0 mb-3 mx-4" id="pills-tab" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link bg-transparent p-2 {{ request('type') == 'customer' ? 'active' : '' }}"
-                                   href="{{ route('vendor.messages.index', ['type' => 'customer']) }}">
-                                    {{translate("customer")}}
+                                <a class="nav-link bg-transparent p-2 {{ request('type') == 'admin' ? 'active' : '' }}"
+                                   href="{{ route('vendor.messages.index', ['type' => 'admin']) }}">
+                                    {{translate("admin")}}
                                 </a>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -152,7 +152,7 @@
                                             <div class="d-flex flex-column align-items-center gap-3">
                                                 <img src="{{ dynamicAsset(path: 'public/assets/back-end/img/empty-state-icon/no-customer-found.svg') }}"
                                                      alt="">
-                                                <p>{{ request('type') == 'customer' ? translate('No_Customer_Found') : translate('No_Deliveryman_Found') }}</p>
+                                                <p>{{ request('type') == 'admin' ? translate('No_Admin_Found') : translate('No_Deliveryman_Found') }}</p>
                                             </div>
                                         </div>
                                     @else
@@ -160,7 +160,7 @@
                                             <div class="d-flex flex-column align-items-center gap-3">
                                                 <img src="{{ dynamicAsset(path: 'public/assets/back-end/img/empty-state-icon/no-customer-found.svg') }}"
                                                      alt="">
-                                                <p>{{ request('type') == 'customer' ? translate('No_Customer_Found') : translate('No_Deliveryman_Found') }}</p>
+                                                <p>{{ request('type') == 'admin' ? translate('No_Admin_Found') : translate('No_Deliveryman_Found') }}</p>
                                             </div>
                                         </div>
                                     @endif

@@ -28,12 +28,6 @@
                                 <div class="chat--sidebar-top">
                                     <ul class="nav nav-tabs nav--tabs justify-content-center">
                                         <li class="nav-item">
-                                            <a class="nav-link {{Request::is('chat/vendor')?'active': '' }}"
-                                               href="{{route('chat', ['type' => 'vendor'])}}">
-                                                {{translate('vendor')}}
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
                                             <a class="nav-link {{Request::is('chat/delivery-man')?'active': '' }}"
                                                href="{{route('chat', ['type' => 'delivery-man'])}}">
                                                 {{translate('deliveryman')}}

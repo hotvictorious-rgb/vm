@@ -26,8 +26,7 @@ class ChatController extends Controller
         $seller = $request->seller;
 
         if ($type == 'customer') {
-            $withParam = 'customer';
-            $idParam = 'user_id';
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } elseif ($type == 'delivery-man') {
             $withParam = 'deliveryMan';
             $idParam = 'delivery_man_id';
@@ -86,15 +85,7 @@ class ChatController extends Controller
 
         $terms = explode(" ", $request->input('search'));
         if ($type == 'customer') {
-            $with_param = 'customer';
-            $id_param = 'user_id';
-            $users = User::where('id', '!=', 0)
-                ->when($request->search, function ($query) use ($terms) {
-                    foreach ($terms as $term) {
-                        $query->where('f_name', 'like', '%' . $term . '%')
-                            ->orWhere('l_name', 'like', '%' . $term . '%');
-                    }
-                })->pluck('id')->toArray();
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
 
         } elseif ($type == 'delivery-man') {
             $with_param = 'deliveryMan';
@@ -148,9 +139,7 @@ class ChatController extends Controller
             return response()->json(['errors' => Helpers::validationErrorProcessor($validator)], 403);
         }
         if ($type == 'customer') {
-            $id_param = 'user_id';
-            $sent_by = 'sent_by_customer';
-            $with = 'customer';
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } elseif ($type == 'delivery-man') {
             $id_param = 'delivery_man_id';
             $sent_by = 'sent_by_delivery_man';
@@ -244,12 +233,7 @@ class ChatController extends Controller
             $deliveryMan = DeliveryMan::find($request->id);
             event(new ChattingEvent(key: 'message_from_seller', type: 'delivery_man', userData: $deliveryMan, messageForm: $messageForm));
         } elseif ($type == 'customer') {
-            $chatting->user_id = $request->id;
-            $chatting->seen_by_customer = 0;
-            $chatting->notification_receiver = 'customer';
-
-            $customer = User::find($request->id);
-            event(new ChattingEvent(key: 'message_from_seller', type: 'customer', userData: $customer, messageForm: $messageForm));
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } elseif ($type == 'admin') {
             $chatting->admin_id = 0;
             $chatting->seen_by_admin = 0;
@@ -295,7 +279,7 @@ class ChatController extends Controller
         if ($type == 'delivery-man') {
             $idParam = 'delivery_man_id';
         } elseif ($type == 'customer') {
-            $idParam = 'user_id';
+            return response()->json(['message' => 'Customer-to-Vendor chat is disabled.'], 403);
         } else {
             return response()->json(['message' => translate('Invalid_Chatting_Type')], 403);
         }

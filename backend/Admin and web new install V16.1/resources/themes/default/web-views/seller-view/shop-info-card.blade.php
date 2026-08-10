@@ -111,20 +111,20 @@
                                 </button>
                             @else
                                 <button data-toggle="modal" data-target="#exampleModal"
-                                    class="btn btn--primary __inline-70 rounded-10 btn-sm text-capitalize chat-with-seller-button d-none d-sm-inline-block"
+                                    class="btn btn--primary __inline-70 rounded-10 btn-sm text-capitalize chat-with-seller-button d-none"
                                     @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $shopInfoArray))
                                         disabled
                                     @endif
                                 >
                                     <img src="{{ theme_asset(path: 'public/assets/front-end/img/shopview-chat.png') }}"
                                          loading="eager" class="" alt="">
-                                    <span class="d-none d-sm-inline-block">
+                                    <span class="d-none">
                                         {{ translate('chat') }}
                                     </span>
                                 </button>
 
                                 <button data-toggle="modal" data-target="#exampleModal"
-                                    class="btn bg-transparent border-0 __inline-70 rounded-10  text-capitalize chat-with-seller-button d-sm-inline-block d-md-none"
+                                    class="btn bg-transparent border-0 __inline-70 rounded-10  text-capitalize chat-with-seller-button d-none"
                                     @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $shopInfoArray))
                                         disabled
                                     @endif

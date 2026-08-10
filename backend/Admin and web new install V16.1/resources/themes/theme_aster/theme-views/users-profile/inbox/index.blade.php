@@ -31,10 +31,6 @@
                                     </form>
 
                                     <ul class="nav nav--tabs gap-3">
-                                        <li class="nav-item" role="presentation">
-                                            <a class="{{Request::is('chat/vendor')?'active':''}}"
-                                               href="{{route('chat', ['type' => 'vendor'])}}">{{translate('vendor')}}</a>
-                                        </li>
                                         <li class="nav-item">
                                             <a class="{{Request::is('chat/delivery-man')?'active':''}}"
                                                href="{{route('chat', ['type' => 'delivery-man'])}}">{{translate('delivery_man')}}</a>
