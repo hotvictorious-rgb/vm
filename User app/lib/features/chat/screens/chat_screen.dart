@@ -444,6 +444,32 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           )),
                         ),
+                        
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
+                        
+                        InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => VoiceNoteBottomSheet(chatController),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Container(
+                              width: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
+                                border: Border.all(width: 1, color: Theme.of(context).hintColor.withValues(alpha: 0.7)),
+                              ),
+                              child: Center(
+                                child: Icon(Icons.mic, color: Provider.of<ThemeController>(context).darkTheme ? Colors.white : Theme.of(context).primaryColor),
+                              ),
+                            ),
+                          ),
+                        ),
                       
                       ])),
                     ),

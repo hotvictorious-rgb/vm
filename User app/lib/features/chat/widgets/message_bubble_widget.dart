@@ -2,8 +2,10 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_image_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat/domain/models/message_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat/controllers/chat_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat/widgets/audio_player_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/controllers/localization_controller.dart';
@@ -168,7 +170,9 @@ class _MessageText extends StatelessWidget {
               : Theme.of(context).primaryColor
               : Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.35),
         ),
-        child: Text(
+        child: message.message!.endsWith('.m4a') 
+        ? AudioPlayerWidget(url: message.message!, isMe: isMe) 
+        : Text(
           message.message!,
           textAlign: TextAlign.justify,
           style: textRegular.copyWith(

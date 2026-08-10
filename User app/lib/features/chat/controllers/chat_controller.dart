@@ -452,6 +452,15 @@ class ChatController extends ChangeNotifier {
     return chatTime;
   }
 
+  void addVoiceNote(PlatformFile pFile) {
+    if (pickedFiles == null) {
+      pickedFiles = [];
+    }
+    pickedFiles!.add(pFile);
+    _isSendButtonActive = true;
+    notifyListeners();
+  }
+
   Future<void> pickOtherFile(bool isRemove, {int? index}) async {
     _pickedFIleCrossMaxLimit = false;
     _pickedFIleCrossMaxLength = false;
