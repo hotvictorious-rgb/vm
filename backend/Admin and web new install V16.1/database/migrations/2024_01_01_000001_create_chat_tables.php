@@ -1,5 +1,3 @@
-database/migrations/2024_01_01_000001_create_chat_tables.php
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
