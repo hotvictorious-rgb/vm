@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sixvalley_delivery_boy/features/chat/controllers/chat_controller.dart';
 import 'package:sixvalley_delivery_boy/features/chat/widgets/custom_image_pick_bottom_sheet.dart';
+import 'package:sixvalley_delivery_boy/features/chat/widgets/voice_note_bottom_sheet.dart';
 import 'package:sixvalley_delivery_boy/helper/color_helper.dart';
 import 'package:sixvalley_delivery_boy/utill/app_constants.dart';
 import 'package:sixvalley_delivery_boy/utill/dimensions.dart';
@@ -88,6 +89,16 @@ class _MessageSendingSectionWidgetState extends State<MessageSendingSectionWidge
                                 ),
 
                                 suffixIcon : Row(mainAxisSize: MainAxisSize.min, children: [
+                                  InkWell(onTap: () => Get.bottomSheet(
+                                    VoiceNoteBottomSheet(chatController),
+                                    isScrollControlled: true,
+                                  ),
+                                      child: Padding(padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
+                                          child: Icon(Icons.mic_none_rounded,
+                                            color: Get.isDarkMode ? Theme.of(context).hintColor : Theme.of(context).primaryColor,
+                                            size: 24,
+                                          ))),
+
                                   InkWell(onTap: ()=> chatController.pickOtherFile(false),
                                       child: Padding(padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
                                           child: SizedBox(width: 24, child: Image.asset(Images.file)))),

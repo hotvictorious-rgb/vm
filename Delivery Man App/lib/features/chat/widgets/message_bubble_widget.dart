@@ -15,6 +15,7 @@ import 'package:sixvalley_delivery_boy/utill/dimensions.dart';
 import 'package:sixvalley_delivery_boy/utill/images.dart';
 import 'package:sixvalley_delivery_boy/utill/styles.dart';
 import 'package:sixvalley_delivery_boy/common/basewidgets/custom_image_widget.dart';
+import 'package:sixvalley_delivery_boy/features/chat/widgets/audio_player_widget.dart';
 
 
 class MessageBubbleWidget extends StatelessWidget {
@@ -75,7 +76,21 @@ class MessageBubbleWidget extends StatelessWidget {
             child: _MediaGridWidget(images: images, isMe: isMe),
           ),
 
-          if (files.isNotEmpty) _FileGridWidget(files: files, isMe: isMe, isLTR: isLTR),
+          if (files.where((f) => !f.path!.toLowerCase().endsWith('.m4a')).isNotEmpty) 
+            _FileGridWidget(files: files.where((f) => !f.path!.toLowerCase().endsWith('.m4a')).toList(), isMe: isMe, isLTR: isLTR),
+          
+          if (files.where((f) => f.path!.toLowerCase().endsWith('.m4a')).isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(
+                top: 5,
+                left: isMe ? 50 : 10, right: isMe ? 10 : 50,
+              ),
+              child: AudioPlayerWidget(
+                url: files.firstWhere((f) => f.path!.toLowerCase().endsWith('.m4a')).path ?? '',
+                isMe: isMe,
+              ),
+            ),
+
 
 
 

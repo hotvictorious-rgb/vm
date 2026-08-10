@@ -533,10 +533,16 @@ class ChatController extends GetxController implements GetxService{
         .toList();
   }
   
+  /// Adds a voice note recording as a file attachment (queued like a document).
+  void addVoiceNote(PlatformFile voiceFile) {
+    _pickedFiles ??= [];
+    _pickedFiles!.add(voiceFile);
+    update();
+  }
+
   void _emptyAllPickedData() {
     _pickedMediaFiles = [];
     pickedMediaFileModelList = [];
-    _pickedFiles = [];
     _pickedFiles = [];
   }
   double? getExtractSizeInMB(String sizeString) {

@@ -65,6 +65,8 @@ dependencies:
   path: any
   http_parser: any
   flutter_svg: ^2.0.9
+  audioplayers: ^6.7.1
+  record: ^6.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
