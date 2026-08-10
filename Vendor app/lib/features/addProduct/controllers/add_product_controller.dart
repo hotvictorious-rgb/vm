@@ -175,7 +175,7 @@ class AddProductController extends ChangeNotifier {
     for(int i= 0; i<languageList.length; i++){
       if(edtProduct != null){
         if(i==0){
-          String plainProductDetails = ProductHelper.htmlToPlainText(edtProduct.details ?? '');
+          String plainProductDetails = edtProduct.details ?? '';
           _titleControllerList.insert(i,TextEditingController(text: edtProduct.name)) ;
           _descriptionControllerList.add(TextEditingController(text: plainProductDetails)) ;
         } else{
@@ -184,7 +184,7 @@ class AddProductController extends ChangeNotifier {
               _titleControllerList.add(TextEditingController(text: lan.value)) ;
             }
             if(lan.locale == languageList[i].code && lan.key == 'description'){
-              String plainText = ProductHelper.htmlToPlainText(lan.value ?? '');
+              String plainText = lan.value ?? '';
               _descriptionControllerList.add(TextEditingController(text: plainText));
 
               debugPrint('--------description---------${lan.value}');

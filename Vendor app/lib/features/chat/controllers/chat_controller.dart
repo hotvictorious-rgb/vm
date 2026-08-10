@@ -565,6 +565,13 @@ class ChatController extends ChangeNotifier {
   }
 
 
+  void addVoiceNote(PlatformFile file) {
+    _pickedFiles ??= [];
+    _pickedFiles!.add(file);
+    toggleMediaSendingButtonActive();
+    notifyListeners();
+  }
+
   void toggleMediaSendingButtonActive(){
     bool isNotEmptyCheck = (pickedMediaFileModelList?.isNotEmpty ?? false) || (_pickedFiles?.isNotEmpty ?? false);
     bool mediaCheck =  !pickedImageCrossMaxLength && !_pickedFIleCrossMaxLength;

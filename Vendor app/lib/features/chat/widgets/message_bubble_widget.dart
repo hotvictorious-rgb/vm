@@ -9,7 +9,9 @@ import 'package:sixvalley_vendor_app/common/basewidgets/custom_image_widget.dart
 import 'package:sixvalley_vendor_app/features/chat/domain/models/message_model.dart';
 import 'package:sixvalley_vendor_app/features/chat/screens/media_viewer_screen.dart';
 import 'package:sixvalley_vendor_app/features/chat/controllers/chat_controller.dart';
+import 'package:sixvalley_vendor_app/features/chat/widgets/audio_player_widget.dart';
 import 'package:sixvalley_vendor_app/localization/controllers/localization_controller.dart';
+import 'package:sixvalley_vendor_app/features/splash/controllers/splash_controller.dart';
 import 'package:sixvalley_vendor_app/theme/controllers/theme_controller.dart';
 import 'package:sixvalley_vendor_app/utill/dimensions.dart';
 import 'package:sixvalley_vendor_app/utill/images.dart';
@@ -39,7 +41,9 @@ class MessageBubbleWidget extends StatelessWidget {
           String previousMessageHasChatTime = previous != null ? chatProvider.getChatTime(previous!.createdAt!, message.createdAt) : "";
 
           final List<Attachment> images = message.attachment?.where((a) => a.type == 'media').toList() ?? [];
-          final List<Attachment> files = message.attachment?.where((a) => a.type == 'file').toList() ?? [];
+          final List<Attachment> allFiles = message.attachment?.where((a) => a.type == 'file').toList() ?? [];
+          final List<Attachment> audioFiles = allFiles.where((a) => ['m4a', 'mp3', 'wav', 'aac', 'ogg', 'wma', 'amr', 'awb', 'flac'].any((ext) => a.path?.toLowerCase().endsWith(ext) ?? false)).toList();
+          final List<Attachment> files = allFiles.where((a) => !['m4a', 'mp3', 'wav', 'aac', 'ogg', 'wma', 'amr', 'awb', 'flac'].any((ext) => a.path?.toLowerCase().endsWith(ext) ?? false)).toList();
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingEye),
@@ -75,6 +79,15 @@ class MessageBubbleWidget extends StatelessWidget {
                 if(images.isNotEmpty) const SizedBox(height: Dimensions.paddingSizeExtraSmall),
                 _MediaGridWidget(images: images, isMe: isMe),
 
+
+                if (audioFiles.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    children: audioFiles.map((a) => Padding(
+                      padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
+                      child: AudioPlayerWidget(url: '${Provider.of<SplashController>(context, listen: false).baseUrls?.chatImageUrl}/${a.path}', isMe: isMe),
+                    )).toList(),
+                  ),
 
                 if (files.isNotEmpty) _FileGridWidget(files: files, isMe: isMe, isLTR: isLTR),
 

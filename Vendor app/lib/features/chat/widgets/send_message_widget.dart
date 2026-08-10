@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sixvalley_vendor_app/features/chat/domain/models/message_body.dart';
 import 'package:sixvalley_vendor_app/features/chat/widgets/custom_image_pick_bottom_sheet.dart';
+import 'package:sixvalley_vendor_app/features/chat/widgets/voice_note_bottom_sheet.dart';
 import 'package:sixvalley_vendor_app/localization/language_constrants.dart';
 import 'package:sixvalley_vendor_app/features/chat/controllers/chat_controller.dart';
 import 'package:sixvalley_vendor_app/utill/dimensions.dart';
@@ -99,6 +100,12 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(horizontal:  Dimensions.paddingSizeExtraSmall),
                                       child: Image.asset(Images.attachment, height: 30, width: 30, color: Theme.of(context).primaryColor),
+                                    ),
+                                  ),
+                                  InkWell(onTap: ()=> showModalBottomSheet(context: context, isScrollControlled: true, builder: (context) => VoiceNoteBottomSheet(chatController)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal:  Dimensions.paddingSizeExtraSmall),
+                                      child: Icon(Icons.mic, size: 30, color: Theme.of(context).primaryColor),
                                     ),
                                   ),
                                 ],
