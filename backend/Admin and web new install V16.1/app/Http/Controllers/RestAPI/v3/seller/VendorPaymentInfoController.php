@@ -68,10 +68,7 @@ class VendorPaymentInfoController extends Controller
 
     public function update(PaymentInfoApiRequest $request): JsonResponse
     {
-        $fields = $this->withdrawalMethodRepo->getFirstWhere(params: ['id' => $request['withdraw_method_id']]);
-        $data = $this->vendorPaymentInformationService->getApiAddData(sellerID: $request['seller']?->id, request: $request, fields: $fields['method_fields']);
-         $this->vendorWithdrawMethodInfoRepo->updateOrInsert(params: ['id' => $request['id']], data: $data);
-        return response()->json(['status' => true], 200);
+        return response()->json(['status' => false, 'message' => translate('Withdrawal_methods_are_locked_upon_creation._Please_contact_Admin_to_edit.')], 403);
     }
 
     public function updateDefault(Request $request): JsonResponse
@@ -93,8 +90,6 @@ class VendorPaymentInfoController extends Controller
 
     public function delete(Request $request): JsonResponse
     {
-        $seller = $request['seller'];
-        $this->vendorWithdrawMethodInfoRepo->delete(params: ['id' => $request['id'], 'user_id' => $seller['id']]);
-        return response()->json(['status' => true], 200);
+        return response()->json(['status' => false, 'message' => translate('Withdrawal_methods_are_locked_upon_creation._Please_contact_Admin_to_delete.')], 403);
     }
 }

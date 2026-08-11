@@ -89,6 +89,9 @@ class DeliverymanWithdrawController extends Controller
         $formatData = $deliveryManWithdrawService->getUpdateData(request: $request, wallet: $wallet, withdraw: $withdraw);
         $walletData = $formatData['wallet'];
         $withdrawData = $formatData['withdraw'];
+        if ($request['approved'] == 1 && $request->has('proof_of_payment')) {
+            $withdrawData['proof_of_payment'] = \App\Utils\ImageManager::upload('withdraw_requests/', 'png', $request->file('proof_of_payment'));
+        }
         $this->deliveryManWalletRepo->update(id: $wallet->id, data: $walletData);
         $this->withdrawRequestRepo->update(id: $withdrawId, data: $withdrawData);
         if (!empty($withdraw->deliveryMan?->fcm_token)) {

@@ -568,6 +568,11 @@ class DeliveryManController extends Controller
     public function bank_info(Request $request):JsonResponse
     {
         $delivery_man = $request['delivery_man'];
+
+        if (!empty($delivery_man->bank_name) || !empty($delivery_man->account_no)) {
+            return response()->json(['message' => translate('Bank Info is locked upon creation. Please contact Admin to edit.')], 403);
+        }
+
         $delivery_man->bank_name = $request->bank_name;
         $delivery_man->branch = $request->branch;
         $delivery_man->account_no = $request->account_no;

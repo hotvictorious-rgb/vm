@@ -40,6 +40,7 @@ class WithdrawRequest extends Model
         'withdrawal_method_fields',
         'transaction_note',
         'approved',
+        'proof_of_payment',
     ];
 
     /**

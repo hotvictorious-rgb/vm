@@ -77,6 +77,17 @@
                     </div>
                 </div>
             </div>
+        @if($details['proof_of_payment'])
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0 font-medium text-capitalize font-weight-bold">{{translate('proof_of_payment')}}</h6>
+                </div>
+                <div class="card-body">
+                    <a href="{{asset('storage/app/public/withdraw_requests')}}/{{$details['proof_of_payment']}}" target="_blank">
+                        <img src="{{asset('storage/app/public/withdraw_requests')}}/{{$details['proof_of_payment']}}" alt="Proof of Payment" class="img-fluid" style="max-height: 100px;">
+                    </a>
+                </div>
+            </div>
         @endif
     </div>
     <div class="d-none note-section">
@@ -85,11 +96,15 @@
                 <i class="tio-clear"></i>
             </span>
         </div>
-        <form action="{{route('admin.delivery-man.withdraw-update-status',[$details['id']])}}" method="POST" id="approval-note-form" data-message="{{ translate('want_to_approve_this_withdraw_request') . '?' }}">
+        <form action="{{route('admin.delivery-man.withdraw-update-status',[$details['id']])}}" method="POST" id="approval-note-form" data-message="{{ translate('want_to_approve_this_withdraw_request') . '?' }}" enctype="multipart/form-data">
             @csrf
             <input name="approved" value="1" hidden="">
             <div class="mt-5 d-none note-area" id="approval-note" >
                 <h4 class="text-center mb-3">{{translate('approval_note')}} </h4>
+                <div class="mb-3 text-start">
+                    <label for="proof_of_payment" class="font-medium text-capitalize">{{translate('proof_of_payment')}} ({{translate('required')}})</label>
+                    <input type="file" class="form-control" name="proof_of_payment" id="proof_of_payment" accept="image/*" required>
+                </div>
                 <textarea name="note" class="form-control" rows="6" placeholder="{{translate('type_a_note_about_request_approval').'.'}}"></textarea>
                 <div class="d-flex gap-2 pt-3 justify-content-center">
                     <button type="button" class="btn btn-secondary min-w-100px back-to-details mx-2"> {{translate('back')}}</button>

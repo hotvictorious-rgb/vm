@@ -42,7 +42,13 @@
                                         <i class="fi fi-rr-trash"></i>
                                     </button>
                                 @else
-                                    <span class="text-muted disabled"> _ </span>
+                                    @if($withdrawRequest->proof_of_payment)
+                                        <a href="{{asset('storage/app/public/withdraw_requests')}}/{{$withdrawRequest->proof_of_payment}}" target="_blank" class="btn btn-outline-info btn-sm" data-toggle="tooltip" title="{{ translate('View Proof of Payment') }}">
+                                            <i class="fi fi-rr-eye"></i>
+                                        </a>
+                                    @else
+                                        <span class="text-muted disabled"> _ </span>
+                                    @endif
                                 @endif
 
                             </div>
