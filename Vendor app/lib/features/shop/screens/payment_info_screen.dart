@@ -340,43 +340,7 @@ class PaymentInfoWidget extends StatelessWidget {
                       ),
 
 
-                      if ('flat' == 'flat' )...[
-                        PopupMenuItem(
-                          value: 3,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(getTranslated('edit', context)!,
-                                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge?.color), maxLines: 2,
-                              ),
-                              const SizedBox(width: 10),
-
-                              CustomAssetImageWidget(Images.myShopEditIcon, width: 20, height: 20, color: Theme.of(context).colorScheme.onPrimary)
-                            ],
-                          ),
-                        )
-                      ],
-
-                      PopupMenuItem(
-                        value: 4,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(getTranslated('delete', context)!,
-                              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault,
-                                color: (shopController.paymentInformationModel?.data![index].isDefault ?? false) ?
-                                Theme.of(context).hintColor : Theme.of(context).textTheme.bodyLarge?.color
-                              ), maxLines: 2,
-                            ),
-                            const SizedBox(width: 10),
-
-                            Opacity(
-                              opacity: (shopController.paymentInformationModel?.data![index].isDefault ?? false) ? 0.5 : 1.0,
-                              child: const CustomAssetImageWidget(Images.trashIcon, width: 20, height: 20),
-                            )
-                          ],
-                        ),
-                      ),
+                      // Edit and Delete have been removed to lock withdrawal methods globally
                     ],
                   )
                 ],

@@ -13,6 +13,7 @@ import 'package:sixvalley_vendor_app/theme/controllers/theme_controller.dart';
 import 'package:sixvalley_vendor_app/utill/dimensions.dart';
 import 'package:sixvalley_vendor_app/utill/images.dart';
 import 'package:sixvalley_vendor_app/utill/styles.dart';
+import 'package:sixvalley_vendor_app/utill/app_constants.dart';
 
 import '../../../main.dart' show Get;
 
@@ -112,6 +113,45 @@ class TransactionWidget extends StatelessWidget {
               ],
             ),
             const Spacer(),
+            if (transactionModel.proofOfPayment != null)
+              InkWell(
+                onTap: () {
+                  showDialog(context: context, builder: (_) => Dialog(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                          child: Text(getTranslated('proof_of_payment', context) ?? 'Proof of Payment', style: robotoBold),
+                        ),
+                        Image.network(
+                          '${AppConstants.baseUrl}/storage/app/public/withdraw_requests/${transactionModel.proofOfPayment}',
+                          fit: BoxFit.contain,
+                          errorBuilder: (c, o, s) => const Icon(Icons.error),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(getTranslated('close', context) ?? 'Close'),
+                        )
+                      ],
+                    ),
+                  ));
+                },
+                child: Container(
+                  height: 30,
+                  margin: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall, vertical: Dimensions.paddingSizeVeryTiny),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(getTranslated('view_proof', context) ?? 'View Proof', style: robotoBold.copyWith(
+                    color: Colors.white,
+                    fontSize: Dimensions.fontSizeSmall,
+                  )),
+                ),
+              ),
 
             if(transactionModel.approved != 1 && transactionModel.approved != 2)
               Consumer<WalletController>(
