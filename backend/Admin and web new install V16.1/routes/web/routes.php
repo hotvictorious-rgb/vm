@@ -458,6 +458,9 @@ if (!$isGatewayPublished) {
             Route::get('cancel', [PaystackController::class, 'cancel'])->name('cancel');
         });
 
+        //PAYSTACK DELIVERY CALLBACK
+        Route::get('paystack-delivery/callback', [\App\Http\Controllers\RestAPI\v2\delivery_man\DeliveryManController::class, 'paystack_delivery_callback'])->name('paystack-delivery.callback');
+
         //BKASH
         Route::group(['prefix' => 'bkash', 'as' => 'bkash.'], function () {
             // Payment Routes for bKash

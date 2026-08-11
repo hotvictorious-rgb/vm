@@ -795,6 +795,184 @@ class DeliveryManController extends Controller
         $delivery_man->app_language = $request->current_language;
         $delivery_man->save();
 
-        return response()->json(['message' => 'Successfully change'], 200);
+    private function _set_paystack_config()
+    {
+        $config = \Illuminate\Support\Facades\DB::table('addon_settings')->where('key_name', 'paystack')
+            ->where('settings_type', 'payment_config')->first();
+        $values = false;
+        if (!is_null($config) && $config->mode == 'live') {
+            $values = json_decode($config->live_values);
+        } elseif (!is_null($config) && $config->mode == 'test') {
+            $values = json_decode($config->test_values);
+        }
+
+        if ($values) {
+            $configArray = array(
+                'publicKey' => env('PAYSTACK_PUBLIC_KEY', $values->public_key),
+                'secretKey' => env('PAYSTACK_SECRET_KEY', $values->secret_key),
+                'paymentUrl' => env('PAYSTACK_PAYMENT_URL', 'https://api.paystack.co'),
+                'merchantEmail' => env('MERCHANT_EMAIL', $values->merchant_email),
+            );
+            \Illuminate\Support\Facades\Config::set('paystack', $configArray);
+        }
+    }
+
+    public function generate_paystack_link(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'order_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::validationErrorProcessor($validator)], 403);
+        }
+
+        $deliveryMan = $request['delivery_man'];
+        $order = Order::with(['customer'])->where(['delivery_man_id' => $deliveryMan['id'], 'id' => $request['order_id']])->first();
+
+        if (!$order) {
+            return response()->json(['success' => 0, 'message' => 'Order not found or not assigned to you.'], 200);
+        }
+
+        if ($order->payment_status == 'paid') {
+            return response()->json(['success' => 0, 'message' => 'Order is already paid.'], 200);
+        }
+
+        $this->_set_paystack_config();
+        
+        $amount = $order->order_amount + $order->edit_due_amount;
+
+        $url = "https://api.paystack.co/transaction/initialize";
+
+        $fields = [
+            'email' => $order->customer->email ?? "customer@email.com",
+            'amount' => $amount * 100,
+            'currency' => \App\Utils\Helpers::currency_code() ?? 'NGN',
+            'reference' => (string)('REF' . time() . 'RANDOM'),
+            'callback_url' => route('paystack-delivery.callback', ['order_id' => $order->id]),
+            'metadata' => [
+                'order_id' => $order->id,
+            ]
+        ];
+
+        $fields_string = http_build_query($fields);
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Authorization: Bearer " . \Illuminate\Support\Facades\Config::get('paystack.secretKey'),
+            "Cache-Control: no-cache",
+        ));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = json_decode(curl_exec($ch), true);
+
+        if ($response['status'] && isset($response['data']['authorization_url'])) {
+            return response()->json([
+                'success' => 1,
+                'authorization_url' => $response['data']['authorization_url']
+            ], 200);
+        }
+
+        return response()->json(['success' => 0, 'message' => 'Paystack integration error'], 403);
+    }
+
+    public function paystack_delivery_callback(Request $request)
+    {
+        $this->_set_paystack_config();
+        
+        $reference = $request->query('reference');
+        $order_id = $request->query('order_id');
+        
+        if(!$reference || !$order_id) {
+             return response()->json(['message' => 'Invalid callback'], 400);
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.paystack.co/transaction/verify/$reference",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "Authorization: Bearer " . \Illuminate\Support\Facades\Config::get('paystack.secretKey'),
+                "Cache-Control: no-cache",
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        
+        $paymentDetails = json_decode($response, true);
+        
+        if ($paymentDetails['status'] == true && $paymentDetails['data']['status'] == 'success') {
+            $order = Order::with(['customer', 'deliveryMan', 'latestEditHistory'])->find($order_id);
+            if ($order && $order->order_status != 'delivered') {
+                $expected_amount = round(($order['order_amount'] + $order['edit_due_amount']) * 100);
+                $paid_amount = $paymentDetails['data']['amount'];
+
+                if ($paid_amount >= $expected_amount) {
+                    Order::where(['id' => $order_id])->update([
+                    'order_status' => 'delivered',
+                    'order_amount' => $order['order_amount'] + $order['edit_due_amount'],
+                    'payment_status' => 'paid',
+                    'edit_due_amount' => 0,
+                    'payment_method' => 'paystack'
+                ]);
+                
+                if ($order?->latestEditHistory) {
+                    OrderEditHistory::where(['id' => $order?->latestEditHistory?->id])->update([
+                        'order_due_payment_status' => 'paid',
+                        'order_due_payment_note' => 'Marked as paid by Paystack at Door',
+                    ]);
+                }
+                
+                $deliveryMan = $order->deliveryMan;
+                $deliveryManWallet = \App\Models\DeliverymanWallet::where('delivery_man_id', $deliveryMan['id'])->first();
+                
+                if (empty($deliveryManWallet)) {
+                    \App\Models\DeliverymanWallet::create([
+                        'delivery_man_id' => $deliveryMan['id'],
+                        'current_balance' => $order?->deliveryman_charge ?? 0,
+                        'cash_in_hand' => 0,
+                        'pending_withdraw' => 0,
+                        'total_withdraw' => 0,
+                    ]);
+                } else {
+                    $deliveryManWallet->current_balance += $order->deliveryman_charge ?? 0;
+                    $deliveryManWallet->save();
+                }
+
+                event(new \App\Events\OrderStatusEvent(key: 'delivered', type: 'customer', order: $order));
+                OrderManager::getStockUpdateOnOrderStatusChange($order, 'delivered');
+                OrderManager::generateReferBonusForFirstOrder(orderId: $order['id']);
+                
+                if ($order['seller_id'] != null) {
+                    OrderManager::getWalletManageOnOrderStatusChange($order, 'delivery man');
+                    OrderDetail::where('order_id', $order->id)->update(['delivery_status' => 'delivered']);
+                }
+                
+                if(isset($deliveryMan->fcm_token)) {
+                    $data = [
+                        'title' => 'Payment Received!',
+                        'description' => 'Customer paid via Paystack. Order automatically marked as delivered.',
+                        'order_id' => $order->id,
+                        'image' => '',
+                        'type' => 'order_status'
+                    ];
+                    Helpers::send_push_notif_to_device($deliveryMan->fcm_token, $data);
+                }
+                
+                return response("<div style='text-align:center; padding: 50px; font-family: sans-serif;'><h2>Payment Successful!</h2><p>Your order has been marked as paid and delivered. You can close this window.</p></div>");
+                }
+            }
+        }
+        return response()->json(['message' => 'Payment failed or already delivered'], 400);
     }
 }

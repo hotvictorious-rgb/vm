@@ -100,19 +100,26 @@ class PaystackController extends Controller
     public function handleGatewayCallback(Request $request): Redirector|RedirectResponse
     {
         $paymentDetails = self::getPayStackPaymentData(request: $request);
+        $payment_data = $this->payment::where(['id' => $paymentDetails['data']['metadata']['payment_id']])->first();
 
-        if ($paymentDetails['status'] == true) {
-            $this->payment::where(['id' => $paymentDetails['data']['metadata']['payment_id']])->update([
-                'payment_method' => 'paystack',
-                'is_paid' => 1,
-                'transaction_id' => $request['trxref'],
-            ]);
-            $data = $this->payment::where(['id' => $paymentDetails['data']['metadata']['payment_id']])->first();
-            if (isset($data) && function_exists($data->success_hook)) {
-                call_user_func($data->success_hook, $data);
+        if ($paymentDetails['status'] == true && $paymentDetails['data']['status'] == 'success') {
+            $expected_amount = round(($payment_data['payment_amount'] ?? 0) * 100);
+            $paid_amount = $paymentDetails['data']['amount'];
+
+            if ($paid_amount >= $expected_amount) {
+                $this->payment::where(['id' => $paymentDetails['data']['metadata']['payment_id']])->update([
+                    'payment_method' => 'paystack',
+                    'is_paid' => 1,
+                    'transaction_id' => $request['trxref'],
+                ]);
+                $data = $this->payment::where(['id' => $paymentDetails['data']['metadata']['payment_id']])->first();
+                if (isset($data) && function_exists($data->success_hook)) {
+                    call_user_func($data->success_hook, $data);
+                }
+                return $this->payment_response($data, 'success');
             }
-            return $this->payment_response($data, 'success');
         }
+
 
         $payment_data = $this->payment::where(['id' => $paymentDetails['data']['metadata']['payment_id']])->first();
         if (isset($payment_data) && function_exists($payment_data->failure_hook)) {
