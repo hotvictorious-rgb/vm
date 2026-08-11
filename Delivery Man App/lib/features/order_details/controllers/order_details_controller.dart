@@ -80,10 +80,10 @@ class OrderDetailsController extends GetxController implements GetxService {
 
 
 
-  Future<bool> updateOrderStatus({int? orderId, String? status,BuildContext? context}) async {
+  Future<bool> updateOrderStatus({int? orderId, String? status, String? pickupVerificationCode, BuildContext? context}) async {
     _isLoading =  true;
     update();
-    Response response = await  orderDetailsServiceInterface.updateOrderStatus(orderId: orderId, status: status);
+    Response response = await  orderDetailsServiceInterface.updateOrderStatus(orderId: orderId, status: status, pickupVerificationCode: pickupVerificationCode);
     bool _isSuccess;
     if(response.body != null && response.statusCode == 200) {
       Get.back();

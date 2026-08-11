@@ -36,6 +36,13 @@ class CallAndChatWidget extends StatelessWidget {
       if(isAdmin || isSeller || !orderModel!.isGuest!)
       InkWell(
         onTap: (){
+        if (orderModel!.orderStatus == 'delivered' || 
+            orderModel!.orderStatus == 'canceled' || 
+            orderModel!.orderStatus == 'returned' || 
+            orderModel!.orderStatus == 'failed') {
+          showCustomSnackBarWidget('chat_disabled_for_this_order_status'.tr);
+          return;
+        }
         if(!isSeller && !isAdmin && orderModel!.isGuest!){
           showCustomSnackBarWidget('you_cant_chat_with_guest_user'.tr);
         }

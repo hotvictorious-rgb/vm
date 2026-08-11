@@ -6,6 +6,7 @@ import 'package:sixvalley_delivery_boy/features/order_details/screens/order_deli
 import 'package:sixvalley_delivery_boy/features/order_details/widgets/camera_or_gallery_widget.dart';
 import 'package:sixvalley_delivery_boy/features/order_details/widgets/slider_button_widget.dart';
 import 'package:sixvalley_delivery_boy/features/order_details/widgets/verify_otp_sheet_widget.dart';
+import 'package:sixvalley_delivery_boy/features/order_details/widgets/verify_pickup_sheet_widget.dart';
 import 'package:sixvalley_delivery_boy/features/splash/controllers/splash_controller.dart';
 import 'package:sixvalley_delivery_boy/features/order/domain/models/order_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,19 +58,23 @@ class OrderStatusChangeCustomButtonWidget extends StatelessWidget {
   }
 
   void _handleProcessingStatus(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => const CustomLoaderWidget(),
-    );
+    _showVerifyPickupSheet(context);
+  }
 
-    Get.find<OrderDetailsController>().updateOrderStatus(
-      orderId: orderModel!.id,
-      status: 'out_for_delivery',
+  void _showVerifyPickupSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: VerifyPickupSheetWidget(
+            orderModel: orderModel,
+          ),
+        );
+      },
     );
-
-    Navigator.of(context).pop();
-    Get.find<OrderController>().getCurrentOrders();
   }
 
 

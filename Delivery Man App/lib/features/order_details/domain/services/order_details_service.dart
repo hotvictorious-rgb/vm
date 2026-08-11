@@ -76,8 +76,8 @@ class OrderDetailsService implements OrderDetailsServiceInterface{
   }
 
   @override
-  Future updateOrderStatus({int? orderId, String? status}) async {
-     return await  orderDetailsRepositoryInterface.updateOrderStatus(orderId: orderId, status: status);
+  Future updateOrderStatus({int? orderId, String? status, String? pickupVerificationCode}) async {
+     return await  orderDetailsRepositoryInterface.updateOrderStatus(orderId: orderId, status: status, pickupVerificationCode: pickupVerificationCode);
 
   }
 

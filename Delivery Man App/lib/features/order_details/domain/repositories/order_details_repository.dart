@@ -15,10 +15,13 @@ class OrderDetailsRepository implements OrderDetailsRepositoryInterface{
 
 
   @override
-  Future<Response> updateOrderStatus({int? orderId, String? status}) async {
+  Future<Response> updateOrderStatus({int? orderId, String? status, String? pickupVerificationCode}) async {
+    Map<String, dynamic> body = {"order_id": orderId, "status": status, "_method": 'put'};
+    if (pickupVerificationCode != null && pickupVerificationCode.isNotEmpty) {
+      body['pickup_verification_code'] = pickupVerificationCode;
+    }
     Response response = await apiClient.postData(
-        AppConstants.updateOrderStatusUri,
-        {"order_id": orderId, "status": status, "_method": 'put'});
+        AppConstants.updateOrderStatusUri, body);
       return response;
 
   }

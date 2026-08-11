@@ -5,7 +5,7 @@ import 'package:sixvalley_delivery_boy/interface/repository_interface.dart';
 
 abstract class OrderDetailsRepositoryInterface implements RepositoryInterface{
   Future<Response> getOrderDetails({String? orderID});
-  Future<Response> updateOrderStatus({int? orderId, String? status});
+  Future<Response> updateOrderStatus({int? orderId, String? status, String? pickupVerificationCode});
   Future<Response> rescheduleOrder({int? orderId, String? deliveryDate, String? cause});
   Future<Response> pauseAndResumeOrder({int? orderId, int? isPos, String? cause});
   Future<dynamic> cancelOrderStatus({int? orderId, String? cause});
