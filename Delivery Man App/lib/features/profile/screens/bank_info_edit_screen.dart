@@ -120,6 +120,14 @@ class _BankInfoEditScreenState extends State<BankInfoEditScreen> {
 
             GetBuilder<ProfileController>(
                 builder: (bankController) {
+                  bool isBankInfoSet = bankController.profileModel?.bankName != null && bankController.profileModel!.bankName!.isNotEmpty;
+                  if (isBankInfoSet) {
+                     return Padding(
+                       padding: EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+                       child: Text('Bank Info is locked upon creation. Please contact Admin to edit.', style: rubikRegular.copyWith(color: Theme.of(context).colorScheme.error)),
+                     );
+                  }
+
                   return !bankController.isUpdate ? CustomButtonWidget(onTap: (){
                     String accountName = _accountNameController.text.trim();
                     String bankName = _bankNameController.text.trim();

@@ -36,7 +36,43 @@ class WithdrawCardWidget extends StatelessWidget {
             child: Text(' ${PriceConverter.convertPrice(withdraws!.amount)}',
                 style: rubikMedium.copyWith(color: Get.isDarkMode?
                 Theme.of(context).hintColor.withValues(alpha:.5) :
-                Theme.of(context).colorScheme.onTertiaryContainer)))]),
+                Theme.of(context).colorScheme.onTertiaryContainer))),
+
+          if (withdraws!.proofOfPayment != null)
+            InkWell(
+              onTap: () {
+                showDialog(context: context, builder: (_) => Dialog(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
+                        child: Text('Proof of Payment', style: rubikMedium),
+                      ),
+                      Image.network(
+                        'http://127.0.0.1:8000/storage/app/public/withdraw_requests/${withdraws!.proofOfPayment}',
+                        fit: BoxFit.contain,
+                        errorBuilder: (c, o, s) => const Icon(Icons.error),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      )
+                    ],
+                  ),
+                ));
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: Dimensions.paddingSizeSmall),
+                padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
+                ),
+                child: Text('Proof', style: rubikMedium.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall)),
+              ),
+            ),
+        ]),
 
         ((index!+1) < length!) ? Padding(padding:  EdgeInsets.only(top: Dimensions.paddingSizeLarge),
           child: CustomDividerWidget(height: .5, color: Theme.of(context).hintColor)) : const SizedBox.shrink()]));

@@ -34,6 +34,7 @@ class Withdraws {
   int? id;
   double? amount;
   String? transactionNote;
+  String? proofOfPayment;
   String? createdAt;
   String? updatedAt;
 
@@ -41,6 +42,7 @@ class Withdraws {
       {this.id,
         this.amount,
         this.transactionNote,
+        this.proofOfPayment,
         this.createdAt,
         this.updatedAt});
 
@@ -48,6 +50,7 @@ class Withdraws {
     id = json['id'];
     amount = double.parse(json['amount'].toString());
     transactionNote = json['transaction_note'];
+    proofOfPayment = json['proof_of_payment'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -57,6 +60,7 @@ class Withdraws {
     data['id'] = id;
     data['amount'] = amount;
     data['transaction_note'] = transactionNote;
+    data['proof_of_payment'] = proofOfPayment;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     return data;
