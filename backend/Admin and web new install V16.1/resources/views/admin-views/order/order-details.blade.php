@@ -169,11 +169,42 @@
                                     </div>
 
                                     @if(getWebConfig('order_verification'))
-                                        <span class="d-flex justify-content-sm-end gap-10 fs-12">
-                                            <b>
-                                                {{translate('order_verification_code')}} : {{$order['verification_code'] }}
-                                            </b>
-                                        </span>
+                                        <div class="d-flex flex-column align-items-sm-end gap-2 fs-12">
+                                            <span class="d-flex gap-10 align-items-center">
+                                                <b>{{translate('pickup_verification_code')}} :</b>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="font-weight-bold" id="pickup_code_hidden">******</span>
+                                                    <span class="font-weight-bold d-none" id="pickup_code_visible">{{$order['pickup_verification_code'] ?? 'N/A'}}</span>
+                                                    <i class="tio-hidden cursor-pointer" id="pickup_code_toggle" onclick="toggleOtp('pickup_code')"></i>
+                                                </div>
+                                            </span>
+                                            <span class="d-flex gap-10 align-items-center">
+                                                <b>{{translate('delivery_verification_code')}} :</b>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="font-weight-bold" id="delivery_code_hidden">******</span>
+                                                    <span class="font-weight-bold d-none" id="delivery_code_visible">{{$order['verification_code']}}</span>
+                                                    <i class="tio-hidden cursor-pointer" id="delivery_code_toggle" onclick="toggleOtp('delivery_code')"></i>
+                                                </div>
+                                            </span>
+                                        </div>
+                                        <script>
+                                            function toggleOtp(type) {
+                                                const hidden = document.getElementById(type + '_hidden');
+                                                const visible = document.getElementById(type + '_visible');
+                                                const toggle = document.getElementById(type + '_toggle');
+                                                if (hidden.classList.contains('d-none')) {
+                                                    hidden.classList.remove('d-none');
+                                                    visible.classList.add('d-none');
+                                                    toggle.classList.remove('tio-visible');
+                                                    toggle.classList.add('tio-hidden');
+                                                } else {
+                                                    hidden.classList.add('d-none');
+                                                    visible.classList.remove('d-none');
+                                                    toggle.classList.remove('tio-hidden');
+                                                    toggle.classList.add('tio-visible');
+                                                }
+                                            }
+                                        </script>
                                     @endif
 
                                 </div>

@@ -106,6 +106,7 @@ class Order extends Model
         'is_shipping_free',
         'order_group_id',
         'verification_code',
+        'pickup_verification_code',
         'verification_status',
         'seller_id',
         'seller_is',

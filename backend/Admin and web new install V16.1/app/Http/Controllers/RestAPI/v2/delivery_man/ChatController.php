@@ -222,6 +222,15 @@ class ChatController extends Controller
         $chatting->seen_by_delivery_man = 1;
 
         if ($type == 'seller') {
+            // Gating: Only allow if an active order is assigned and not terminal
+            $orderExists = \App\Models\Order::where('seller_id', $request->id)
+                                            ->where('delivery_man_id', $deliveryMan->id)
+                                            ->whereNotIn('order_status', ['delivered', 'canceled', 'returned', 'failed'])
+                                            ->exists();
+            if (!$orderExists) {
+                return response()->json(['message' => translate('You can only chat with vendors for whom you have an active assigned order.')], 403);
+            }
+
             $chatting->seller_id = $request->id;
             $chatting->seen_by_seller = 0;
             $chatting->notification_receiver = 'seller';
@@ -229,12 +238,13 @@ class ChatController extends Controller
             $seller = Seller::find($request->id);
             event(new ChattingEvent(key: 'message_from_delivery_man', type: 'seller', userData: $seller, messageForm: $deliveryMan));
         } elseif ($type == 'customer') {
-            // Gating: Only allow if an order is assigned
+            // Gating: Only allow if an active order is assigned and not terminal
             $orderExists = \App\Models\Order::where('customer_id', $request->id)
                                             ->where('delivery_man_id', $deliveryMan->id)
+                                            ->whereNotIn('order_status', ['delivered', 'canceled', 'returned', 'failed'])
                                             ->exists();
             if (!$orderExists) {
-                return response()->json(['message' => translate('You can only chat with your assigned customer')], 403);
+                return response()->json(['message' => translate('You can only chat with customers who have an active assigned order.')], 403);
             }
 
             $chatting->user_id = $request->id;

@@ -145,6 +145,12 @@ class DeliveryManController extends Controller
             return response()->json(['success' => 0, 'message' => 'order is already delivered.'], 200);
         }
 
+        if ($request['status'] == 'out_for_delivery') {
+            if (!isset($request['pickup_verification_code']) || $order->pickup_verification_code != $request['pickup_verification_code']) {
+                return response()->json(['success' => 0, 'message' => translate('invalid_pickup_otp')], 403);
+            }
+        }
+
         Order::where(['id' => $request['order_id'], 'delivery_man_id' => $deliveryMan['id']])->update([
             'order_status' => $request['status'],
             'cause' => $cause
