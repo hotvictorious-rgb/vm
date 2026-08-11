@@ -58,6 +58,12 @@ class OrderDetailsRepository implements OrderDetailsRepositoryInterface{
 
   }
 
+  @override
+  Future<Response> generatePaystackLink({int? orderId}) async {
+    Response response = await apiClient.postData(AppConstants.generatePaystackLinkUri,
+        {"order_id": orderId});
+    return response;
+  }
 
 
   @override

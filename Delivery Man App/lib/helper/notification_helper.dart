@@ -94,7 +94,28 @@ class NotificationHelper {
       }
 
       if(message.data['type'] != 'maintenance_mode') {
-        showNotification(message, flutterLocalNotificationsPlugin, kIsWeb);
+        if(message.data['type'] == 'order_status' && message.data['title'] == 'Payment Received!') {
+          if(Get.isBottomSheetOpen == true || Get.isDialogOpen == true) {
+            Get.back();
+            Get.find<OrderController>().getCurrentOrders();
+            showDialog(
+               context: Get.context!, 
+               barrierDismissible: false,
+               builder: (ctx) => AlertDialog(
+                   title: Text('Payment Successful!'),
+                   content: Text('The customer paid via Paystack and the order has been automatically marked as delivered.'),
+                   actions: [
+                      TextButton(onPressed: () { 
+                         Navigator.of(ctx).pop(); 
+                         Navigator.of(Get.context!).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const DashboardScreen(pageIndex: 0)), (route) => false);
+                      }, child: Text('OK'))
+                   ]
+               )
+            );
+          }
+        } else {
+           showNotification(message, flutterLocalNotificationsPlugin, kIsWeb);
+        }
       }
     });
 

@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:sixvalley_delivery_boy/features/order/domain/models/order_model.dart';
 import 'package:sixvalley_delivery_boy/features/order_details/controllers/order_details_controller.dart';
 import 'package:sixvalley_delivery_boy/features/order_details/screens/order_delivered_screen.dart';
@@ -99,34 +101,51 @@ class _VerifyDeliverySheetWidgetState extends State<VerifyDeliverySheetWidget> {
                SizedBox(height: Dimensions.paddingSizeLarge)]),
 
             orderController.isLoading ? const Center(child: CircularProgressIndicator()) :
-            CustomButtonWidget(
-              btnTxt: orderController.otpVerified? 'ok'.tr : 'submit'.tr,
-              onTap: () async {
-              if(orderController.otpVerified){
-                orderController.updatePaymentStatus(orderId: widget.orderModel!.id, status: 'paid').then((value) {
-                  if (value?.statusCode == 200) {
-                    orderController.updateOrderStatus(orderId: widget.orderModel!.id,
-                        context: context, status: 'delivered').then((value) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (_) => OrderDeliveredScreen(
-                            orderID: widget.orderModel!.id.toString(), orderModel: widget.orderModel)));
-                        });}});
-              }else{
-                if(otp.length == 6){
-                 orderController.otpVerificationForOrderVerification(orderId: widget.orderModel!.id, otp: otp).then((value){
-                   if(value?.statusCode == 200){
-                     if(widget.orderModel?.paymentStatus != 'paid'){
-                       orderController.toggleProceedToNext();
-                     }else{
-                       orderController.updateOrderStatus(orderId: widget.orderModel!.id,context: context,
-                           status: 'delivered').then((value) {
-                         Navigator.of(context).push(MaterialPageRoute(
-                             builder: (_) => OrderDeliveredScreen(orderID: widget.orderModel!.id.toString(),
-                               orderModel: widget.orderModel,)));
-                       });}
-                   }else{setState(() {invalidOtp = true;});}
-                 });
-                }else{showCustomSnackBarWidget('input_valid_otp'.tr);}}}
+            Column(
+              children: [
+                CustomButtonWidget(
+                  btnTxt: orderController.otpVerified ? 'cash_collected'.tr : 'submit'.tr,
+                  onTap: () async {
+                  if(orderController.otpVerified){
+                    orderController.updatePaymentStatus(orderId: widget.orderModel!.id, status: 'paid').then((value) {
+                      if (value?.statusCode == 200) {
+                        orderController.updateOrderStatus(orderId: widget.orderModel!.id,
+                            context: context, status: 'delivered').then((value) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (_) => OrderDeliveredScreen(
+                                orderID: widget.orderModel!.id.toString(), orderModel: widget.orderModel)));
+                            });}});
+                  }else{
+                    if(otp.length == 6){
+                     orderController.otpVerificationForOrderVerification(orderId: widget.orderModel!.id, otp: otp).then((value){
+                       if(value?.statusCode == 200){
+                         if(widget.orderModel?.paymentStatus != 'paid'){
+                           orderController.toggleProceedToNext();
+                         }else{
+                           orderController.updateOrderStatus(orderId: widget.orderModel!.id,context: context,
+                               status: 'delivered').then((value) {
+                             Navigator.of(context).push(MaterialPageRoute(
+                                 builder: (_) => OrderDeliveredScreen(orderID: widget.orderModel!.id.toString(),
+                                   orderModel: widget.orderModel,)));
+                           });}
+                       }else{setState(() {invalidOtp = true;});}
+                     });
+                    }else{showCustomSnackBarWidget('input_valid_otp'.tr);}}}
+                ),
+                
+                if (orderController.otpVerified) ...[
+                  SizedBox(height: Dimensions.paddingSizeSmall),
+                  CustomButtonWidget(
+                    btnTxt: 'Pay via Paystack',
+                    onTap: () async {
+                      String? authUrl = await orderController.generatePaystackPaymentLink(widget.orderModel!.id!);
+                      if(authUrl != null) {
+                         _showPaystackPaymentSheet(context, authUrl);
+                      }
+                    }
+                  ),
+                ]
+              ],
             ),
 
             if(!orderController.otpVerified)
@@ -145,6 +164,51 @@ class _VerifyDeliverySheetWidgetState extends State<VerifyDeliverySheetWidget> {
           ]),
         );
       }),
+    );
+  }
+  
+  void _showPaystackPaymentSheet(BuildContext context, String authUrl) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(color: Theme.of(context).canvasColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20))),
+          padding: EdgeInsets.all(Dimensions.paddingSizeLarge),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+               Text('Pay via Paystack', style: rubikBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+               SizedBox(height: Dimensions.paddingSizeLarge),
+               Text('Ask customer to scan the QR code to pay.', style: rubikRegular, textAlign: TextAlign.center),
+               SizedBox(height: Dimensions.paddingSizeLarge),
+               Container(
+                 color: Colors.white,
+                 padding: EdgeInsets.all(10),
+                 child: QrImageView(
+                   data: authUrl,
+                   version: QrVersions.auto,
+                   size: 200.0,
+                 ),
+               ),
+               SizedBox(height: Dimensions.paddingSizeLarge),
+               Text('Or, click below to open the payment page directly.', style: rubikRegular, textAlign: TextAlign.center),
+               SizedBox(height: Dimensions.paddingSizeLarge),
+               CustomButtonWidget(
+                 btnTxt: 'Open Payment Link',
+                 onTap: () async {
+                    if (!await launchUrl(Uri.parse(authUrl), mode: LaunchMode.externalApplication)) {
+                        showCustomSnackBarWidget('Could not launch payment link');
+                    }
+                 }
+               ),
+               SizedBox(height: Dimensions.paddingSizeLarge),
+            ]
+          )
+        );
+      }
     );
   }
 }

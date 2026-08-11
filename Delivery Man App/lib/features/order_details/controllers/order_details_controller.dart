@@ -147,7 +147,20 @@ class OrderDetailsController extends GetxController implements GetxService {
     return apiResponse;
   }
 
-
+  Future<String?> generatePaystackPaymentLink(int orderId) async {
+    _isLoading = true;
+    update();
+    Response response = await orderDetailsServiceInterface.generatePaystackLink(orderId: orderId);
+    _isLoading = false;
+    update();
+    
+    if(response.statusCode == 200 && response.body['success'] == 1) {
+       return response.body['authorization_url'];
+    } else {
+       ApiChecker.checkApi(response);
+       return null;
+    }
+  }
 
 
   void setEarningFilterIndex(int index) {
