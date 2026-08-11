@@ -33,23 +33,47 @@ class OrderPaymentInfoWidget extends StatelessWidget {
                 const SizedBox(height: Dimensions.paddingSizeDefault),
 
                 if(configModel?.orderVerification == 1 && orderProvider.orderDetails?.first.order?.orderType != 'POS')...[
-                  Container(
-                    color: Theme.of(context).cardColor,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          getTranslated('order_verification_code', context) ?? '',
-                          style: robotoRegular.copyWith(color: Theme.of(context).textTheme.titleMedium?.color)
-                        ),
+                  (() {
+                    bool _isCodeHidden = true;
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        return Container(
+                          color: Theme.of(context).cardColor,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                getTranslated('pickup_verification_code', context) ?? 'Pickup Verification Code',
+                                style: robotoRegular.copyWith(color: Theme.of(context).textTheme.titleMedium?.color)
+                              ),
 
-                        Text(
-                          orderProvider.orderDetails?.first.order?.verificationCode ?? '',
-                          style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)
-                        ),
-                      ],
-                    ),
-                  ),
+                              Row(
+                                children: [
+                                  Text(
+                                    _isCodeHidden ? '******' : (orderProvider.orderDetails?.first.order?.pickupVerificationCode ?? 'N/A'),
+                                    style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)
+                                  ),
+                                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _isCodeHidden = !_isCodeHidden;
+                                      });
+                                    },
+                                    child: Icon(
+                                      _isCodeHidden ? Icons.visibility_off : Icons.visibility,
+                                      size: 20,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    );
+                  })(),
 
                   if(configModel?.orderVerification == 1 && orderProvider.orderDetails?.first.order?.orderType != 'POS')
                     const SizedBox(height: Dimensions.paddingSizeSmall),

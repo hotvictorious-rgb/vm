@@ -61,6 +61,7 @@ class Order {
   String? paymentNote;
   bool? isGuest;
   String? verificationCode;
+  String? pickupVerificationCode;
   double? totalProductPrice;
   double? totalProductDiscount;
   double? totalTaxAmount;
@@ -312,6 +313,7 @@ class Order {
     _offlinePayments = json['offline_payments'] != null ? OfflinePayments.fromJson(json['offline_payments']) : null;
     isGuest = json['is_guest']??false;
     verificationCode = json['verification_code'];
+    pickupVerificationCode = json['pickup_verification_code'];
     if(json['total_product_price'] != null){
       totalProductPrice = double.parse(json['total_product_price'].toString());
     }

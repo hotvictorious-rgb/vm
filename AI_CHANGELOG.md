@@ -7,6 +7,14 @@ Always append your completed tasks here in chronological order. Include the date
 
 ---
 
+### [2026-08-11] Pickup OTP and Chat Restrictions Implementation [Flutter Mobile Apps]
+* **Component:** Flutter Mobile Apps (Vendor, Customer, Delivery Man)
+* **Action:** Updated all Flutter apps to support the new Pickup OTP logic and strictly enforce Chat restrictions as requested.
+* **Changes Made:**
+  - **Vendor App:** Parsed `pickup_verification_code` in `order_model.dart`. Updated `order_payment_info_widget.dart` to remove Delivery OTP and replace it with a hide/reveal toggle for the `pickup_verification_code`.
+  - **Customer App:** Updated `order_payment_info_widget.dart` to hide the existing Delivery OTP behind a visibility toggle. Ensured `pickup_verification_code` is not exposed.
+  - **Delivery Man App:** Updated `OrderDetailsRepository`, `OrderDetailsService`, and `OrderDetailsController` to pass `pickupVerificationCode` when updating status. Created `VerifyPickupSheetWidget` to prompt for OTP before transitioning to `out_for_delivery`. Modified `cal_chat_widget.dart` to strictly disable the chat input and button for delivered, canceled, returned, or failed orders.
+
 ### [2026-08-10] Delivery Man App ↔ Laravel Backend Pairing Audit
 * **Component:** Delivery Man App / Backend (`routes/rest_api/v2/api.php`)
 * **Action:** Completed security and performance pairing for the Delivery Man App. This is the final leg of the platform-wide audit.
