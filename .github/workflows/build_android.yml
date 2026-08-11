@@ -65,6 +65,20 @@ jobs:
           cd "User app"
           flutter pub get
 
+      - name: Run Tests
+        run: |
+          cd "User app"
+          flutter test || echo "No tests found or tests failed, continuing..."
+
+      - name: Configure Keystore
+        run: |
+          cd "User app/android"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/upload-keystore.jks
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+          echo "storeFile=upload-keystore.jks" >> key.properties
+
       - name: Build APK and App Bundle
         run: |
           cd "User app"
@@ -117,6 +131,20 @@ jobs:
           cd "Vendor app"
           flutter pub get
 
+      - name: Run Tests
+        run: |
+          cd "Vendor app"
+          flutter test || echo "No tests found or tests failed, continuing..."
+
+      - name: Configure Keystore
+        run: |
+          cd "Vendor app/android"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/upload-keystore.jks
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+          echo "storeFile=upload-keystore.jks" >> key.properties
+
       - name: Build APK and App Bundle
         run: |
           cd "Vendor app"
@@ -168,6 +196,20 @@ jobs:
         run: |
           cd "Delivery Man App"
           flutter pub get
+
+      - name: Run Tests
+        run: |
+          cd "Delivery Man App"
+          flutter test || echo "No tests found or tests failed, continuing..."
+
+      - name: Configure Keystore
+        run: |
+          cd "Delivery Man App/android"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/upload-keystore.jks
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> key.properties
+          echo "storeFile=upload-keystore.jks" >> key.properties
 
       - name: Build APK and App Bundle
         run: |

@@ -118,3 +118,12 @@ Always append your completed tasks here in chronological order. Include the date
   - **Vendor `collected_cash` Exploit:** Fixed a critical bug in `OrderManager::getWalletManageOnOrderStatusChange` where the `OrderEditHistory` amount was being added to the vendor's `collected_cash` twice for Cash-on-Delivery orders. Added `cash_on_delivery` to the subtraction block so the edit history amount is only counted once, preventing artificial inflation of cash liabilities.
   - **Customer Refund Multiplier Exploit:** Fixed a critical bug in `RefundStatusService`. When refunding a customer's wallet (`walletAddRefund`), the system incorrectly wrapped `$refund['amount']` with `usdToDefaultCurrency()`. Because the stored refund amount is already evaluated in the default currency via `OrderDetail` base prices, this caused the refund to be multiplied by the system exchange rate again, resulting in massive over-refunding (e.g. refunding millions instead of hundreds) in non-USD environments. Removed the redundant conversion wrapper to ensure 1:1 wallet refunds.
   - Audited Admin `pending_amount` deduction and Delivery Man `cash_in_hand` logic; verified they correctly account for Paystack/digital and COD edit scenarios without double counting.
+
+### [2026-08-11] Payment Proof Attachments & Account Lock
+* **Component:** Global (Backend, Web Panels, Vendor App, Delivery Man App)
+* **Action:** Enabled Admin to upload Proof of Payment for withdrawal requests and locked vendor/delivery man account details upon creation.
+* **Details:**
+  - **Backend:** Added `proof_of_payment` column to `withdraw_requests` table.
+  - **Admin Web:** Added file upload input to Admin withdrawal approval modal and displayed the uploaded image on the details page.
+  - **Vendor & Delivery Man Backends:** Updated controllers to prevent editing/deleting of bank info/withdrawal methods (server-side enforcement returning 403 errors).
+  - **Vendor & Delivery Man Web/Apps:** Removed Edit/Delete UI buttons. Added "View Proof" buttons on withdrawal history cards to display the receipt/screenshot if the Admin attached one.
