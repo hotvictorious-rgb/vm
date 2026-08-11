@@ -305,7 +305,7 @@ class OrderManager
                         $wallet->delivery_charge_earned += $order['shipping_cost'];
                     }
                     $currentOrderAmount = $order['order_amount'];
-                    if ($order['payment_method'] == 'offline_payment') {
+                    if ($order['payment_method'] == 'offline_payment' || $order['payment_method'] == 'cash_on_delivery') {
                         $editHistoryAmount = OrderEditHistory::where([
                             'order_id' => $order->id,
                             'order_due_payment_status' => 'paid',

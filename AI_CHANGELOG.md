@@ -102,3 +102,11 @@ Always append your completed tasks here in chronological order. Include the date
 - **Backend**: Hardened DeliveryManController::paystack_delivery_callback and PaystackController::handleGatewayCallback to verify the actual amount paid matches the expected order amount, preventing underpayment exploits.
 - **Vendor App**: Refactored AuthRepository to securely migrate and store authentication tokens and passwords exclusively in lutter_secure_storage, removing plain text shared_preferences storage.
 - **Delivery Man App**: Refactored AuthRepository to securely migrate and store authentication tokens and passwords exclusively in lutter_secure_storage, removing plain text shared_preferences storage.
+
+### [2026-08-11] Wallet & Money Calculations Audit and Fixes
+* **Component:** Backend Laravel (`app/Utils/OrderManager.php` & `app/Services/RefundStatusService.php`)
+* **Action:** Audited and patched critical monetary logic across the system's wallet handlers.
+* **Details:**
+  - **Vendor `collected_cash` Exploit:** Fixed a critical bug in `OrderManager::getWalletManageOnOrderStatusChange` where the `OrderEditHistory` amount was being added to the vendor's `collected_cash` twice for Cash-on-Delivery orders. Added `cash_on_delivery` to the subtraction block so the edit history amount is only counted once, preventing artificial inflation of cash liabilities.
+  - **Customer Refund Multiplier Exploit:** Fixed a critical bug in `RefundStatusService`. When refunding a customer's wallet (`walletAddRefund`), the system incorrectly wrapped `$refund['amount']` with `usdToDefaultCurrency()`. Because the stored refund amount is already evaluated in the default currency via `OrderDetail` base prices, this caused the refund to be multiplied by the system exchange rate again, resulting in massive over-refunding (e.g. refunding millions instead of hundreds) in non-USD environments. Removed the redundant conversion wrapper to ensure 1:1 wallet refunds.
+  - Audited Admin `pending_amount` deduction and Delivery Man `cash_in_hand` logic; verified they correctly account for Paystack/digital and COD edit scenarios without double counting.
