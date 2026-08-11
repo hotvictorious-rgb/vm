@@ -17,7 +17,57 @@ class AuthRepository implements AuthRepositoryInterface{
   final DioClient? dioClient;
   final SharedPreferences? sharedPreferences;
   final FlutterSecureStorage? secureStorage;
-  AuthRepository({required this.dioClient, required this.sharedPreferences, this.secureStorage});
+  
+  static String _token = "";
+  static String _userEmail = "";
+  static String _userPassword = "";
+
+  AuthRepository({required this.dioClient, required this.sharedPreferences, this.secureStorage}) {
+    _initStorage();
+  }
+
+  Future<void> _initStorage() async {
+    String? sToken = await secureStorage?.read(key: AppConstants.token);
+    if (sToken == null) {
+      String? oldToken = sharedPreferences?.getString(AppConstants.token);
+      if (oldToken != null) {
+        await secureStorage?.write(key: AppConstants.token, value: oldToken);
+        _token = oldToken;
+        await sharedPreferences?.remove(AppConstants.token);
+      }
+    } else {
+      _token = sToken;
+    }
+
+    String? sEmail = await secureStorage?.read(key: AppConstants.userEmail);
+    if (sEmail == null) {
+      String? oldEmail = sharedPreferences?.getString(AppConstants.userEmail);
+      if (oldEmail != null) {
+        await secureStorage?.write(key: AppConstants.userEmail, value: oldEmail);
+        _userEmail = oldEmail;
+        await sharedPreferences?.remove(AppConstants.userEmail);
+      }
+    } else {
+      _userEmail = sEmail;
+    }
+
+    String? sPassword = await secureStorage?.read(key: AppConstants.userPassword);
+    if (sPassword == null) {
+      String? oldPassword = sharedPreferences?.getString(AppConstants.userPassword);
+      if (oldPassword != null) {
+        await secureStorage?.write(key: AppConstants.userPassword, value: oldPassword);
+        _userPassword = oldPassword;
+        await sharedPreferences?.remove(AppConstants.userPassword);
+      }
+    } else {
+      _userPassword = sPassword;
+    }
+
+    if (_token.isNotEmpty) {
+      dioClient?.token = _token;
+      dioClient?.dio?.options.headers = {'Content-Type': 'application/json; charset=UTF-8', 'Authorization': 'Bearer $_token'};
+    }
+  }
 
   @override
   Future<ApiResponse> login({String? emailAddress, String? password}) async {
@@ -109,12 +159,12 @@ class AuthRepository implements AuthRepositoryInterface{
 
   @override
   Future<void> saveUserToken(String token) async {
+    _token = token;
     dioClient!.token = token;
     dioClient!.dio!.options.headers = {'Content-Type': 'application/json; charset=UTF-8', 'Authorization': 'Bearer $token'};
 
     try {
       await secureStorage?.write(key: AppConstants.token, value: token);
-      await sharedPreferences!.setString(AppConstants.token, token);
     } catch (e) {
       rethrow;
     }
@@ -122,12 +172,12 @@ class AuthRepository implements AuthRepositoryInterface{
 
   @override
   String getUserToken() {
-    return sharedPreferences!.getString(AppConstants.token) ?? "";
+    return _token;
   }
 
   @override
   bool isLoggedIn() {
-    return sharedPreferences!.containsKey(AppConstants.token);
+    return _token.isNotEmpty;
   }
 
   @override
@@ -136,21 +186,22 @@ class AuthRepository implements AuthRepositoryInterface{
       await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
       await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.maintenanceModeTopic);
       await secureStorage?.delete(key: AppConstants.token);
+      _token = "";
     }catch(e) {
       if (kDebugMode) {
         print("====Execption====>>$e");
       }
     }
-    return sharedPreferences!.remove(AppConstants.token);
+    return true;
   }
 
   @override
   Future<void> saveUserCredentials(String number, String password) async {
+    _userEmail = number;
+    _userPassword = password;
     try {
       await secureStorage?.write(key: AppConstants.userPassword, value: password);
       await secureStorage?.write(key: AppConstants.userEmail, value: number);
-      await sharedPreferences!.setString(AppConstants.userPassword, password);
-      await sharedPreferences!.setString(AppConstants.userEmail, number);
     } catch (e) {
       rethrow;
     }
@@ -158,20 +209,21 @@ class AuthRepository implements AuthRepositoryInterface{
 
   @override
   String getUserEmail() {
-    return sharedPreferences!.getString(AppConstants.userEmail) ?? "";
+    return _userEmail;
   }
 
   @override
   String getUserPassword() {
-    return sharedPreferences!.getString(AppConstants.userPassword) ?? "";
+    return _userPassword;
   }
 
   @override
   Future<bool> clearUserNumberAndPassword() async {
+    _userEmail = "";
+    _userPassword = "";
     await secureStorage?.delete(key: AppConstants.userPassword);
     await secureStorage?.delete(key: AppConstants.userEmail);
-    await sharedPreferences!.remove(AppConstants.userPassword);
-    return await sharedPreferences!.remove(AppConstants.userEmail);
+    return true;
   }
 
   @override
